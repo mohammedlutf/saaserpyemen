@@ -1,0 +1,1048 @@
+# Copyright (c) 2026, mohammedlutf and contributors
+# For license information, please see license.txt
+
+from __future__ import annotations
+
+import re
+
+import frappe
+from frappe import _
+from frappe.utils import add_days, cint, flt, getdate, nowdate, today, validate_email_address
+
+from saaserpyemen import provisioning, tenant_ops
+from saaserpyemen.utils import (
+	convert_amount,
+	create_provisioning_log,
+	ensure_central,
+	get_billing_period,
+	get_central_url,
+	get_days_left,
+	get_domain,
+	get_enabled_currencies,
+	get_full_site_name,
+	get_owned_tenant,
+	get_plan_by_identifier,
+	get_plan_limits,
+	get_plan_price,
+	get_public_plans,
+	get_site_url,
+	get_tenant_for_user,
+	get_tenant_subscription,
+	get_trial_end,
+	is_manager,
+	is_subdomain_available,
+	log_activity,
+	normalize_subdomain,
+	sanitize_redirect,
+	serialize_plan,
+	validate_subdomain,
+)
+from saaserpyemen.utils import get_settings
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+def _require_login():
+	if frappe.session.user == "Guest":
+		frappe.throw(_("Please sign in to continue."), frappe.PermissionError)
+
+
+def _rate_limit(bucket: str, limit: int, window: int = 3600):
+	limit = cint(limit)
+	if not limit:
+		return
+	ip = getattr(frappe.local, "request_ip", None) or "unknown"
+	key = f"saas_rate:{bucket}:{ip}"
+	count = cint(frappe.cache.get_value(key) or 0)
+	if count >= limit:
+		frappe.throw(_("Too many attempts. Please try again later."), frappe.RateLimitExceededError)
+	frappe.cache.set_value(key, count + 1, expires_in_sec=window)
+
+
+def _ensure_currency(currency: str) -> str:
+	currency = (currency or "").upper()
+	if not currency:
+		currency = get_settings().default_currency or "USD"
+	if not frappe.db.exists("Currency", {"name": currency, "enabled": 1}):
+		frappe.throw(_("The selected currency is not available."))
+	return currency
+
+
+def _serialize_date(value):
+	return str(value) if value else None
+
+
+def _serialize_subscription(subscription) -> dict:
+	if not subscription:
+		return None
+	plan = get_plan_by_identifier(subscription.plan)
+	return {
+		"name": subscription.name,
+		"plan": subscription.plan,
+		"plan_name": plan.plan_name if plan else subscription.plan,
+		"status": subscription.status,
+		"billing_cycle": subscription.billing_cycle,
+		"currency": subscription.currency,
+		"amount": flt(subscription.amount),
+		"payment_status": subscription.payment_status,
+		"start_date": _serialize_date(subscription.start_date),
+		"trial_end_date": _serialize_date(subscription.trial_end_date),
+		"end_date": _serialize_date(subscription.end_date),
+		"next_billing_date": _serialize_date(subscription.next_billing_date),
+		"days_left": get_days_left(subscription.end_date or subscription.trial_end_date),
+		"auto_renew": bool(subscription.auto_renew),
+		"cancelled_on": _serialize_date(subscription.cancelled_on),
+		"cancel_reason": subscription.cancel_reason,
+	}
+
+
+def _serialize_payment(payment) -> dict:
+	return {
+		"name": payment.name,
+		"amount": flt(payment.amount),
+		"currency": payment.currency,
+		"status": payment.status,
+		"billing_cycle": payment.billing_cycle,
+		"period_start": _serialize_date(payment.period_start),
+		"period_end": _serialize_date(payment.period_end),
+		"payment_method": payment.payment_method,
+		"reference_no": payment.reference_no,
+		"paid_on": _serialize_date(payment.paid_on),
+		"receipt": payment.receipt,
+		"notes": payment.notes,
+		"creation": str(payment.creation),
+	}
+
+
+def _notify_payment_submitted(payment, tenant):
+	settings = get_settings()
+	recipients = []
+	if settings.support_email:
+		recipients.append(settings.support_email)
+	# Notify users with SaaS Manager / System Manager roles without scanning every user.
+	manager_emails = frappe.db.sql(
+		"""
+		select distinct u.email
+		from `tabUser` u
+		inner join `tabHas Role` hr on hr.parent = u.name
+		where hr.role in ('System Manager', 'SaaS Manager')
+			and u.enabled = 1
+			and u.email is not null
+		""",
+		as_dict=True,
+	)
+	recipients.extend(row.email for row in manager_emails if row.email)
+	recipients = list(dict.fromkeys(recipients))
+	if not recipients:
+		return
+	try:
+		frappe.sendmail(
+			recipients=recipients,
+			subject=_("New manual payment awaiting review: {0}").format(tenant.tenant_name),
+			message=f"""
+				<p>A new manual payment was submitted.</p>
+				<ul>
+					<li><b>Tenant:</b> {frappe.utils.escape_html(tenant.tenant_name)} ({frappe.utils.escape_html(tenant.name)})</li>
+					<li><b>Payment:</b> {frappe.utils.escape_html(payment.name)}</li>
+					<li><b>Amount:</b> {frappe.utils.escape_html(str(payment.amount))} {frappe.utils.escape_html(payment.currency or "")}</li>
+					<li><b>Reference:</b> {frappe.utils.escape_html(payment.reference_no or "-")}</li>
+				</ul>
+				<p><a href="{get_central_url()}/app/saas-payment/{frappe.utils.escape_html(payment.name)}">Review payment</a></p>
+			""",
+			now=False,
+		)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "SaaS Payment Notification")
+
+
+def _notify_tenant(tenant, subject, message):
+	if not tenant.admin_email:
+		return
+	try:
+		frappe.sendmail(recipients=[tenant.admin_email], subject=subject, message=message, now=False)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "SaaS Tenant Notification")
+
+
+def _attach_receipt(payment, file_url: str) -> None:
+	"""Link an uploaded private file to the payment so permissions follow the document."""
+	try:
+		file_name = frappe.db.get_value("File", {"file_url": file_url}, "name", order_by="creation desc")
+		if not file_name:
+			return
+		file_doc = frappe.get_doc("File", file_name)
+		if file_doc.owner not in (frappe.session.user, "Administrator") and not is_manager():
+			return
+		file_doc.attached_to_doctype = "SaaS Payment"
+		file_doc.attached_to_name = payment.name
+		file_doc.attached_to_field = "receipt"
+		file_doc.flags.ignore_permissions = True
+		file_doc.save(ignore_permissions=True)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "SaaS payment receipt attach")
+
+
+# ---------------------------------------------------------------------------
+# Public catalogue
+# ---------------------------------------------------------------------------
+@frappe.whitelist(allow_guest=True)
+def get_plans(currency: str | None = None):
+	settings = get_settings()
+	currency = (currency or settings.default_currency or "USD").upper()
+	currencies = get_enabled_currencies()
+	allowed = {row["name"] for row in currencies}
+	if currency not in allowed:
+		currency = settings.default_currency if settings.default_currency in allowed else next(iter(allowed), "USD")
+
+	plans = get_public_plans(currency)
+	return {
+		"plans": plans,
+		"currencies": currencies,
+		"default_currency": currency,
+		"domain": get_domain(),
+		"trial_days": cint(settings.trial_days) or 30,
+		"brand_name": settings.brand_name,
+		"brand_name_ar": settings.brand_name_ar,
+	}
+
+
+@frappe.whitelist(allow_guest=True)
+def get_currencies():
+	return get_enabled_currencies()
+
+
+@frappe.whitelist(allow_guest=True)
+def check_subdomain(subdomain: str):
+	available, normalized, message = is_subdomain_available(subdomain)
+	return {
+		"available": available,
+		"subdomain": normalized,
+		"site_name": get_full_site_name(normalized) if normalized else "",
+		"url": get_site_url(normalized) if normalized and available else "",
+		"message": message,
+	}
+
+
+# ---------------------------------------------------------------------------
+# Signup / auth
+# ---------------------------------------------------------------------------
+@frappe.whitelist(allow_guest=True)
+def signup(
+	full_name: str,
+	email: str,
+	password: str,
+	username: str | None = None,
+	company_name: str | None = None,
+	phone: str | None = None,
+	country: str | None = None,
+	language: str = "en",
+	redirect: str | None = None,
+):
+	ensure_central()
+	settings = get_settings()
+	_rate_limit("signup", settings.signup_rate_limit or 10)
+
+	full_name = (full_name or "").strip()
+	email = (email or "").strip().lower()
+	password = password or ""
+	username = (username or "").strip().lower()
+	language = language if language in ("en", "ar") else "en"
+
+	if not full_name:
+		frappe.throw(_("Please enter your full name."))
+	if not email:
+		frappe.throw(_("Please enter your email address."))
+	validate_email_address(email, throw=True)
+	if len(password) < (cint(settings.min_password_length) or 8):
+		frappe.throw(_("Password must be at least {0} characters long.").format(cint(settings.min_password_length) or 8))
+	if username and not re.match(r"^[a-zA-Z0-9._-]{3,30}$", username):
+		frappe.throw(_("Username may contain letters, numbers, dots, underscores and hyphens only."))
+
+	if frappe.db.exists("User", email):
+		frappe.throw(_("An account with this email already exists. Please sign in instead."))
+	if username and frappe.db.exists("User", {"username": username}):
+		frappe.throw(_("This username is already taken."))
+
+	parts = full_name.split(" ", 1)
+	user = frappe.new_doc("User")
+	user.update(
+		{
+			"email": email,
+			"first_name": parts[0],
+			"last_name": parts[1] if len(parts) > 1 else "",
+			"enabled": 1,
+			"user_type": "Website User",
+			"new_password": password,
+			"send_welcome_email": 0,
+			"username": username or None,
+			"saas_company_name": (company_name or "").strip(),
+			"saas_phone": (phone or "").strip(),
+			"saas_country": country or None,
+			"saas_preferred_language": language,
+			"saas_signup_source": "Email",
+		}
+	)
+	user.flags.ignore_permissions = True
+	user.flags.no_welcome_mail = True
+	user.insert(ignore_permissions=True)
+
+	if frappe.db.exists("Role", "SaaS Customer"):
+		user.add_roles("SaaS Customer")
+
+	log_activity(None, "Signup", f"New account created via website: {email}", user=user.name)
+	frappe.db.commit()
+
+	try:
+		frappe.local.login_manager.login_as(user.name)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "SaaS Signup Login")
+
+	redirect = sanitize_redirect(redirect, "/plans")
+	return {"ok": True, "redirect": redirect, "user": user.name}
+
+
+# ---------------------------------------------------------------------------
+# Subscriptions / tenants
+# ---------------------------------------------------------------------------
+@frappe.whitelist()
+def create_subscription(
+	plan: str,
+	billing_cycle: str = "Monthly",
+	currency: str = "USD",
+	subdomain: str | None = None,
+	company_name: str | None = None,
+	phone: str | None = None,
+	country: str | None = None,
+	language: str = "en",
+	existing_tenant: str | None = None,
+):
+	_require_login()
+	ensure_central()
+	settings = get_settings()
+
+	plan_doc = get_plan_by_identifier(plan)
+	if not plan_doc or not cint(plan_doc.enabled):
+		frappe.throw(_("The selected plan is not available."))
+
+	if existing_tenant:
+		return change_plan(existing_tenant, plan_doc.name, billing_cycle, currency)
+
+	billing_cycle = "Yearly" if (billing_cycle or "").lower().startswith("y") else "Monthly"
+	currency = _ensure_currency(currency)
+	language = language if language in ("en", "ar") else "en"
+	company_name = (company_name or "").strip()
+	if not company_name:
+		frappe.throw(_("Please enter your company or workspace name."))
+
+	existing = get_tenant_for_user()
+	if existing:
+		frappe.throw(
+			_("You already have a workspace ({0}). Use your dashboard to change your plan.").format(
+				existing.tenant_name
+			)
+		)
+
+	max_tenants = cint(settings.max_tenants_per_user) or 1
+	if len(frappe.get_all("SaaS Tenant", filters={"owner_user": frappe.session.user})) >= max_tenants:
+		frappe.throw(_("You have reached the maximum number of workspaces for your account."))
+
+	subdomain = validate_subdomain(subdomain, check_availability=True)
+
+	tenant = frappe.new_doc("SaaS Tenant")
+	tenant.update(
+		{
+			"tenant_name": company_name,
+			"subdomain": subdomain,
+			"plan": plan_doc.name,
+			"owner_user": frappe.session.user,
+			"admin_full_name": frappe.db.get_value("User", frappe.session.user, "full_name")
+			or frappe.session.user,
+			"admin_email": frappe.db.get_value("User", frappe.session.user, "email") or frappe.session.user,
+			"phone": (phone or "").strip() or frappe.db.get_value("User", frappe.session.user, "saas_phone"),
+			"country": country or frappe.db.get_value("User", frappe.session.user, "saas_country"),
+			"currency": currency,
+			"language": language,
+			"status": "Provisioning",
+			"provisioning_status": "Pending",
+			"created_via": "Website",
+		}
+	)
+	tenant.flags.ignore_permissions = True
+	tenant.insert(ignore_permissions=True)
+
+	trial_end = get_trial_end(plan_doc)
+	amount = get_plan_price(plan_doc, currency, billing_cycle)
+
+	subscription = frappe.new_doc("SaaS Subscription")
+	subscription.update(
+		{
+			"tenant": tenant.name,
+			"plan": plan_doc.name,
+			"status": "Trial",
+			"billing_cycle": billing_cycle,
+			"currency": currency,
+			"amount": amount,
+			"start_date": today(),
+			"trial_end_date": trial_end,
+			"end_date": trial_end,
+			"next_billing_date": trial_end,
+			"payment_status": "Unpaid",
+			"auto_renew": 1,
+		}
+	)
+	subscription.flags.ignore_permissions = True
+	subscription.insert(ignore_permissions=True)
+
+	tenant.db_set("subscription", subscription.name, update_modified=False)
+	tenant.db_set("trial_ends_on", trial_end, update_modified=False)
+	tenant.db_set("subscription_ends_on", trial_end, update_modified=False)
+
+	frappe.db.commit()
+
+	provisioning.enqueue_provisioning(tenant.name)
+
+	log_activity(
+		tenant.name,
+		"Subscription created",
+		f"Plan: {plan_doc.plan_name}, cycle: {billing_cycle}, trial ends: {trial_end}",
+	)
+
+	return {
+		"ok": True,
+		"tenant": tenant.name,
+		"subscription": subscription.name,
+		"redirect": f"/provisioning?tenant={tenant.name}",
+	}
+
+
+@frappe.whitelist()
+def change_plan(tenant: str, plan: str, billing_cycle: str = "Monthly", currency: str = "USD", force: int = 0):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	plan_doc = get_plan_by_identifier(plan)
+	if not plan_doc or not cint(plan_doc.enabled):
+		frappe.throw(_("The selected plan is not available."))
+
+	billing_cycle = "Yearly" if (billing_cycle or "").lower().startswith("y") else "Monthly"
+	currency = _ensure_currency(currency)
+
+	if not (cint(force) and is_manager()):
+		limits = get_plan_limits(plan_doc)
+		checks = [
+			("users_count", "max_users", _("users")),
+			("branches_count", "max_branches", _("branches")),
+			("companies_count", "max_companies", _("companies")),
+		]
+		for used_field, limit_field, label in checks:
+			limit = limits[limit_field]
+			used = cint(tenant_doc.get(used_field))
+			if limit and used > limit:
+				frappe.throw(
+					_("Your current usage ({0} {1}) exceeds the {2} plan limit ({3}). Please upgrade or reduce usage first.").format(
+						used, label, plan_doc.plan_name, limit
+					)
+				)
+
+	subscription = get_tenant_subscription(tenant_doc)
+	if not subscription:
+		frappe.throw(_("This workspace has no subscription."))
+
+	subscription.plan = plan_doc.name
+	subscription.billing_cycle = billing_cycle
+	subscription.currency = currency
+	subscription.amount = get_plan_price(plan_doc, currency, billing_cycle)
+	subscription.flags.ignore_permissions = True
+	subscription.save(ignore_permissions=True)
+
+	tenant_doc.plan = plan_doc.name
+	tenant_doc.currency = currency
+	tenant_doc.flags.ignore_permissions = True
+	tenant_doc.save(ignore_permissions=True)
+
+	frappe.db.commit()
+	tenant_ops.push_limits(tenant_doc)
+	log_activity(
+		tenant_doc.name,
+		"Plan changed",
+		f"New plan: {plan_doc.plan_name}, cycle: {billing_cycle}, currency: {currency}",
+	)
+	return {"ok": True, "redirect": "/dashboard?tab=billing"}
+
+
+@frappe.whitelist()
+def get_dashboard(tenant: str | None = None):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	subscription = get_tenant_subscription(tenant_doc)
+	plan = get_plan_by_identifier(tenant_doc.plan) if tenant_doc.plan else None
+	payments = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name},
+		fields=["name", "amount", "currency", "status", "billing_cycle", "period_start", "period_end", "payment_method", "reference_no", "paid_on", "receipt", "notes", "creation"],
+		order_by="creation desc",
+		limit=20,
+	)
+	limits = get_plan_limits(plan) if plan else {}
+	usage = {
+		"users": {
+			"used": cint(tenant_doc.users_count),
+			"limit": limits.get("max_users", 0),
+			"percent": min(100, round((cint(tenant_doc.users_count) / limits["max_users"]) * 100)) if limits.get("max_users") else 0,
+		},
+		"branches": {
+			"used": cint(tenant_doc.branches_count),
+			"limit": limits.get("max_branches", 0),
+			"percent": min(100, round((cint(tenant_doc.branches_count) / limits["max_branches"]) * 100)) if limits.get("max_branches") else 0,
+		},
+		"companies": {
+			"used": cint(tenant_doc.companies_count),
+			"limit": limits.get("max_companies", 0),
+			"percent": min(100, round((cint(tenant_doc.companies_count) / limits["max_companies"]) * 100)) if limits.get("max_companies") else 0,
+		},
+		"storage": {
+			"used_mb": flt(tenant_doc.storage_used_mb),
+			"limit_gb": limits.get("storage_gb", 0),
+			"percent": min(100, round((flt(tenant_doc.storage_used_mb) / (limits["storage_gb"] * 1024)) * 100)) if limits.get("storage_gb") else 0,
+		},
+	}
+	pending = next((p for p in payments if p.status == "Pending Review"), None)
+	return {
+		"tenant": {
+			"name": tenant_doc.name,
+			"tenant_name": tenant_doc.tenant_name,
+			"subdomain": tenant_doc.subdomain,
+			"site_name": tenant_doc.site_name,
+			"status": tenant_doc.status,
+			"provisioning_status": tenant_doc.provisioning_status,
+			"plan": tenant_doc.plan,
+			"site_url": get_site_url(tenant_doc.subdomain),
+			"admin_email": tenant_doc.admin_email,
+			"currency": tenant_doc.currency,
+			"language": tenant_doc.language,
+			"trial_ends_on": _serialize_date(tenant_doc.trial_ends_on),
+			"subscription_ends_on": _serialize_date(tenant_doc.subscription_ends_on),
+			"last_usage_sync": str(tenant_doc.last_usage_sync) if tenant_doc.last_usage_sync else None,
+		},
+		"plan": serialize_plan(plan, tenant_doc.currency) if plan else None,
+		"subscription": _serialize_subscription(subscription),
+		"usage": usage,
+		"payments": [_serialize_payment(frappe._dict(row)) for row in payments],
+		"pending_payment": _serialize_payment(frappe._dict(pending)) if pending else None,
+		"days_left": get_days_left(
+			(subscription.end_date or subscription.trial_end_date) if subscription else None
+		),
+		"payment_url": f"/payment?tenant={tenant_doc.name}",
+		"upgrade_url": f"/plans?change=1&tenant={tenant_doc.name}",
+		"dashboard_url": "/dashboard",
+	}
+
+
+@frappe.whitelist()
+def get_provisioning_status(tenant: str):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	log_text = tenant_doc.provisioning_log or ""
+	return {
+		"tenant": tenant_doc.name,
+		"tenant_name": tenant_doc.tenant_name,
+		"status": tenant_doc.status,
+		"provisioning_status": tenant_doc.provisioning_status,
+		"site_url": get_site_url(tenant_doc.subdomain),
+		"log": log_text[-6000:],
+		"completed": tenant_doc.provisioning_status == "Completed",
+		"failed": tenant_doc.provisioning_status == "Failed",
+		"redirect": "/dashboard" if tenant_doc.provisioning_status == "Completed" else None,
+	}
+
+
+@frappe.whitelist()
+def get_tenant_credentials(tenant: str):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	password = tenant_doc.get_password("admin_temp_password", raise_exception=False)
+	if not is_manager():
+		log_activity(tenant_doc.name, "Credentials viewed", "Workspace credentials revealed by owner.")
+	return {
+		"email": tenant_doc.admin_email,
+		"password": password,
+		"login_url": get_site_url(tenant_doc.subdomain) + "/login",
+		"site_url": get_site_url(tenant_doc.subdomain),
+	}
+
+
+@frappe.whitelist()
+def update_profile(
+	tenant: str,
+	company_name: str | None = None,
+	phone: str | None = None,
+	country: str | None = None,
+	language: str | None = None,
+):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	old_name = tenant_doc.tenant_name
+
+	if company_name:
+		tenant_doc.tenant_name = company_name.strip()
+	if phone is not None:
+		tenant_doc.phone = phone.strip()
+	if country is not None:
+		tenant_doc.country = country or None
+	if language in ("en", "ar"):
+		tenant_doc.language = language
+
+	tenant_doc.flags.ignore_permissions = True
+	tenant_doc.save(ignore_permissions=True)
+
+	user = frappe.get_doc("User", frappe.session.user)
+	user.saas_company_name = tenant_doc.tenant_name
+	user.saas_phone = tenant_doc.phone
+	user.saas_country = tenant_doc.country
+	user.saas_preferred_language = tenant_doc.language
+	user.flags.ignore_permissions = True
+	user.save(ignore_permissions=True)
+
+	frappe.db.commit()
+	if old_name != tenant_doc.tenant_name:
+		frappe.enqueue(
+			"saaserpyemen.tenant_ops.update_site_company",
+			queue="short",
+			timeout=300,
+			tenant=tenant_doc.name,
+			company_name=tenant_doc.tenant_name,
+		)
+	return {"ok": True, "message": _("Profile updated.")}
+
+
+@frappe.whitelist()
+def cancel_subscription(tenant: str, reason: str | None = None):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	subscription = get_tenant_subscription(tenant_doc)
+	if not subscription:
+		frappe.throw(_("This workspace has no subscription."))
+	subscription.auto_renew = 0
+	subscription.cancelled_on = today()
+	subscription.cancel_reason = (reason or "").strip() or _("Cancelled by customer")
+	subscription.flags.ignore_permissions = True
+	subscription.save(ignore_permissions=True)
+	frappe.db.commit()
+	log_activity(tenant_doc.name, "Subscription cancelled", subscription.cancel_reason)
+	return {
+		"ok": True,
+		"message": _("Your subscription will not renew. You can keep using the workspace until {0}.").format(
+			subscription.end_date or subscription.trial_end_date
+		),
+	}
+
+
+# ---------------------------------------------------------------------------
+# Manual payments
+# ---------------------------------------------------------------------------
+@frappe.whitelist()
+def get_payment_context(tenant: str | None = None):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	subscription = get_tenant_subscription(tenant_doc)
+	if not subscription:
+		frappe.throw(_("This workspace has no subscription."))
+	plan = get_plan_by_identifier(subscription.plan)
+	period_start, period_end = get_billing_period(subscription)
+	amount = get_plan_price(plan, subscription.currency, subscription.billing_cycle) if plan else subscription.amount
+	payments = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name},
+		fields=["name", "amount", "currency", "status", "billing_cycle", "period_start", "period_end", "payment_method", "reference_no", "paid_on", "receipt", "notes", "creation"],
+		order_by="creation desc",
+		limit=50,
+	)
+	settings = get_settings()
+	return {
+		"tenant": {
+			"name": tenant_doc.name,
+			"tenant_name": tenant_doc.tenant_name,
+			"subdomain": tenant_doc.subdomain,
+			"currency": tenant_doc.currency,
+			"status": tenant_doc.status,
+		},
+		"subscription": _serialize_subscription(subscription),
+		"plan": serialize_plan(plan, subscription.currency) if plan else None,
+		"amount": amount,
+		"currency": subscription.currency,
+		"period_start": str(period_start),
+		"period_end": str(period_end),
+		"bank_details": settings.bank_details,
+		"bank_details_ar": settings.bank_details_ar,
+		"payment_note_en": settings.payment_note_en,
+		"payment_note_ar": settings.payment_note_ar,
+		"payments": [_serialize_payment(frappe._dict(row)) for row in payments],
+		"pending_payment": next((p for p in payments if p.status == "Pending Review"), None),
+	}
+
+
+@frappe.whitelist()
+def submit_payment(
+	tenant: str,
+	reference_no: str | None = None,
+	payment_method: str = "Bank Transfer",
+	notes: str | None = None,
+	receipt: str | None = None,
+	amount: float | None = None,
+):
+	_require_login()
+	tenant_doc = get_owned_tenant(tenant)
+	subscription = get_tenant_subscription(tenant_doc)
+	if not subscription:
+		frappe.throw(_("This workspace has no subscription."))
+	if frappe.db.exists("SaaS Payment", {"tenant": tenant_doc.name, "status": "Pending Review"}):
+		frappe.throw(
+			_("You already have a payment awaiting review. Please wait for our team to approve it before submitting another one.")
+		)
+
+	payment_method = (payment_method or "Bank Transfer").strip()
+	allowed_methods = {"Bank Transfer", "Cash", "Card", "PayPal", "Other"}
+	if payment_method not in allowed_methods:
+		payment_method = "Bank Transfer"
+	reference_no = (reference_no or "").strip()
+	receipt = (receipt or "").strip()
+	if not reference_no and not receipt:
+		frappe.throw(_("Please enter the transfer reference or upload your payment receipt."))
+	if receipt and not (receipt.startswith("/files/") or receipt.startswith("/private/")):
+		frappe.throw(_("The uploaded receipt is not valid. Please upload it again."))
+
+	plan = get_plan_by_identifier(subscription.plan)
+	server_amount = get_plan_price(plan, subscription.currency, subscription.billing_cycle) if plan else subscription.amount
+	if not flt(server_amount):
+		frappe.throw(_("The amount due could not be calculated. Please contact support."))
+
+	period_start, period_end = get_billing_period(subscription)
+	payment = frappe.new_doc("SaaS Payment")
+	payment.update(
+		{
+			"tenant": tenant_doc.name,
+			"subscription": subscription.name,
+			"plan": subscription.plan,
+			"amount": server_amount,
+			"currency": subscription.currency,
+			"billing_cycle": subscription.billing_cycle,
+			"period_start": period_start,
+			"period_end": period_end,
+			"status": "Pending Review",
+			"payment_method": payment_method,
+			"reference_no": reference_no,
+			"notes": (notes or "").strip(),
+			"receipt": receipt or None,
+		}
+	)
+	payment.flags.ignore_permissions = True
+	payment.insert(ignore_permissions=True)
+
+	if receipt:
+		_attach_receipt(payment, receipt)
+
+	subscription.payment_status = "Pending Review"
+	subscription.flags.ignore_permissions = True
+	subscription.save(ignore_permissions=True)
+	frappe.db.commit()
+
+	log_activity(
+		tenant_doc.name,
+		"Payment submitted",
+		f"Payment {payment.name} for {server_amount} {subscription.currency}",
+	)
+	_notify_payment_submitted(payment, tenant_doc)
+	return {
+		"ok": True,
+		"payment": payment.name,
+		"message": _("Payment submitted. We will review it within one business day."),
+	}
+
+
+# ---------------------------------------------------------------------------
+# Admin actions (Desk)
+# ---------------------------------------------------------------------------
+@frappe.whitelist()
+def approve_payment(payment: str):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	doc = frappe.get_doc("SaaS Payment", payment)
+	doc.approve()
+	frappe.db.commit()
+	return {"ok": True, "message": _("Payment approved and subscription extended.")}
+
+
+@frappe.whitelist()
+def reject_payment(payment: str, reason: str | None = None):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	doc = frappe.get_doc("SaaS Payment", payment)
+	doc.reject(reason)
+	frappe.db.commit()
+	return {"ok": True, "message": _("Payment rejected.")}
+
+
+@frappe.whitelist()
+def create_payment_invoice(payment: str):
+	"""Create (or retry) the Sales Invoice for an approved payment."""
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	doc = frappe.get_doc("SaaS Payment", payment)
+	if doc.sales_invoice and frappe.db.exists("Sales Invoice", doc.sales_invoice):
+		return {"ok": True, "invoice": doc.sales_invoice, "message": _("Invoice already exists.")}
+	invoice = doc.create_sales_invoice()
+	if not invoice:
+		frappe.throw(_("Could not create the invoice. Check the company and default accounts."))
+	doc.db_set("sales_invoice", invoice.name, update_modified=False)
+	frappe.db.commit()
+	return {"ok": True, "invoice": invoice.name, "message": _("Invoice created.")}
+
+
+@frappe.whitelist()
+def provision_tenant(tenant: str):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	provisioning.enqueue_provisioning(tenant)
+	return {"ok": True, "message": _("Provisioning queued.")}
+
+
+@frappe.whitelist()
+def suspend_tenant(tenant: str, reason: str | None = None):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	tenant_ops.suspend_tenant(tenant, reason)
+	return {"ok": True, "message": _("Workspace suspended.")}
+
+
+@frappe.whitelist()
+def unsuspend_tenant(tenant: str):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	tenant_ops.unsuspend_tenant(tenant)
+	return {"ok": True, "message": _("Workspace reactivated.")}
+
+
+@frappe.whitelist()
+def sync_usage(tenant: str | None = None):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	if tenant:
+		tenant_ops.sync_usage(tenant)
+	else:
+		tenant_ops.sync_all_tenants()
+	return {"ok": True, "message": _("Usage synced.")}
+
+
+@frappe.whitelist()
+def extend_subscription(tenant: str, cycle: str = "Monthly"):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	tenant_doc = frappe.get_doc("SaaS Tenant", tenant)
+	subscription = get_tenant_subscription(tenant_doc)
+	if not subscription:
+		frappe.throw(_("This workspace has no subscription."))
+	subscription.extend(cycle, note=_("Manual extension by administrator"))
+	frappe.db.commit()
+	return {"ok": True, "message": _("Subscription extended.")}
+
+
+@frappe.whitelist()
+def create_sales_invoice(payment: str):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	doc = frappe.get_doc("SaaS Payment", payment)
+	invoice = doc.create_sales_invoice()
+	frappe.db.commit()
+	return {"ok": True, "invoice": invoice.name if invoice else None}
+
+
+@frappe.whitelist()
+def request_ssl(tenant: str):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	provisioning.enqueue_ssl(tenant)
+	return {"ok": True, "message": _("SSL request queued.")}
+
+
+@frappe.whitelist()
+def delete_tenant(tenant: str, confirm: str | None = None):
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+	tenant_ops.delete_tenant(tenant, confirm)
+	return {"ok": True, "message": _("Workspace deleted.")}
+
+
+# ---------------------------------------------------------------------------
+# Admin dashboard
+# ---------------------------------------------------------------------------
+@frappe.whitelist()
+def get_admin_dashboard():
+	if not is_manager():
+		frappe.throw(_("Not permitted."), frappe.PermissionError)
+
+	settings = get_settings()
+	base_currency = settings.default_currency or "USD"
+
+	total_tenants = frappe.db.count("SaaS Tenant")
+	active_tenants = frappe.db.count("SaaS Tenant", {"status": "Active"})
+	trial_tenants = frappe.db.count("SaaS Tenant", {"status": "Trial"})
+	past_due = frappe.db.count("SaaS Tenant", {"status": "Past Due"})
+	suspended = frappe.db.count("SaaS Tenant", {"status": "Suspended"})
+	failed = frappe.db.count("SaaS Tenant", {"status": "Failed"})
+	pending_payments = frappe.db.count("SaaS Payment", {"status": "Pending Review"})
+
+	mrr = 0.0
+	active_subs = frappe.get_all(
+		"SaaS Subscription",
+		filters={"status": ["in", ["Active", "Trial", "Past Due"]]},
+		fields=["amount", "currency", "billing_cycle"],
+	)
+	for row in active_subs:
+		amount = flt(row.amount)
+		if (row.billing_cycle or "Monthly") == "Yearly":
+			amount = amount / 12.0
+		mrr += convert_amount(amount, row.currency, base_currency)
+
+	paid_this_month = 0.0
+	paid_rows = frappe.get_all(
+		"SaaS Payment",
+		filters={"status": "Paid", "paid_on": [">=", today()[:8] + "01"]},
+		fields=["amount", "currency"],
+	)
+	for row in paid_rows:
+		paid_this_month += convert_amount(flt(row.amount), row.currency, base_currency)
+
+	# Signups per month for the last 12 months.
+	signups = frappe.db.sql(
+		"""
+		select date_format(creation, '%Y-%m') as month, count(*) as total
+		from `tabSaaS Tenant`
+		where creation >= date_sub(curdate(), interval 12 month)
+		group by date_format(creation, '%Y-%m')
+		order by month asc
+		""",
+		as_dict=True,
+	)
+
+	# Revenue per month for the last 12 months.
+	revenue_rows = frappe.get_all(
+		"SaaS Payment",
+		filters={"status": "Paid", "paid_on": [">=", add_days(today(), -365)]},
+		fields=["amount", "currency", "paid_on"],
+	)
+	revenue_map = {}
+	for row in revenue_rows:
+		if not row.paid_on:
+			continue
+		month = str(row.paid_on)[:7]
+		revenue_map[month] = revenue_map.get(month, 0.0) + convert_amount(
+			flt(row.amount), row.currency, base_currency
+		)
+	revenue = [{"month": key, "total": round(value, 2)} for key, value in sorted(revenue_map.items())]
+
+	by_plan = frappe.db.sql(
+		"""
+		select coalesce(plan, 'No plan') as plan, count(*) as total
+		from `tabSaaS Tenant`
+		where status not in ('Cancelled')
+		group by plan
+		order by total desc
+		""",
+		as_dict=True,
+	)
+
+	recent_tenants = frappe.get_all(
+		"SaaS Tenant",
+		fields=["name", "tenant_name", "subdomain", "status", "plan", "creation", "admin_email", "users_count", "storage_used_mb"],
+		order_by="creation desc",
+		limit=10,
+	)
+
+	pending = frappe.get_all(
+		"SaaS Payment",
+		filters={"status": "Pending Review"},
+		fields=["name", "tenant", "tenant_name", "amount", "currency", "creation", "reference_no", "receipt"],
+		order_by="creation desc",
+		limit=10,
+	)
+
+	expiring = frappe.get_all(
+		"SaaS Subscription",
+		filters={
+			"status": ["in", ["Trial", "Active", "Past Due"]],
+			"end_date": ["between", [today(), add_days(today(), 14)]],
+		},
+		fields=["name", "tenant", "tenant_name", "plan", "status", "end_date", "amount", "currency"],
+		order_by="end_date asc",
+		limit=10,
+	)
+
+	return {
+		"currency": base_currency,
+		"kpis": {
+			"total_tenants": total_tenants,
+			"active_tenants": active_tenants,
+			"trial_tenants": trial_tenants,
+			"past_due": past_due,
+			"suspended": suspended,
+			"failed": failed,
+			"pending_payments": pending_payments,
+			"mrr": round(mrr, 2),
+			"arr": round(mrr * 12, 2),
+			"paid_this_month": round(paid_this_month, 2),
+		},
+		"signups": signups,
+		"revenue": revenue,
+		"by_plan": by_plan,
+		"recent_tenants": recent_tenants,
+		"pending_payments_list": pending,
+		"expiring": expiring,
+		"website_url": get_central_url(),
+	}
+
+
+# ---------------------------------------------------------------------------
+# Misc endpoints
+# ---------------------------------------------------------------------------
+@frappe.whitelist()
+def has_app_permission():
+	"""Used by the apps screen to decide whether to show this app."""
+	return is_manager()
+
+
+@frappe.whitelist(allow_guest=True)
+def get_public_settings():
+	settings = get_settings()
+	return {
+		"brand_name": settings.brand_name,
+		"brand_name_ar": settings.brand_name_ar,
+		"tagline_en": settings.tagline_en,
+		"tagline_ar": settings.tagline_ar,
+		"support_email": settings.support_email,
+		"support_phone": settings.support_phone,
+		"website_domain": get_domain(),
+		"trial_days": cint(settings.trial_days) or 30,
+		"currencies": get_enabled_currencies(),
+		"default_currency": settings.default_currency or "USD",
+	}
+
+
+@frappe.whitelist()
+def get_current_user_context():
+	if frappe.session.user == "Guest":
+		return {"logged_in": False}
+	user = frappe.get_doc("User", frappe.session.user)
+	tenant = get_tenant_for_user()
+	return {
+		"logged_in": True,
+		"user": {
+			"name": user.name,
+			"full_name": user.full_name,
+			"email": user.email,
+			"user_image": user.user_image,
+			"language": user.language,
+		},
+		"tenant": tenant.name if tenant else None,
+		"is_manager": is_manager(),
+	}
+

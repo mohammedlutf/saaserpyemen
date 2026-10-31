@@ -1,0 +1,396 @@
+{
+ "doctype": "DocType",
+ "name": "SaaS Tenant",
+ "module": "Saaserpyemen",
+ "custom": 0,
+ "istable": 0,
+ "issingle": 0,
+ "is_submittable": 0,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "track_changes": 1,
+ "allow_rename": 0,
+ "allow_import": 0,
+ "quick_entry": 1,
+ "max_attachments": 0,
+ "translated_doctype": 0,
+ "show_title_field_in_link": 0,
+ "field_order": [
+  "tab_general",
+  "identity_section",
+  "tenant_name",
+  "subdomain",
+  "site_name",
+  "status",
+  "provisioning_status",
+  "col_identity",
+  "plan",
+  "subscription",
+  "owner_user",
+  "created_via",
+  "custom_domain",
+  "contact_section",
+  "admin_full_name",
+  "admin_email",
+  "phone",
+  "country",
+  "currency",
+  "language",
+  "col_contact",
+  "address_line1",
+  "city",
+  "state",
+  "pincode",
+  "notes",
+  "tab_subscription",
+  "subscription_section",
+  "trial_ends_on",
+  "subscription_ends_on",
+  "is_paid",
+  "suspended",
+  "ssl_status",
+  "col_subscription",
+  "last_provisioned_on",
+  "provisioning_log",
+  "tab_usage",
+  "usage_section",
+  "users_count",
+  "branches_count",
+  "companies_count",
+  "storage_used_mb",
+  "last_usage_sync",
+  "tab_technical",
+  "technical_section",
+  "db_name",
+  "db_password",
+  "site_path",
+  "admin_temp_password"
+ ],
+ "fields": [
+  {
+   "fieldname": "tab_general",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "identity_section",
+   "fieldtype": "Section Break",
+   "label": "Workspace"
+  },
+  {
+   "fieldname": "tenant_name",
+   "fieldtype": "Data",
+   "label": "Company / Workspace Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "subdomain",
+   "fieldtype": "Data",
+   "label": "Subdomain",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "description": "Lowercase letters, numbers and hyphens only."
+  },
+  {
+   "fieldname": "site_name",
+   "fieldtype": "Data",
+   "label": "Site Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nProvisioning\nTrial\nActive\nPast Due\nSuspended\nExpired\nCancelled\nFailed",
+   "default": "Draft",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "provisioning_status",
+   "fieldtype": "Select",
+   "label": "Provisioning Status",
+   "options": "Pending\nRunning\nCompleted\nFailed",
+   "default": "Pending"
+  },
+  {
+   "fieldname": "col_identity",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "plan",
+   "fieldtype": "Link",
+   "label": "Plan",
+   "options": "SaaS Plan",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "subscription",
+   "fieldtype": "Link",
+   "label": "Subscription",
+   "options": "SaaS Subscription"
+  },
+  {
+   "fieldname": "owner_user",
+   "fieldtype": "Link",
+   "label": "Owner User",
+   "options": "User"
+  },
+  {
+   "fieldname": "created_via",
+   "fieldtype": "Select",
+   "label": "Created Via",
+   "options": "Website\nDesk\nAPI",
+   "default": "Website"
+  },
+  {
+   "fieldname": "custom_domain",
+   "fieldtype": "Data",
+   "label": "Custom Domain"
+  },
+  {
+   "fieldname": "contact_section",
+   "fieldtype": "Section Break",
+   "label": "Primary Contact"
+  },
+  {
+   "fieldname": "admin_full_name",
+   "fieldtype": "Data",
+   "label": "Admin Full Name"
+  },
+  {
+   "fieldname": "admin_email",
+   "fieldtype": "Data",
+   "label": "Admin Email",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "label": "Language",
+   "options": "en\nar",
+   "default": "en"
+  },
+  {
+   "fieldname": "col_contact",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address_line1",
+   "fieldtype": "Data",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "pincode",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "tab_subscription",
+   "fieldtype": "Tab Break",
+   "label": "Subscription"
+  },
+  {
+   "fieldname": "subscription_section",
+   "fieldtype": "Section Break",
+   "label": "Subscription"
+  },
+  {
+   "fieldname": "trial_ends_on",
+   "fieldtype": "Date",
+   "label": "Trial Ends On"
+  },
+  {
+   "fieldname": "subscription_ends_on",
+   "fieldtype": "Date",
+   "label": "Subscription Ends On"
+  },
+  {
+   "fieldname": "is_paid",
+   "fieldtype": "Check",
+   "label": "Paid",
+   "default": "0"
+  },
+  {
+   "fieldname": "suspended",
+   "fieldtype": "Check",
+   "label": "Suspended",
+   "default": "0"
+  },
+  {
+   "fieldname": "ssl_status",
+   "fieldtype": "Select",
+   "label": "SSL Status",
+   "options": "Not Requested\nPending\nIssued\nFailed",
+   "default": "Not Requested"
+  },
+  {
+   "fieldname": "col_subscription",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_provisioned_on",
+   "fieldtype": "Datetime",
+   "label": "Last Provisioned On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "provisioning_log",
+   "fieldtype": "Long Text",
+   "label": "Provisioning Log",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tab_usage",
+   "fieldtype": "Tab Break",
+   "label": "Usage"
+  },
+  {
+   "fieldname": "usage_section",
+   "fieldtype": "Section Break",
+   "label": "Live Usage"
+  },
+  {
+   "fieldname": "users_count",
+   "fieldtype": "Int",
+   "label": "Users",
+   "read_only": 1
+  },
+  {
+   "fieldname": "branches_count",
+   "fieldtype": "Int",
+   "label": "Branches",
+   "read_only": 1
+  },
+  {
+   "fieldname": "companies_count",
+   "fieldtype": "Int",
+   "label": "Companies",
+   "read_only": 1
+  },
+  {
+   "fieldname": "storage_used_mb",
+   "fieldtype": "Float",
+   "label": "Storage Used (MB)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "last_usage_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Usage Sync",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tab_technical",
+   "fieldtype": "Tab Break",
+   "label": "Technical"
+  },
+  {
+   "fieldname": "technical_section",
+   "fieldtype": "Section Break",
+   "label": "Site & Database"
+  },
+  {
+   "fieldname": "db_name",
+   "fieldtype": "Data",
+   "label": "Database Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "db_password",
+   "fieldtype": "Password",
+   "label": "Database Password",
+   "read_only": 1
+  },
+  {
+   "fieldname": "site_path",
+   "fieldtype": "Data",
+   "label": "Site Path",
+   "read_only": 1
+  },
+  {
+   "fieldname": "admin_temp_password",
+   "fieldtype": "Password",
+   "label": "Admin Temporary Password",
+   "read_only": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  },
+  {
+   "role": "SaaS Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "modified": "2026-10-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "creation": "2026-10-29 00:00:00.000000",
+ "idx": 0,
+ "docstatus": 0,
+ "autoname": "field:subdomain",
+ "title_field": "tenant_name",
+ "search_fields": "tenant_name,subdomain,admin_email,site_name",
+ "icon": "organization"
+}

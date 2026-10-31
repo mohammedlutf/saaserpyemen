@@ -1,0 +1,92 @@
+{% extends "templates/saas_base.html" %}
+
+{% block title %}{{ _('Workspace suspended') }} — {{ brand_name }}{% endblock %}
+
+{% block page_content %}
+<section class="section section--top">
+	<div class="saas-container saas-container--narrow">
+		<div class="suspended">
+			<div class="suspended__orb">
+				<span class="suspended__lock" aria-hidden="true">
+					<svg width="46" height="46" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect x="4" y="10" width="16" height="11" rx="3" stroke="currentColor" stroke-width="1.8"/>
+						<path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+						<circle cx="12" cy="15.5" r="1.6" fill="currentColor"/>
+					</svg>
+				</span>
+			</div>
+			<div class="saas-pill"><span data-en="Workspace suspended" data-ar="مساحة العمل موقوفة">Workspace suspended</span></div>
+			<h1>
+				<span class="lang-en">This workspace is taking a short break.</span>
+				<span class="lang-ar">مساحة العمل هذه في استراحة قصيرة.</span>
+			</h1>
+			<p class="suspended__lead">
+				<span class="lang-en">Access to <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'this workspace' }}</b> is temporarily paused. This usually happens when a subscription has expired or a payment is awaiting approval.</span>
+				<span class="lang-ar">تم إيقاف الوصول إلى <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'مساحة العمل هذه' }}</b> مؤقتًا. يحدث هذا عادةً عند انتهاء الاشتراك أو انتظار الموافقة على دفعة.</span>
+			</p>
+
+			{% if suspended_tenant %}
+			<div class="suspended__details">
+				<div class="credential-row">
+					<span data-en="Workspace" data-ar="مساحة العمل">Workspace</span>
+					<b>{{ suspended_tenant.tenant_name }}</b>
+				</div>
+				<div class="credential-row">
+					<span data-en="Address" data-ar="العنوان">Address</span>
+					<b>{{ suspended_tenant.subdomain }}.{{ domain }}</b>
+				</div>
+				<div class="credential-row">
+					<span data-en="Status" data-ar="الحالة">Status</span>
+					<span class="status status--{{ suspended_tenant.status | lower | replace(' ', '-') }}" data-en="{{ suspended_tenant.status }}" data-ar="{{ suspended_tenant.status }}">{{ suspended_tenant.status }}</span>
+				</div>
+			</div>
+			{% endif %}
+
+			<div class="suspended__steps">
+				<div class="suspended__step">
+					<span class="suspended__step-num">1</span>
+					<div>
+						<b data-en="Sign in to the customer portal" data-ar="سجّل الدخول إلى بوابة العملاء">Sign in to the customer portal</b>
+						<p data-en="Use the email address you signed up with to open your dashboard." data-ar="استخدم البريد الإلكتروني الذي سجلت به لفتح لوحة التحكم.">Use the email address you signed up with to open your dashboard.</p>
+					</div>
+				</div>
+				<div class="suspended__step">
+					<span class="suspended__step-num">2</span>
+					<div>
+						<b data-en="Complete your payment" data-ar="أكمل دفعتك">Complete your payment</b>
+						<p data-en="Transfer the amount due and upload your receipt. We review payments within one business day." data-ar="حوّل المبلغ المستحق وارفع إيصالك. نراجع المدفوعات خلال يوم عمل واحد.">Transfer the amount due and upload your receipt. We review payments within one business day.</p>
+					</div>
+				</div>
+				<div class="suspended__step">
+					<span class="suspended__step-num">3</span>
+					<div>
+						<b data-en="Get back to work" data-ar="عد إلى العمل">Get back to work</b>
+						<p data-en="As soon as your payment is approved, your workspace is reactivated automatically." data-ar="بمجرد الموافقة على دفعتك، تُعاد مساحة عملك إلى العمل تلقائيًا.">As soon as your payment is approved, your workspace is reactivated automatically.</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="suspended__actions">
+				{% if tenant %}
+				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/dashboard?tenant={{ tenant.name }}&tab=billing">
+					<span data-en="Go to my dashboard" data-ar="انتقل إلى لوحتي">Go to my dashboard</span>
+					<span class="saas-btn__arrow" aria-hidden="true">→</span>
+				</a>
+				{% else %}
+				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/signin?redirect=/dashboard">
+					<span data-en="Sign in to renew" data-ar="سجّل الدخول للتجديد">Sign in to renew</span>
+					<span class="saas-btn__arrow" aria-hidden="true">→</span>
+				</a>
+				{% endif %}
+				<a class="saas-btn saas-btn--outline saas-btn--lg" href="mailto:{{ support_email or 'support@shopzadmarket.com' }}">
+					<span data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</span>
+				</a>
+			</div>
+
+			<p class="suspended__note">
+				<span data-en="Think this is a mistake? Your payment may already be under review. Contact us and we will check right away." data-ar="تعتقد أن هذا خطأ؟ ربما تكون دفعتك قيد المراجعة بالفعل. تواصل معنا وسنتحقق فورًا.">Think this is a mistake? Your payment may already be under review. Contact us and we will check right away.</span>
+			</p>
+		</div>
+	</div>
+</section>
+{% endblock %}

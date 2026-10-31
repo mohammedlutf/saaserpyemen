@@ -1,0 +1,616 @@
+{
+ "doctype": "DocType",
+ "name": "SaaS Settings",
+ "module": "Saaserpyemen",
+ "custom": 0,
+ "istable": 0,
+ "issingle": 1,
+ "is_submittable": 0,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "track_changes": 1,
+ "allow_rename": 0,
+ "allow_import": 0,
+ "quick_entry": 1,
+ "max_attachments": 0,
+ "translated_doctype": 0,
+ "show_title_field_in_link": 0,
+ "field_order": [
+  "tab_general",
+  "general_section",
+  "enabled",
+  "brand_name",
+  "brand_name_ar",
+  "tagline_en",
+  "tagline_ar",
+  "logo",
+  "favicon",
+  "col_brand",
+  "support_email",
+  "support_phone",
+  "website_domain",
+  "central_site",
+  "default_currency",
+  "trial_days",
+  "grace_days",
+  "terms_url",
+  "privacy_url",
+  "maintenance_message",
+  "tab_website",
+  "hero_section",
+  "hero_title_en",
+  "hero_title_ar",
+  "hero_subtitle_en",
+  "hero_subtitle_ar",
+  "col_hero",
+  "show_pricing",
+  "show_testimonials",
+  "show_faq",
+  "footer_about_en",
+  "footer_about_ar",
+  "address",
+  "facebook_url",
+  "twitter_url",
+  "linkedin_url",
+  "instagram_url",
+  "tab_provisioning",
+  "provisioning_section",
+  "template_site",
+  "sites_path",
+  "bench_path",
+  "bench_command",
+  "site_scheme",
+  "col_provisioning",
+  "db_root_user",
+  "db_root_password",
+  "db_host",
+  "db_port",
+  "install_app_on_tenant",
+  "run_scheduler",
+  "setup_nginx",
+  "enable_ssl",
+  "add_to_hosts",
+  "keep_db_dump",
+  "send_credentials_email",
+  "provisioning_timeout",
+  "tab_google",
+  "google_section",
+  "enable_google_login",
+  "google_client_id",
+  "google_client_secret",
+  "google_redirect_uri",
+  "allow_google_signup",
+  "tab_billing",
+  "billing_section",
+  "company",
+  "default_customer_group",
+  "default_territory",
+  "create_sales_invoice",
+  "invoice_due_days",
+  "col_billing",
+  "auto_suspend_on_expiry",
+  "send_expiry_reminders",
+  "bank_details",
+  "bank_details_ar",
+  "payment_note_en",
+  "payment_note_ar",
+  "tab_security",
+  "security_section",
+  "signup_rate_limit",
+  "min_password_length",
+  "max_tenants_per_user",
+  "enable_custom_domains",
+  "reserved_subdomains",
+  "internal_notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "tab_general",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "general_section",
+   "fieldtype": "Section Break",
+   "label": "Brand"
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "default": "1"
+  },
+  {
+   "fieldname": "brand_name",
+   "fieldtype": "Data",
+   "label": "Brand Name",
+   "default": "Shopzad"
+  },
+  {
+   "fieldname": "brand_name_ar",
+   "fieldtype": "Data",
+   "label": "Brand Name (Arabic)",
+   "default": "شوب زاد"
+  },
+  {
+   "fieldname": "tagline_en",
+   "fieldtype": "Data",
+   "label": "Tagline (English)",
+   "default": "Your business, on a world-class ERP."
+  },
+  {
+   "fieldname": "tagline_ar",
+   "fieldtype": "Data",
+   "label": "Tagline (Arabic)",
+   "default": "عملك على نظام ERP عالمي."
+  },
+  {
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
+  },
+  {
+   "fieldname": "favicon",
+   "fieldtype": "Attach Image",
+   "label": "Favicon"
+  },
+  {
+   "fieldname": "col_brand",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "support_email",
+   "fieldtype": "Data",
+   "label": "Support Email",
+   "default": "support@shopzadmarket.com"
+  },
+  {
+   "fieldname": "support_phone",
+   "fieldtype": "Data",
+   "label": "Support Phone"
+  },
+  {
+   "fieldname": "website_domain",
+   "fieldtype": "Data",
+   "label": "Website Domain",
+   "default": "shopzadmarket.com",
+   "reqd": 1
+  },
+  {
+   "fieldname": "central_site",
+   "fieldtype": "Data",
+   "label": "Central Site"
+  },
+  {
+   "fieldname": "default_currency",
+   "fieldtype": "Link",
+   "label": "Default Currency",
+   "options": "Currency",
+   "default": "USD"
+  },
+  {
+   "fieldname": "trial_days",
+   "fieldtype": "Int",
+   "label": "Default Trial Days",
+   "default": "30"
+  },
+  {
+   "fieldname": "grace_days",
+   "fieldtype": "Int",
+   "label": "Grace Days",
+   "default": "3"
+  },
+  {
+   "fieldname": "terms_url",
+   "fieldtype": "Data",
+   "label": "Terms URL",
+   "default": "/terms"
+  },
+  {
+   "fieldname": "privacy_url",
+   "fieldtype": "Data",
+   "label": "Privacy URL",
+   "default": "/privacy"
+  },
+  {
+   "fieldname": "maintenance_message",
+   "fieldtype": "Small Text",
+   "label": "Maintenance Message"
+  },
+  {
+   "fieldname": "tab_website",
+   "fieldtype": "Tab Break",
+   "label": "Website"
+  },
+  {
+   "fieldname": "hero_section",
+   "fieldtype": "Section Break",
+   "label": "Hero"
+  },
+  {
+   "fieldname": "hero_title_en",
+   "fieldtype": "Data",
+   "label": "Hero Title (English)",
+   "default": "Run your entire business from one beautiful platform"
+  },
+  {
+   "fieldname": "hero_title_ar",
+   "fieldtype": "Data",
+   "label": "Hero Title (Arabic)",
+   "default": "أدر عملك بالكامل من منصة واحدة"
+  },
+  {
+   "fieldname": "hero_subtitle_en",
+   "fieldtype": "Small Text",
+   "label": "Hero Subtitle (English)"
+  },
+  {
+   "fieldname": "hero_subtitle_ar",
+   "fieldtype": "Small Text",
+   "label": "Hero Subtitle (Arabic)"
+  },
+  {
+   "fieldname": "col_hero",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "show_pricing",
+   "fieldtype": "Check",
+   "label": "Show Pricing",
+   "default": "1"
+  },
+  {
+   "fieldname": "show_testimonials",
+   "fieldtype": "Check",
+   "label": "Show Testimonials",
+   "default": "1"
+  },
+  {
+   "fieldname": "show_faq",
+   "fieldtype": "Check",
+   "label": "Show FAQ",
+   "default": "1"
+  },
+  {
+   "fieldname": "footer_about_en",
+   "fieldtype": "Small Text",
+   "label": "Footer About (English)"
+  },
+  {
+   "fieldname": "footer_about_ar",
+   "fieldtype": "Small Text",
+   "label": "Footer About (Arabic)"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "facebook_url",
+   "fieldtype": "Data",
+   "label": "Facebook URL"
+  },
+  {
+   "fieldname": "twitter_url",
+   "fieldtype": "Data",
+   "label": "X / Twitter URL"
+  },
+  {
+   "fieldname": "linkedin_url",
+   "fieldtype": "Data",
+   "label": "LinkedIn URL"
+  },
+  {
+   "fieldname": "instagram_url",
+   "fieldtype": "Data",
+   "label": "Instagram URL"
+  },
+  {
+   "fieldname": "tab_provisioning",
+   "fieldtype": "Tab Break",
+   "label": "Provisioning"
+  },
+  {
+   "fieldname": "provisioning_section",
+   "fieldtype": "Section Break",
+   "label": "Site Template"
+  },
+  {
+   "fieldname": "template_site",
+   "fieldtype": "Data",
+   "label": "Template Site",
+   "default": "saas-default.com",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sites_path",
+   "fieldtype": "Data",
+   "label": "Sites Path",
+   "default": "/home/frappe/frappe-bench/sites",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bench_path",
+   "fieldtype": "Data",
+   "label": "Bench Path",
+   "default": "/home/frappe/frappe-bench",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bench_command",
+   "fieldtype": "Data",
+   "label": "Bench Command",
+   "default": "/usr/local/bin/bench"
+  },
+  {
+   "fieldname": "site_scheme",
+   "fieldtype": "Select",
+   "label": "Tenant Site Scheme",
+   "options": "http\nhttps",
+   "default": "http"
+  },
+  {
+   "fieldname": "col_provisioning",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "db_root_user",
+   "fieldtype": "Data",
+   "label": "DB Root User",
+   "default": "root"
+  },
+  {
+   "fieldname": "db_root_password",
+   "fieldtype": "Password",
+   "label": "DB Root Password",
+   "default": "123"
+  },
+  {
+   "fieldname": "db_host",
+   "fieldtype": "Data",
+   "label": "DB Host",
+   "default": "localhost"
+  },
+  {
+   "fieldname": "db_port",
+   "fieldtype": "Int",
+   "label": "DB Port",
+   "default": "3306"
+  },
+  {
+   "fieldname": "install_app_on_tenant",
+   "fieldtype": "Check",
+   "label": "Install SaaS App on Tenant",
+   "default": "1"
+  },
+  {
+   "fieldname": "run_scheduler",
+   "fieldtype": "Check",
+   "label": "Enable Scheduler on Tenant",
+   "default": "1"
+  },
+  {
+   "fieldname": "setup_nginx",
+   "fieldtype": "Check",
+   "label": "Run bench setup nginx",
+   "default": "0"
+  },
+  {
+   "fieldname": "enable_ssl",
+   "fieldtype": "Check",
+   "label": "Issue SSL Certificate",
+   "default": "0"
+  },
+  {
+   "fieldname": "add_to_hosts",
+   "fieldtype": "Check",
+   "label": "Add Site to /etc/hosts",
+   "default": "0"
+  },
+  {
+   "fieldname": "keep_db_dump",
+   "fieldtype": "Check",
+   "label": "Keep Database Dump",
+   "default": "0"
+  },
+  {
+   "fieldname": "send_credentials_email",
+   "fieldtype": "Check",
+   "label": "Email Workspace Credentials",
+   "default": "0"
+  },
+  {
+   "fieldname": "provisioning_timeout",
+   "fieldtype": "Int",
+   "label": "Provisioning Timeout (seconds)",
+   "default": "1800"
+  },
+  {
+   "fieldname": "tab_google",
+   "fieldtype": "Tab Break",
+   "label": "Google Login"
+  },
+  {
+   "fieldname": "google_section",
+   "fieldtype": "Section Break",
+   "label": "Google OAuth"
+  },
+  {
+   "fieldname": "enable_google_login",
+   "fieldtype": "Check",
+   "label": "Enable Google Login",
+   "default": "0"
+  },
+  {
+   "fieldname": "google_client_id",
+   "fieldtype": "Data",
+   "label": "Google Client ID"
+  },
+  {
+   "fieldname": "google_client_secret",
+   "fieldtype": "Password",
+   "label": "Google Client Secret"
+  },
+  {
+   "fieldname": "google_redirect_uri",
+   "fieldtype": "Data",
+   "label": "Redirect URI",
+   "default": "/api/method/frappe.integrations.oauth2_logins.login_via_google"
+  },
+  {
+   "fieldname": "allow_google_signup",
+   "fieldtype": "Check",
+   "label": "Allow Google Signup",
+   "default": "1"
+  },
+  {
+   "fieldname": "tab_billing",
+   "fieldtype": "Tab Break",
+   "label": "Billing"
+  },
+  {
+   "fieldname": "billing_section",
+   "fieldtype": "Section Break",
+   "label": "Invoicing"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "default_customer_group",
+   "fieldtype": "Link",
+   "label": "Default Customer Group",
+   "options": "Customer Group"
+  },
+  {
+   "fieldname": "default_territory",
+   "fieldtype": "Link",
+   "label": "Default Territory",
+   "options": "Territory"
+  },
+  {
+   "fieldname": "create_sales_invoice",
+   "fieldtype": "Check",
+   "label": "Create Sales Invoice on Payment",
+   "default": "0"
+  },
+  {
+   "fieldname": "invoice_due_days",
+   "fieldtype": "Int",
+   "label": "Invoice Due Days",
+   "default": "7"
+  },
+  {
+   "fieldname": "col_billing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "auto_suspend_on_expiry",
+   "fieldtype": "Check",
+   "label": "Auto Suspend on Expiry",
+   "default": "1"
+  },
+  {
+   "fieldname": "send_expiry_reminders",
+   "fieldtype": "Check",
+   "label": "Send Expiry Reminders",
+   "default": "1"
+  },
+  {
+   "fieldname": "bank_details",
+   "fieldtype": "Text Editor",
+   "label": "Bank Details (English)"
+  },
+  {
+   "fieldname": "bank_details_ar",
+   "fieldtype": "Text Editor",
+   "label": "Bank Details (Arabic)"
+  },
+  {
+   "fieldname": "payment_note_en",
+   "fieldtype": "Small Text",
+   "label": "Payment Note (English)"
+  },
+  {
+   "fieldname": "payment_note_ar",
+   "fieldtype": "Small Text",
+   "label": "Payment Note (Arabic)"
+  },
+  {
+   "fieldname": "tab_security",
+   "fieldtype": "Tab Break",
+   "label": "Security"
+  },
+  {
+   "fieldname": "security_section",
+   "fieldtype": "Section Break",
+   "label": "Signup Protection"
+  },
+  {
+   "fieldname": "signup_rate_limit",
+   "fieldtype": "Int",
+   "label": "Signups per IP per Hour",
+   "default": "10"
+  },
+  {
+   "fieldname": "min_password_length",
+   "fieldtype": "Int",
+   "label": "Minimum Password Length",
+   "default": "8"
+  },
+  {
+   "fieldname": "max_tenants_per_user",
+   "fieldtype": "Int",
+   "label": "Max Tenants per User",
+   "default": "1"
+  },
+  {
+   "fieldname": "enable_custom_domains",
+   "fieldtype": "Check",
+   "label": "Allow Custom Domains",
+   "default": "0"
+  },
+  {
+   "fieldname": "reserved_subdomains",
+   "fieldtype": "Small Text",
+   "label": "Reserved Subdomains",
+   "default": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,shopzad,shopzadmarket"
+  },
+  {
+   "fieldname": "internal_notes",
+   "fieldtype": "Small Text",
+   "label": "Internal Notes"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "modified": "2026-10-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "creation": "2026-10-29 00:00:00.000000",
+ "idx": 0,
+ "docstatus": 0,
+ "description": "Global configuration for the SaaS platform.",
+ "icon": "setting"
+}

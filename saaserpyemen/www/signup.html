@@ -1,0 +1,168 @@
+{% extends "templates/saas_base.html" %}
+
+{% block title %}{{ _('Create your account') }} — {{ brand_name }}{% endblock %}
+
+{% block page_content %}
+<section class="auth auth--signup">
+	<div class="auth__panel auth__panel--brand">
+		<div class="auth__brand-glow"></div>
+		<a class="saas-brand saas-brand--light" href="/">
+			<span class="saas-brand__mark">
+				<svg viewBox="0 0 40 40" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<rect width="40" height="40" rx="12" fill="white" fill-opacity=".16"/>
+					<path d="M12 25.5c2.2 1.6 4.7 2.4 7.6 2.4 3.8 0 6.1-1.7 6.1-4.2 0-2.2-1.4-3.5-4.9-4.2l-2.1-.4c-1.7-.3-2.4-.9-2.4-1.8 0-1.1 1.1-1.9 3-1.9 1.8 0 3.5.5 5.1 1.6l2.1-3.1c-2-1.4-4.4-2.1-7.1-2.1-3.8 0-6.2 1.8-6.2 4.4 0 2.3 1.5 3.7 4.9 4.4l2.1.4c1.8.3 2.5.9 2.5 1.8 0 1.2-1.2 1.9-3.2 1.9-2 0-3.8-.6-5.5-1.9L12 25.5Z" fill="white"/>
+				</svg>
+			</span>
+			<span class="saas-brand__text">
+				<span class="lang-en">{{ brand_name }}</span>
+				<span class="lang-ar">{{ brand_name_ar }}</span>
+			</span>
+		</a>
+
+		<div class="auth__brand-copy">
+			<h2>
+				<span class="lang-en">Your workspace is 3 minutes away.</span>
+				<span class="lang-ar">مساحة عملك على بعد 3 دقائق.</span>
+			</h2>
+			<p>
+				<span class="lang-en">Create an account, pick a plan, choose your subdomain. We do the rest.</span>
+				<span class="lang-ar">أنشئ حسابًا، اختر خطة، واختر نطاقك الفرعي. ونحن نتولى الباقي.</span>
+			</p>
+		</div>
+
+		<div class="auth__steps">
+			<div class="auth__step active"><span>1</span><div><b data-en="Create account" data-ar="إنشاء حساب">Create account</b><small data-en="Takes 30 seconds" data-ar="يستغرق 30 ثانية">Takes 30 seconds</small></div></div>
+			<div class="auth__step"><span>2</span><div><b data-en="Choose plan &amp; subdomain" data-ar="اختر الخطة والنطاق">Choose plan &amp; subdomain</b><small data-en="Your own isolated ERP" data-ar="نظام ERP معزول خاص بك">Your own isolated ERP</small></div></div>
+			<div class="auth__step"><span>3</span><div><b data-en="Start free trial" data-ar="ابدأ التجربة المجانية">Start free trial</b><small data-en="30 days, no card needed" data-ar="30 يومًا، بدون بطاقة">30 days, no card needed</small></div></div>
+		</div>
+
+		<ul class="auth__points">
+			<li><span class="tick">✓</span><span data-en="No credit card required" data-ar="لا حاجة لبطاقة ائتمان">No credit card required</span></li>
+			<li><span class="tick">✓</span><span data-en="Cancel anytime" data-ar="إلغاء في أي وقت">Cancel anytime</span></li>
+			<li><span class="tick">✓</span><span data-en="Full ERPNext suite included" data-ar="حزمة ERPNext الكاملة مشمولة">Full ERPNext suite included</span></li>
+		</ul>
+	</div>
+
+	<div class="auth__panel auth__panel--form">
+		<div class="auth__form-wrap auth__form-wrap--wide">
+			<div class="saas-pill"><span data-en="Free 30-day trial" data-ar="تجربة مجانية 30 يومًا">Free 30-day trial</span></div>
+			<h1>
+				<span class="lang-en">Create your account</span>
+				<span class="lang-ar">أنشئ حسابك</span>
+			</h1>
+			<p class="auth__sub">
+				<span data-en="Already have an account?" data-ar="لديك حساب بالفعل؟">Already have an account?</span>
+				<a href="/signin" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+			</p>
+
+			{% if plan_doc %}
+			<div class="selected-plan">
+				<span class="selected-plan__icon" style="background: {{ plan_doc.color }}1a; color: {{ plan_doc.color }}">✦</span>
+				<div>
+					<small data-en="Selected plan" data-ar="الخطة المختارة">Selected plan</small>
+					<b>{{ plan_doc.plan_name }}</b>
+					<span class="selected-plan__price">{{ plan_price_label }} · {{ selected_cycle }}</span>
+				</div>
+				<a href="/plans" class="saas-link saas-link--sm" data-en="Change" data-ar="تغيير">Change</a>
+			</div>
+			{% endif %}
+
+			<form class="form form--grid" id="signup-form" data-plan="{{ selected_plan }}" data-cycle="{{ selected_cycle }}" data-currency="{{ selected_currency }}" novalidate>
+				<label class="field field--full">
+					<span class="field__label" data-en="Full name" data-ar="الاسم الكامل">Full name</span>
+					<div class="field__control">
+						<span class="field__icon">◉</span>
+						<input type="text" name="full_name" autocomplete="name" required data-en-placeholder="Sara Al-Harbi" data-ar-placeholder="سارة الحربي" placeholder="Sara Al-Harbi">
+					</div>
+				</label>
+
+				<label class="field">
+					<span class="field__label" data-en="Work email" data-ar="البريد الإلكتروني">Work email</span>
+					<div class="field__control">
+						<span class="field__icon">@</span>
+						<input type="email" name="email" autocomplete="email" required data-en-placeholder="you@company.com" data-ar-placeholder="you@company.com" placeholder="you@company.com">
+					</div>
+				</label>
+
+				<label class="field">
+					<span class="field__label" data-en="Company name" data-ar="اسم الشركة">Company name</span>
+					<div class="field__control">
+						<span class="field__icon">▦</span>
+						<input type="text" name="company_name" autocomplete="organization" required data-en-placeholder="Noura Trading Co." data-ar-placeholder="شركة نورة للتجارة" placeholder="Noura Trading Co.">
+					</div>
+				</label>
+
+				<label class="field">
+					<span class="field__label" data-en="Password" data-ar="كلمة المرور">Password</span>
+					<div class="field__control">
+						<span class="field__icon">⌁</span>
+						<input type="password" name="password" id="signup-password" autocomplete="new-password" minlength="8" required data-en-placeholder="At least 8 characters" data-ar-placeholder="8 أحرف على الأقل" placeholder="At least 8 characters">
+						<button type="button" class="field__toggle" data-toggle-password aria-label="Show password">👁</button>
+					</div>
+					<div class="password-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+				</label>
+
+				<label class="field">
+					<span class="field__label" data-en="Confirm password" data-ar="تأكيد كلمة المرور">Confirm password</span>
+					<div class="field__control">
+						<span class="field__icon">⌁</span>
+						<input type="password" name="confirm_password" autocomplete="new-password" required data-en-placeholder="Repeat your password" data-ar-placeholder="أعد كلمة المرور" placeholder="Repeat your password">
+					</div>
+				</label>
+
+				<label class="field">
+					<span class="field__label" data-en="Phone (optional)" data-ar="الهاتف (اختياري)">Phone (optional)</span>
+					<div class="field__control">
+						<span class="field__icon">☎</span>
+						<input type="tel" name="phone" autocomplete="tel" data-en-placeholder="+966 5X XXX XXXX" data-ar-placeholder="+966 5X XXX XXXX" placeholder="+966 5X XXX XXXX">
+					</div>
+				</label>
+
+				<label class="field">
+					<span class="field__label" data-en="Country" data-ar="الدولة">Country</span>
+					<div class="field__control field__control--select">
+						<span class="field__icon">◍</span>
+						<select name="country">
+							<option value="" data-en="Select a country" data-ar="اختر دولة">Select a country</option>
+							{% for country in countries %}
+							<option value="{{ country.name }}" {% if country.name in ('Saudi Arabia', 'Yemen', 'United Arab Emirates') %}selected{% endif %}>{{ country.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</label>
+
+				<label class="field field--full">
+					<span class="field__label" data-en="Username (optional)" data-ar="اسم المستخدم (اختياري)">Username (optional)</span>
+					<div class="field__control">
+						<span class="field__icon">@</span>
+						<input type="text" name="username" autocomplete="username" pattern="[a-zA-Z0-9._\-]{3,30}" data-en-placeholder="sara.harbi" data-ar-placeholder="sara.harbi" placeholder="sara.harbi">
+					</div>
+					<span class="field__hint" data-en="Letters, numbers, dots, underscores and hyphens." data-ar="أحرف وأرقام ونقاط وشرطات سفلية وشرطات.">Letters, numbers, dots, underscores and hyphens.</span>
+				</label>
+
+				<label class="checkbox field--full">
+					<input type="checkbox" name="terms" required>
+					<span>
+						<span data-en="I agree to the" data-ar="أوافق على">I agree to the</span>
+						<a href="/terms" target="_blank" data-en="Terms of Service" data-ar="شروط الخدمة">Terms of Service</a>
+						<span data-en="and" data-ar="و">and</span>
+						<a href="/privacy" target="_blank" data-en="Privacy Policy" data-ar="سياسة الخصوصية">Privacy Policy</a>.
+					</span>
+				</label>
+
+				<input type="hidden" name="language" value="{{ lang }}">
+				<div class="form__error field--full" data-form-error hidden></div>
+
+				<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block field--full" type="submit">
+					<span data-en="Create account &amp; continue" data-ar="إنشاء الحساب والمتابعة">Create account &amp; continue</span>
+					<span class="btn-spinner" hidden></span>
+				</button>
+			</form>
+
+			<p class="auth__terms">
+				<span data-en="By creating an account you agree to our terms and privacy policy. We will never sell your data." data-ar="بإنشاء حساب فإنك توافق على شروطنا وسياسة الخصوصية. لن نبيع بياناتك أبدًا.">By creating an account you agree to our terms and privacy policy. We will never sell your data.</span>
+			</p>
+		</div>
+	</div>
+</section>
+{% endblock %}

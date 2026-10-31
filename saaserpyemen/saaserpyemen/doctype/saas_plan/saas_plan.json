@@ -1,0 +1,301 @@
+{
+ "doctype": "DocType",
+ "name": "SaaS Plan",
+ "module": "Saaserpyemen",
+ "custom": 0,
+ "istable": 0,
+ "issingle": 0,
+ "is_submittable": 0,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "track_changes": 1,
+ "allow_rename": 1,
+ "allow_import": 0,
+ "quick_entry": 1,
+ "max_attachments": 0,
+ "translated_doctype": 0,
+ "show_title_field_in_link": 0,
+ "field_order": [
+  "tab_general",
+  "general_section",
+  "enabled",
+  "plan_name",
+  "slug",
+  "sort_order",
+  "is_featured",
+  "color",
+  "icon",
+  "col_general",
+  "tagline_en",
+  "tagline_ar",
+  "description_en",
+  "description_ar",
+  "website_description",
+  "internal_notes",
+  "tab_pricing",
+  "pricing_section",
+  "currency",
+  "monthly_price",
+  "yearly_price",
+  "yearly_discount_percent",
+  "trial_days",
+  "col_pricing",
+  "prices",
+  "tab_limits",
+  "limits_section",
+  "max_users",
+  "max_branches",
+  "max_companies",
+  "storage_gb",
+  "tab_features",
+  "features_section",
+  "features"
+ ],
+ "fields": [
+  {
+   "fieldname": "tab_general",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "general_section",
+   "fieldtype": "Section Break",
+   "label": "Plan"
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "plan_name",
+   "fieldtype": "Data",
+   "label": "Plan Name",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "label": "Slug",
+   "unique": 1,
+   "in_list_view": 1,
+   "description": "Used in URLs. Leave blank to generate from the plan name."
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order",
+   "default": "10",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "is_featured",
+   "fieldtype": "Check",
+   "label": "Featured",
+   "default": "0",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Color",
+   "label": "Accent Color",
+   "default": "#6366f1"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon",
+   "default": "sparkles"
+  },
+  {
+   "fieldname": "col_general",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tagline_en",
+   "fieldtype": "Data",
+   "label": "Tagline (English)"
+  },
+  {
+   "fieldname": "tagline_ar",
+   "fieldtype": "Data",
+   "label": "Tagline (Arabic)"
+  },
+  {
+   "fieldname": "description_en",
+   "fieldtype": "Small Text",
+   "label": "Description (English)"
+  },
+  {
+   "fieldname": "description_ar",
+   "fieldtype": "Small Text",
+   "label": "Description (Arabic)"
+  },
+  {
+   "fieldname": "website_description",
+   "fieldtype": "Text Editor",
+   "label": "Website Description"
+  },
+  {
+   "fieldname": "internal_notes",
+   "fieldtype": "Small Text",
+   "label": "Internal Notes"
+  },
+  {
+   "fieldname": "tab_pricing",
+   "fieldtype": "Tab Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "pricing_section",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Base Currency",
+   "options": "Currency",
+   "reqd": 1,
+   "default": "USD"
+  },
+  {
+   "fieldname": "monthly_price",
+   "fieldtype": "Currency",
+   "label": "Monthly Price",
+   "options": "currency",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "yearly_price",
+   "fieldtype": "Currency",
+   "label": "Yearly Price",
+   "options": "currency",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "yearly_discount_percent",
+   "fieldtype": "Percent",
+   "label": "Yearly Discount %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trial_days",
+   "fieldtype": "Int",
+   "label": "Trial Days",
+   "default": "30"
+  },
+  {
+   "fieldname": "col_pricing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "prices",
+   "fieldtype": "Table",
+   "label": "Prices per Currency",
+   "options": "SaaS Plan Price"
+  },
+  {
+   "fieldname": "tab_limits",
+   "fieldtype": "Tab Break",
+   "label": "Limits"
+  },
+  {
+   "fieldname": "limits_section",
+   "fieldtype": "Section Break",
+   "label": "Included Limits"
+  },
+  {
+   "fieldname": "max_users",
+   "fieldtype": "Int",
+   "label": "Max Users",
+   "default": "5",
+   "description": "0 = unlimited"
+  },
+  {
+   "fieldname": "max_branches",
+   "fieldtype": "Int",
+   "label": "Max Branches",
+   "default": "1",
+   "description": "0 = unlimited"
+  },
+  {
+   "fieldname": "max_companies",
+   "fieldtype": "Int",
+   "label": "Max Companies",
+   "default": "1",
+   "description": "0 = unlimited"
+  },
+  {
+   "fieldname": "storage_gb",
+   "fieldtype": "Int",
+   "label": "Storage (GB)",
+   "default": "5",
+   "description": "0 = unlimited"
+  },
+  {
+   "fieldname": "tab_features",
+   "fieldtype": "Tab Break",
+   "label": "Features"
+  },
+  {
+   "fieldname": "features_section",
+   "fieldtype": "Section Break",
+   "label": "Plan Features"
+  },
+  {
+   "fieldname": "features",
+   "fieldtype": "Table",
+   "label": "Features",
+   "options": "SaaS Plan Feature"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  },
+  {
+   "role": "SaaS Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "modified": "2026-10-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "creation": "2026-10-29 00:00:00.000000",
+ "idx": 0,
+ "docstatus": 0,
+ "autoname": "field:plan_name",
+ "title_field": "plan_name",
+ "search_fields": "plan_name,slug",
+ "icon": "price-list"
+}

@@ -1,0 +1,55 @@
+{% set brand = settings.brand_name if settings and settings.brand_name else 'Shopzad' %}
+{% set brand_ar = settings.brand_name_ar if settings and settings.brand_name_ar else 'شوب زاد' %}
+<header class="saas-nav" id="saas-nav">
+	<div class="saas-container saas-nav__inner">
+		<a class="saas-brand" href="/" aria-label="{{ brand }}">
+			<span class="saas-brand__mark" aria-hidden="true">
+				<svg viewBox="0 0 40 40" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<rect width="40" height="40" rx="12" fill="url(#brandGradient)"/>
+					<path d="M12 25.5c2.2 1.6 4.7 2.4 7.6 2.4 3.8 0 6.1-1.7 6.1-4.2 0-2.2-1.4-3.5-4.9-4.2l-2.1-.4c-1.7-.3-2.4-.9-2.4-1.8 0-1.1 1.1-1.9 3-1.9 1.8 0 3.5.5 5.1 1.6l2.1-3.1c-2-1.4-4.4-2.1-7.1-2.1-3.8 0-6.2 1.8-6.2 4.4 0 2.3 1.5 3.7 4.9 4.4l2.1.4c1.8.3 2.5.9 2.5 1.8 0 1.2-1.2 1.9-3.2 1.9-2 0-3.8-.6-5.5-1.9L12 25.5Z" fill="white"/>
+					<circle cx="30.5" cy="10.5" r="3.5" fill="#22d3ee"/>
+					<defs>
+						<linearGradient id="brandGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+							<stop stop-color="#6366f1"/>
+							<stop offset="1" stop-color="#a855f7"/>
+						</linearGradient>
+					</defs>
+				</svg>
+			</span>
+			<span class="saas-brand__text">
+				<span class="lang-en">{{ brand }}</span>
+				<span class="lang-ar">{{ brand_ar }}</span>
+			</span>
+		</a>
+
+		<button class="saas-nav__toggle" type="button" aria-label="Menu" aria-expanded="false" data-nav-toggle>
+			<span></span><span></span><span></span>
+		</button>
+
+		<nav class="saas-nav__links" data-nav-links>
+			<a href="/" data-en="Home" data-ar="الرئيسية">Home</a>
+			<a href="/plans" data-en="Plans" data-ar="الخطط">Plans</a>
+			<a href="/#features" data-en="Features" data-ar="المزايا">Features</a>
+			<a href="/#faq" data-en="FAQ" data-ar="الأسئلة">FAQ</a>
+			<a href="/#contact" data-en="Contact" data-ar="اتصل بنا">Contact</a>
+		</nav>
+
+		<div class="saas-nav__actions">
+			<button class="saas-lang" type="button" data-lang-toggle aria-label="Switch language">
+				<span class="saas-lang__icon">◎</span>
+				<span class="saas-lang__label" data-lang-label>العربية</span>
+			</button>
+
+			{% if frappe.session.user != 'Guest' %}
+				<a class="saas-btn saas-btn--primary saas-nav__cta" href="/dashboard" data-en="Dashboard" data-ar="لوحتي">Dashboard</a>
+				<button class="saas-btn saas-btn--ghost saas-nav__logout" type="button" data-logout>
+					<span class="saas-nav__logout-icon" aria-hidden="true">⏻</span>
+					<span data-en="Sign out" data-ar="تسجيل الخروج">Sign out</span>
+				</button>
+			{% else %}
+				<a class="saas-btn saas-btn--ghost saas-nav__signin" href="/signin" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+				<a class="saas-btn saas-btn--primary saas-nav__cta" href="/signup" data-en="Start free trial" data-ar="ابدأ التجربة المجانية">Start free trial</a>
+			{% endif %}
+		</div>
+	</div>
+</header>

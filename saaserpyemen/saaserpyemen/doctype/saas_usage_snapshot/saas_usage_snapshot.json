@@ -1,0 +1,107 @@
+{
+ "doctype": "DocType",
+ "name": "SaaS Usage Snapshot",
+ "module": "Saaserpyemen",
+ "custom": 0,
+ "istable": 0,
+ "issingle": 0,
+ "is_submittable": 0,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "track_changes": 0,
+ "allow_rename": 0,
+ "allow_import": 0,
+ "quick_entry": 1,
+ "max_attachments": 0,
+ "translated_doctype": 0,
+ "show_title_field_in_link": 0,
+ "field_order": [
+  "tenant",
+  "date",
+  "users_count",
+  "branches_count",
+  "companies_count",
+  "storage_used_mb"
+ ],
+ "fields": [
+  {
+   "fieldname": "tenant",
+   "fieldtype": "Link",
+   "label": "Tenant",
+   "options": "SaaS Tenant",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "users_count",
+   "fieldtype": "Int",
+   "label": "Users",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "branches_count",
+   "fieldtype": "Int",
+   "label": "Branches",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "companies_count",
+   "fieldtype": "Int",
+   "label": "Companies"
+  },
+  {
+   "fieldname": "storage_used_mb",
+   "fieldtype": "Float",
+   "label": "Storage Used (MB)",
+   "precision": "2",
+   "in_list_view": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  },
+  {
+   "role": "SaaS Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "submit": 0,
+   "cancel": 0,
+   "amend": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "modified": "2026-10-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "creation": "2026-10-29 00:00:00.000000",
+ "idx": 0,
+ "docstatus": 0,
+ "autoname": "hash",
+ "icon": "line-chart"
+}

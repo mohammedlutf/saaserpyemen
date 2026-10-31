@@ -1,0 +1,54 @@
+{
+ "doctype": "DocType",
+ "name": "SaaS Plan Price",
+ "module": "Saaserpyemen",
+ "custom": 0,
+ "istable": 1,
+ "issingle": 0,
+ "is_submittable": 0,
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "track_changes": 0,
+ "allow_rename": 0,
+ "allow_import": 0,
+ "quick_entry": 1,
+ "max_attachments": 0,
+ "translated_doctype": 0,
+ "show_title_field_in_link": 0,
+ "field_order": [
+  "currency",
+  "monthly_price",
+  "yearly_price"
+ ],
+ "fields": [
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "monthly_price",
+   "fieldtype": "Currency",
+   "label": "Monthly Price",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "yearly_price",
+   "fieldtype": "Currency",
+   "label": "Yearly Price",
+   "in_list_view": 1
+  }
+ ],
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "modified": "2026-10-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "creation": "2026-10-29 00:00:00.000000",
+ "idx": 0,
+ "docstatus": 0
+}

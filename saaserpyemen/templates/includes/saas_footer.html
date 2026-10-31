@@ -1,0 +1,86 @@
+{% set brand = settings.brand_name if settings and settings.brand_name else 'Shopzad' %}
+{% set brand_ar = settings.brand_name_ar if settings and settings.brand_name_ar else 'شوب زاد' %}
+<footer class="saas-footer" id="contact">
+	<div class="saas-container">
+		<div class="saas-footer__grid">
+			<div class="saas-footer__brand">
+				<a class="saas-brand" href="/">
+					<span class="saas-brand__mark" aria-hidden="true">
+						<svg viewBox="0 0 40 40" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<rect width="40" height="40" rx="12" fill="url(#footerGradient)"/>
+							<path d="M12 25.5c2.2 1.6 4.7 2.4 7.6 2.4 3.8 0 6.1-1.7 6.1-4.2 0-2.2-1.4-3.5-4.9-4.2l-2.1-.4c-1.7-.3-2.4-.9-2.4-1.8 0-1.1 1.1-1.9 3-1.9 1.8 0 3.5.5 5.1 1.6l2.1-3.1c-2-1.4-4.4-2.1-7.1-2.1-3.8 0-6.2 1.8-6.2 4.4 0 2.3 1.5 3.7 4.9 4.4l2.1.4c1.8.3 2.5.9 2.5 1.8 0 1.2-1.2 1.9-3.2 1.9-2 0-3.8-.6-5.5-1.9L12 25.5Z" fill="white"/>
+							<defs>
+								<linearGradient id="footerGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+									<stop stop-color="#6366f1"/>
+									<stop offset="1" stop-color="#a855f7"/>
+								</linearGradient>
+							</defs>
+						</svg>
+					</span>
+					<span class="saas-brand__text">
+						<span class="lang-en">{{ brand }}</span>
+						<span class="lang-ar">{{ brand_ar }}</span>
+					</span>
+				</a>
+				<p class="saas-footer__about">
+					<span class="lang-en">{{ settings.footer_about_en if settings and settings.footer_about_en else 'The all-in-one cloud ERP platform for ambitious businesses in the Middle East and beyond.' }}</span>
+					<span class="lang-ar">{{ settings.footer_about_ar if settings and settings.footer_about_ar else 'منصة ERP السحابية الشاملة للشركات الطموحة في الشرق الأوسط وخارجه.' }}</span>
+				</p>
+				<div class="saas-footer__social">
+					{% if settings and settings.twitter_url %}<a href="{{ settings.twitter_url }}" target="_blank" rel="noopener" aria-label="X">𝕏</a>{% endif %}
+					{% if settings and settings.linkedin_url %}<a href="{{ settings.linkedin_url }}" target="_blank" rel="noopener" aria-label="LinkedIn">in</a>{% endif %}
+					{% if settings and settings.instagram_url %}<a href="{{ settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">◎</a>{% endif %}
+					{% if settings and settings.facebook_url %}<a href="{{ settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">f</a>{% endif %}
+				</div>
+			</div>
+
+			<div class="saas-footer__col">
+				<h4 data-en="Product" data-ar="المنتج">Product</h4>
+				<a href="/plans" data-en="Plans &amp; pricing" data-ar="الخطط والأسعار">Plans &amp; pricing</a>
+				<a href="/#features" data-en="Features" data-ar="المزايا">Features</a>
+				<a href="/#how" data-en="How it works" data-ar="كيف يعمل">How it works</a>
+				<a href="/#faq" data-en="FAQ" data-ar="الأسئلة الشائعة">FAQ</a>
+			</div>
+
+			<div class="saas-footer__col">
+				<h4 data-en="Company" data-ar="الشركة">Company</h4>
+				<a href="/terms" data-en="Terms of service" data-ar="شروط الخدمة">Terms of service</a>
+				<a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">Privacy policy</a>
+				<a href="/#contact" data-en="Contact us" data-ar="اتصل بنا">Contact us</a>
+				<a href="/signin" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+			</div>
+
+			<div class="saas-footer__col saas-footer__contact">
+				<h4 data-en="Get in touch" data-ar="تواصل معنا">Get in touch</h4>
+				{% if settings and settings.support_email %}
+					<a href="mailto:{{ settings.support_email }}">{{ settings.support_email }}</a>
+				{% endif %}
+				{% if settings and settings.support_phone %}
+					<a href="tel:{{ settings.support_phone }}">{{ settings.support_phone }}</a>
+				{% endif %}
+				{% if settings and settings.address %}
+					<p>{{ settings.address }}</p>
+				{% endif %}
+				<div class="saas-footer__badges">
+					<span>🔒 SSL</span>
+					<span>☁ Cloud</span>
+					<span>⚡ 99.9%</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="saas-footer__bottom">
+			<p>
+				© {{ frappe.utils.nowdate()[:4] }}
+				<span class="lang-en">{{ brand }}</span>
+				<span class="lang-ar">{{ brand_ar }}</span>
+				· <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span>
+			</p>
+			<p class="saas-footer__made">
+				<span data-en="Built on ERPNext" data-ar="مبني على ERPNext">Built on ERPNext</span>
+				<span class="dot"></span>
+				<span data-en="Made for the Middle East" data-ar="صُنع للشرق الأوسط">Made for the Middle East</span>
+			</p>
+		</div>
+	</div>
+</footer>

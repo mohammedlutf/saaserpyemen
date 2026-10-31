@@ -1,0 +1,82 @@
+<div class="saas-desk" id="saas-desk-root">
+	<div class="saas-desk-hero">
+		<div class="saas-desk-hero-copy">
+			<span class="saas-desk-eyebrow">Shopzad SaaS</span>
+			<h2 class="saas-desk-title">Control Center</h2>
+			<p class="saas-desk-subtitle">
+				Monitor subscriptions, review manual payments, and provision customer workspaces.
+			</p>
+		</div>
+		<div class="saas-desk-hero-actions">
+			<a class="saas-desk-link" data-action="open-website" href="#" target="_blank" rel="noopener">
+				Open website
+			</a>
+			<button class="saas-desk-btn is-ghost" data-action="refresh" type="button">Refresh</button>
+		</div>
+	</div>
+
+	<div class="saas-desk-loading" data-region="loading">
+		<span class="saas-desk-spinner"></span>
+		Loading your SaaS overview…
+	</div>
+
+	<div class="saas-desk-error" data-region="error" hidden></div>
+
+	<div data-region="content" hidden>
+		<section class="saas-desk-kpis" data-region="kpis"></section>
+
+		<section class="saas-desk-grid is-two">
+			<div class="saas-desk-card">
+				<header class="saas-desk-card-head">
+					<h3>Signups</h3>
+					<span class="saas-desk-muted">Last 12 months</span>
+				</header>
+				<div class="saas-desk-chart" data-region="signups"></div>
+			</div>
+			<div class="saas-desk-card">
+				<header class="saas-desk-card-head">
+					<h3>Revenue</h3>
+					<span class="saas-desk-muted">Approved payments</span>
+				</header>
+				<div class="saas-desk-chart" data-region="revenue"></div>
+			</div>
+		</section>
+
+		<section class="saas-desk-grid is-sidebar">
+			<div class="saas-desk-card">
+				<header class="saas-desk-card-head">
+					<h3>Pending payments</h3>
+					<button class="saas-desk-btn is-ghost is-small" data-action="open-payments" type="button">
+						View all
+					</button>
+				</header>
+				<div class="saas-desk-table-wrap" data-region="pending-payments"></div>
+			</div>
+			<div class="saas-desk-card">
+				<header class="saas-desk-card-head">
+					<h3>Plans</h3>
+					<span class="saas-desk-muted">Active tenants</span>
+				</header>
+				<div class="saas-desk-plan-list" data-region="by-plan"></div>
+			</div>
+		</section>
+
+		<section class="saas-desk-card">
+			<header class="saas-desk-card-head">
+				<h3>Recent workspaces</h3>
+				<button class="saas-desk-btn is-ghost is-small" data-action="open-tenants" type="button">
+					Manage tenants
+				</button>
+			</header>
+			<div class="saas-desk-table-wrap" data-region="recent-tenants"></div>
+		</section>
+
+		<section class="saas-desk-card">
+			<header class="saas-desk-card-head">
+				<h3>Expiring soon</h3>
+				<span class="saas-desk-muted">Next 14 days</span>
+			</header>
+			<div class="saas-desk-table-wrap" data-region="expiring"></div>
+		</section>
+	</div>
+</div>

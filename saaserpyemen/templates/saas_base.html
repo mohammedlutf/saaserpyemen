@@ -1,0 +1,60 @@
+{% extends "templates/base.html" %}
+
+{% block meta_block %}
+	{{ super() }}
+	<meta name="description" content="{% block meta_description %}{{ _('Shopzad is a complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endblock %}">
+	<meta name="theme-color" content="#4f46e5">
+{% endblock %}
+
+{% block favicon %}
+	<link rel="shortcut icon" href="{{ (favicon or '/assets/saaserpyemen/images/favicon.svg') | abs_url }}" type="image/svg+xml">
+{% endblock %}
+
+{% block head_include %}
+	{{ super() }}
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<script>
+		(function () {
+			try {
+				var stored = localStorage.getItem("saas_lang") || {{ (lang or 'en') | tojson }};
+				if (stored === "ar") {
+					document.documentElement.classList.add("saas-ar");
+					document.documentElement.lang = "ar";
+					document.documentElement.dir = "rtl";
+				}
+			} catch (e) { /* ignore */ }
+		})();
+	</script>
+{% endblock %}
+
+{% block navbar %}
+	{% include "templates/includes/saas_nav.html" %}
+{% endblock %}
+
+{% block content %}
+	<main id="saas-main" class="saas-main">
+		{% block page_content %}{{ content }}{% endblock %}
+	</main>
+{% endblock %}
+
+{% block footer %}
+	{% include "templates/includes/saas_footer.html" %}
+{% endblock %}
+
+{% block script %}
+	{{ super() }}
+	<script>
+		window.saas = Object.assign(window.saas || {}, {
+			csrf_token: {{ (frappe.session.csrf_token or '') | tojson }},
+			site_url: {{ (frappe.utils.get_url() or '') | tojson }},
+			user: {{ (frappe.session.user or 'Guest') | tojson }},
+			is_manager: {{ (is_manager if is_manager is defined else false) | tojson }},
+			logged_in: {{ (frappe.session.user != 'Guest') | tojson }},
+			lang: {{ (lang or 'en') | tojson }},
+			currency: {{ (default_currency or 'USD') | tojson }},
+			domain: {{ (domain or '') | tojson }}
+		});
+	</script>
+{% endblock %}

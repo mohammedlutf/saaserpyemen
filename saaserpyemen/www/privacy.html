@@ -1,0 +1,128 @@
+{% extends "templates/saas_base.html" %}
+
+{% block title %}{{ _('Privacy Policy') }} — {{ brand_name }}{% endblock %}
+
+{% block page_content %}
+<section class="page-hero page-hero--compact">
+	<div class="hero__glow hero__glow--one"></div>
+	<div class="saas-container">
+		<div class="page-hero__inner">
+			<div class="saas-pill"><span data-en="Legal" data-ar="قانوني">Legal</span></div>
+			<h1>
+				<span class="lang-en">Privacy <span class="gradient-text">Policy</span></span>
+				<span class="lang-ar">سياسة <span class="gradient-text">الخصوصية</span></span>
+			</h1>
+			<p>
+				<span class="lang-en">How {{ brand_name }} collects, uses, stores and protects your information.</span>
+				<span class="lang-ar">كيف تجمع {{ brand_name_ar }} معلوماتك وتستخدمها وتخزنها وتحميها.</span>
+			</p>
+			<p class="legal__meta">
+				<span data-en="Last updated" data-ar="آخر تحديث">Last updated</span>:
+				<b>{{ frappe.utils.formatdate(updated_on, 'dd MMMM yyyy') }}</b>
+			</p>
+		</div>
+	</div>
+</section>
+
+<section class="section section--tight">
+	<div class="saas-container">
+		<div class="legal">
+			<aside class="legal__toc" aria-label="Contents">
+				<h3 data-en="On this page" data-ar="في هذه الصفحة">On this page</h3>
+				<a href="#who" data-en="1. Who we are" data-ar="1. من نحن">1. Who we are</a>
+				<a href="#collect" data-en="2. What we collect" data-ar="2. ما نجمعه">2. What we collect</a>
+				<a href="#use" data-en="3. How we use it" data-ar="3. كيف نستخدمه">3. How we use it</a>
+				<a href="#legal-basis" data-en="4. Legal basis" data-ar="4. الأساس القانوني">4. Legal basis</a>
+				<a href="#sharing" data-en="5. Sharing" data-ar="5. المشاركة">5. Sharing</a>
+				<a href="#storage" data-en="6. Storage &amp; security" data-ar="6. التخزين والأمان">6. Storage &amp; security</a>
+				<a href="#cookies" data-en="7. Cookies" data-ar="7. ملفات تعريف الارتباط">7. Cookies</a>
+				<a href="#rights" data-en="8. Your rights" data-ar="8. حقوقك">8. Your rights</a>
+				<a href="#retention" data-en="9. Retention" data-ar="9. الاحتفاظ">9. Retention</a>
+				<a href="#children" data-en="10. Children" data-ar="10. الأطفال">10. Children</a>
+				<a href="#changes" data-en="11. Changes" data-ar="11. التغييرات">11. Changes</a>
+				<a href="#contact" data-en="12. Contact" data-ar="12. التواصل">12. Contact</a>
+			</aside>
+
+			<div class="legal__body">
+				<article class="legal-card" id="who">
+					<h2><span class="legal__num">1</span><span data-en="Who we are" data-ar="من نحن">Who we are</span></h2>
+					<p data-en="{{ brand_name }} operates a hosted ERP platform built on ERPNext. We act as the data controller for account and billing information, and as a data processor for the business data you store inside your workspace. This policy explains our practices across the marketing website and the customer portal." data-ar="{{ brand_name_ar }} تشغّل منصة ERP مستضافة مبنية على ERPNext. نعمل كمسؤول عن بيانات الحساب والفوترة، وكمعالج لبيانات الأعمال التي تخزنها داخل مساحة عملك. توضح هذه السياسة ممارساتنا عبر الموقع التسويقي وبوابة العملاء.">{{ brand_name }} operates a hosted ERP platform built on ERPNext. We act as the data controller for account and billing information, and as a data processor for the business data you store inside your workspace. This policy explains our practices across the marketing website and the customer portal.</p>
+				</article>
+
+				<article class="legal-card" id="collect">
+					<h2><span class="legal__num">2</span><span data-en="What we collect" data-ar="ما نجمعه">What we collect</span></h2>
+					<ul class="legal-list">
+						<li data-en="Account details: your name, work email, company name, phone number, country and preferred language." data-ar="بيانات الحساب: اسمك وبريد العمل واسم الشركة ورقم الهاتف والدولة واللغة المفضلة.">Account details: your name, work email, company name, phone number, country and preferred language.</li>
+						<li data-en="Billing details: plan, billing cycle, currency, payment references and the receipts you upload. We do not store full card numbers because payments are made by bank transfer." data-ar="بيانات الفوترة: الخطة ودورة الفوترة والعملة ومراجع الدفع والإيصالات التي ترفعها. لا نخزّن أرقام البطاقات الكاملة لأن المدفوعات تتم عبر التحويل البنكي.">Billing details: plan, billing cycle, currency, payment references and the receipts you upload. We do not store full card numbers because payments are made by bank transfer.</li>
+						<li data-en="Workspace data: the records, files and settings you create inside your ERP, which belong to you." data-ar="بيانات مساحة العمل: السجلات والملفات والإعدادات التي تنشئها داخل نظام ERP، وهي ملك لك.">Workspace data: the records, files and settings you create inside your ERP, which belong to you.</li>
+						<li data-en="Technical data: IP address, browser type, device information, pages visited and timestamps, used for security and diagnostics." data-ar="البيانات التقنية: عنوان IP ونوع المتصفح ومعلومات الجهاز والصفحات التي تمت زيارتها والأوقات، تُستخدم للأمان والتشخيص.">Technical data: IP address, browser type, device information, pages visited and timestamps, used for security and diagnostics.</li>
+						<li data-en="Communication: messages you send to support and records of account activity." data-ar="التواصل: الرسائل التي ترسلها إلى الدعم وسجلات نشاط الحساب.">Communication: messages you send to support and records of account activity.</li>
+					</ul>
+				</article>
+
+				<article class="legal-card" id="use">
+					<h2><span class="legal__num">3</span><span data-en="How we use your information" data-ar="كيف نستخدم معلوماتك">How we use your information</span></h2>
+					<ul class="legal-list">
+						<li data-en="To create your account, provision your workspace and keep it running." data-ar="لإنشاء حسابك وتجهيز مساحة عملك والحفاظ على تشغيلها.">To create your account, provision your workspace and keep it running.</li>
+						<li data-en="To process manual payments, verify receipts and manage subscriptions." data-ar="لمعالجة المدفوعات اليدوية والتحقق من الإيصالات وإدارة الاشتراكات.">To process manual payments, verify receipts and manage subscriptions.</li>
+						<li data-en="To provide support and respond to your requests." data-ar="لتقديم الدعم والرد على طلباتك.">To provide support and respond to your requests.</li>
+						<li data-en="To secure the platform, prevent abuse and monitor performance." data-ar="لتأمين المنصة ومنع إساءة الاستخدام ومراقبة الأداء.">To secure the platform, prevent abuse and monitor performance.</li>
+						<li data-en="To send service messages such as trial reminders, payment updates and security notices." data-ar="لإرسال رسائل الخدمة مثل تذكيرات التجربة وتحديثات الدفع وإشعارات الأمان.">To send service messages such as trial reminders, payment updates and security notices.</li>
+						<li data-en="To improve the product using aggregated, non-identifying usage statistics." data-ar="لتحسين المنتج باستخدام إحصاءات استخدام مجمعة غير معرِّفة.">To improve the product using aggregated, non-identifying usage statistics.</li>
+					</ul>
+					<p data-en="We do not sell your personal data, and we do not use the business data in your workspace for advertising." data-ar="نحن لا نبيع بياناتك الشخصية، ولا نستخدم بيانات الأعمال في مساحة عملك لأغراض إعلانية.">We do not sell your personal data, and we do not use the business data in your workspace for advertising.</p>
+				</article>
+
+				<article class="legal-card" id="legal-basis">
+					<h2><span class="legal__num">4</span><span data-en="Legal basis for processing" data-ar="الأساس القانوني للمعالجة">Legal basis for processing</span></h2>
+					<p data-en="We process personal data to perform our contract with you, to comply with legal obligations, to protect legitimate interests such as security and fraud prevention, and where you have given consent (for example, optional communications). You can withdraw consent at any time." data-ar="نعالج البيانات الشخصية لتنفيذ عقدنا معك، وللوفاء بالالتزامات القانونية، ولحماية المصالح المشروعة مثل الأمان ومنع الاحتيال، وحيث منحت موافقتك (مثل الاتصالات الاختيارية). يمكنك سحب موافقتك في أي وقت.">We process personal data to perform our contract with you, to comply with legal obligations, to protect legitimate interests such as security and fraud prevention, and where you have given consent (for example, optional communications). You can withdraw consent at any time.</p>
+				</article>
+
+				<article class="legal-card" id="sharing">
+					<h2><span class="legal__num">5</span><span data-en="Sharing your information" data-ar="مشاركة معلوماتك">Sharing your information</span></h2>
+					<p data-en="We share information only with service providers who help us run the platform — such as hosting, email delivery and backup providers — under contracts that require them to protect it. We may also disclose information if required by law or to protect our rights, users or the public. We never share one customer's workspace data with another customer." data-ar="نشارك المعلومات فقط مع مزودي الخدمات الذين يساعدوننا في تشغيل المنصة — مثل الاستضافة وتسليم البريد ومزودي النسخ الاحتياطي — بموجب عقود تلزمهم بحمايتها. قد نكشف المعلومات أيضًا إذا اقتضى القانون ذلك أو لحماية حقوقنا أو مستخدمينا أو الجمهور. لا نشارك بيانات مساحة عمل عميل مع عميل آخر أبدًا.">We share information only with service providers who help us run the platform — such as hosting, email delivery and backup providers — under contracts that require them to protect it. We may also disclose information if required by law or to protect our rights, users or the public. We never share one customer's workspace data with another customer.</p>
+				</article>
+
+				<article class="legal-card" id="storage">
+					<h2><span class="legal__num">6</span><span data-en="Storage and security" data-ar="التخزين والأمان">Storage and security</span></h2>
+					<p data-en="Each workspace has its own isolated database and file storage. We encrypt data in transit with HTTPS, restrict administrative access, apply security updates and take daily backups. Passwords are stored using one-way hashing. No system is completely secure, so please use a strong, unique password and enable any additional protections available to you." data-ar="لكل مساحة عمل قاعدة بيانات وتخزين ملفات معزولان. نشفّر البيانات أثناء النقل باستخدام HTTPS، ونقيّد الوصول الإداري، ونطبق تحديثات الأمان، ونأخذ نسخًا احتياطية يومية. تُخزّن كلمات المرور باستخدام التجزئة أحادية الاتجاه. لا يوجد نظام آمن تمامًا، لذا يرجى استخدام كلمة مرور قوية وفريدة وتفعيل أي حمايات إضافية متاحة لك.">Each workspace has its own isolated database and file storage. We encrypt data in transit with HTTPS, restrict administrative access, apply security updates and take daily backups. Passwords are stored using one-way hashing. No system is completely secure, so please use a strong, unique password and enable any additional protections available to you.</p>
+					<p data-en="Our servers and backup providers may process data in countries other than yours. Where required, we use appropriate safeguards for these transfers." data-ar="قد تعالج خوادمنا ومزودو النسخ الاحتياطي البيانات في دول غير دولتك. وحيثما كان مطلوبًا، نستخدم ضمانات مناسبة لهذه النقلات.">Our servers and backup providers may process data in countries other than yours. Where required, we use appropriate safeguards for these transfers.</p>
+				</article>
+
+				<article class="legal-card" id="cookies">
+					<h2><span class="legal__num">7</span><span data-en="Cookies" data-ar="ملفات تعريف الارتباط">Cookies</span></h2>
+					<p data-en="We use essential cookies to keep you signed in and to protect forms against cross-site request forgery. We may use a small preference cookie to remember your language and currency choices. We do not use advertising cookies. You can clear cookies in your browser at any time, though you will need to sign in again." data-ar="نستخدم ملفات تعريف ارتباط أساسية لإبقائك مسجلًا الدخول وحماية النماذج من هجمات تزوير الطلبات عبر المواقع. قد نستخدم ملف تعريف ارتباط صغير للتفضيلات لتذكر اختيارات اللغة والعملة. لا نستخدم ملفات تعريف ارتباط إعلانية. يمكنك مسح ملفات تعريف الارتباط من متصفحك في أي وقت، لكنك ستحتاج إلى تسجيل الدخول مرة أخرى.">We use essential cookies to keep you signed in and to protect forms against cross-site request forgery. We may use a small preference cookie to remember your language and currency choices. We do not use advertising cookies. You can clear cookies in your browser at any time, though you will need to sign in again.</p>
+				</article>
+
+				<article class="legal-card" id="rights">
+					<h2><span class="legal__num">8</span><span data-en="Your rights" data-ar="حقوقك">Your rights</span></h2>
+					<p data-en="Subject to applicable law, you may request access to, correction of, or deletion of your personal data, object to or restrict certain processing, and request a portable copy of your data. You can update your company profile from your dashboard. To exercise other rights, email {{ support_email or 'support@shopzadmarket.com' }} and we will respond within the time required by law." data-ar="وفقًا للقانون المعمول به، يمكنك طلب الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها، والاعتراض على معالجة معينة أو تقييدها، وطلب نسخة قابلة للنقل من بياناتك. يمكنك تحديث ملف شركتك من لوحة التحكم. لممارسة الحقوق الأخرى، راسل {{ support_email or 'support@shopzadmarket.com' }} وسنرد خلال المدة التي يقتضيها القانون.">Subject to applicable law, you may request access to, correction of, or deletion of your personal data, object to or restrict certain processing, and request a portable copy of your data. You can update your company profile from your dashboard. To exercise other rights, email {{ support_email or 'support@shopzadmarket.com' }} and we will respond within the time required by law.</p>
+				</article>
+
+				<article class="legal-card" id="retention">
+					<h2><span class="legal__num">9</span><span data-en="Retention" data-ar="الاحتفاظ">Retention</span></h2>
+					<p data-en="We keep account and billing records for as long as your account is active and for a reasonable period afterwards to meet legal, tax and accounting obligations. When a workspace is deleted, its database and files are removed after any retention period, and backups are rotated out on our normal backup schedule." data-ar="نحتفظ بسجلات الحساب والفوترة طالما كان حسابك نشطًا ولفترة معقولة بعد ذلك للوفاء بالالتزامات القانونية والضريبية والمحاسبية. عند حذف مساحة عمل، تُزال قاعدة بياناتها وملفاتها بعد أي فترة احتفاظ، وتُستبدل النسخ الاحتياطية وفق جدول النسخ الاحتياطي المعتاد لدينا.">We keep account and billing records for as long as your account is active and for a reasonable period afterwards to meet legal, tax and accounting obligations. When a workspace is deleted, its database and files are removed after any retention period, and backups are rotated out on our normal backup schedule.</p>
+				</article>
+
+				<article class="legal-card" id="children">
+					<h2><span class="legal__num">10</span><span data-en="Children" data-ar="الأطفال">Children</span></h2>
+					<p data-en="The service is intended for businesses and is not directed at children under 18. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact us and we will delete it." data-ar="الخدمة مخصصة للشركات وليست موجهة للأطفال دون 18 عامًا. نحن لا نجمع بيانات شخصية من الأطفال عن قصد. إذا كنت تعتقد أن طفلًا قد قدم لنا بيانات شخصية، يرجى التواصل معنا وسنحذفها.">The service is intended for businesses and is not directed at children under 18. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact us and we will delete it.</p>
+				</article>
+
+				<article class="legal-card" id="changes">
+					<h2><span class="legal__num">11</span><span data-en="Changes to this policy" data-ar="التغييرات على هذه السياسة">Changes to this policy</span></h2>
+					<p data-en="We may update this policy to reflect changes in our practices or the law. We will post the new version here with an updated date, and where changes are significant we will notify you by email or in your dashboard." data-ar="قد نحدّث هذه السياسة لتعكس التغييرات في ممارساتنا أو القانون. سننشر النسخة الجديدة هنا مع تاريخ محدث، وعندما تكون التغييرات مهمة سنبلغك عبر البريد الإلكتروني أو من خلال لوحة التحكم.">We may update this policy to reflect changes in our practices or the law. We will post the new version here with an updated date, and where changes are significant we will notify you by email or in your dashboard.</p>
+				</article>
+
+				<article class="legal-card" id="contact">
+					<h2><span class="legal__num">12</span><span data-en="Contact us" data-ar="تواصل معنا">Contact us</span></h2>
+					<p data-en="For any privacy question or request, email {{ support_email or 'support@shopzadmarket.com' }}. We take privacy seriously and will do our best to help." data-ar="لأي سؤال أو طلب يتعلق بالخصوصية، راسل {{ support_email or 'support@shopzadmarket.com' }}. نأخذ الخصوصية على محمل الجد وسنبذل قصارى جهدنا للمساعدة.">For any privacy question or request, email {{ support_email or 'support@shopzadmarket.com' }}. We take privacy seriously and will do our best to help.</p>
+					<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'support@shopzadmarket.com' }}">
+						<span data-en="Contact privacy team" data-ar="تواصل مع فريق الخصوصية">Contact privacy team</span>
+					</a>
+				</article>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

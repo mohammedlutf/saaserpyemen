@@ -1,0 +1,178 @@
+{% extends "templates/saas_base.html" %}
+
+{% block title %}{{ _('Choose your workspace') }} — {{ brand_name }}{% endblock %}
+
+{% block page_content %}
+<section class="section section--top">
+	<div class="saas-container">
+		<div class="subscribe">
+			<div class="subscribe__aside">
+				<a class="saas-link saas-link--sm" href="/plans">← <span data-en="Back to plans" data-ar="العودة إلى الخطط">Back to plans</span></a>
+				<h1>
+					<span class="lang-en">{{ 'Change your plan' if is_change else 'Set up your workspace' }}</span>
+					<span class="lang-ar">{{ 'غيّر خطتك' if is_change else 'أنشئ مساحة عملك' }}</span>
+				</h1>
+				<p>
+					<span class="lang-en">{{ 'Move to a plan that fits your team. Your data and settings stay exactly where they are.' if is_change else 'One last step before your ERP is live. Choose your subdomain and confirm your details.' }}</span>
+					<span class="lang-ar">{{ 'انتقل إلى خطة تناسب فريقك. تبقى بياناتك وإعداداتك كما هي تمامًا.' if is_change else 'خطوة أخيرة قبل أن يصبح نظام ERP جاهزًا. اختر نطاقك الفرعي وأكد بياناتك.' }}</span>
+				</p>
+
+				<div class="order-card">
+					<div class="order-card__head">
+						<span class="order-card__icon" style="background: {{ plan.color }}1a; color: {{ plan.color }}">✦</span>
+						<div>
+							<small data-en="Your plan" data-ar="خطتك">Your plan</small>
+							<h3>{{ plan.plan_name }}</h3>
+						</div>
+						{% if plan.is_featured %}<span class="badge" data-en="Popular" data-ar="شائع">Popular</span>{% endif %}
+					</div>
+					<div class="order-card__price">
+						{% set amount = prices.yearly if cycle == 'Yearly' else prices.monthly %}
+						<span data-price-amount>{{ "{:,.0f}".format(amount) }}</span>
+						<small>
+							<span data-price-currency>{{ prices.currency }}</span>
+							{% if cycle == 'Yearly' %}<span data-en="/ year" data-ar="/ سنويًا">/ year</span>{% else %}<span data-en="/ month" data-ar="/ شهريًا">/ month</span>{% endif %}
+						</small>
+					</div>
+					{% if cycle == 'Yearly' and prices.yearly_discount %}
+					<p class="order-card__save"><span data-en="You save {{ prices.yearly_discount }}% with yearly billing" data-ar="توفر {{ prices.yearly_discount }}% عند الدفع السنوي">You save {{ prices.yearly_discount }}% with yearly billing</span></p>
+					{% endif %}
+					<ul class="order-card__list">
+						<li><span class="tick">✓</span><span data-en="{{ plan.trial_days }} days free trial" data-ar="{{ plan.trial_days }} يومًا تجربة مجانية">{{ plan.trial_days }} days free trial</span></li>
+						<li><span class="tick">✓</span><span data-en="Full ERPNext suite" data-ar="حزمة ERPNext الكاملة">Full ERPNext suite</span></li>
+						<li><span class="tick">✓</span><span data-en="Daily backups &amp; updates" data-ar="نسخ احتياطي وتحديثات يومية">Daily backups &amp; updates</span></li>
+						<li><span class="tick">✓</span><span data-en="Cancel anytime" data-ar="إلغاء في أي وقت">Cancel anytime</span></li>
+					</ul>
+					<div class="order-card__billing">
+						<span data-en="Billing cycle" data-ar="دورة الفوترة">Billing cycle</span>
+						<div class="segmented segmented--sm">
+							<button type="button" class="segmented__item {% if cycle == 'Monthly' %}active{% endif %}" data-cycle="Monthly"><span data-en="Monthly" data-ar="شهري">Monthly</span></button>
+							<button type="button" class="segmented__item {% if cycle == 'Yearly' %}active{% endif %}" data-cycle="Yearly"><span data-en="Yearly" data-ar="سنوي">Yearly</span></button>
+						</div>
+					</div>
+					<div class="order-card__billing">
+						<span data-en="Currency" data-ar="العملة">Currency</span>
+						<div class="currency-switch currency-switch--sm">
+							{% for row in currencies %}
+							{% set row_prices = currency_prices.get(row.name) or prices %}
+							<button type="button" class="currency-switch__item {% if row.name == currency %}active{% endif %}" data-currency="{{ row.name }}" data-monthly="{{ row_prices.monthly }}" data-yearly="{{ row_prices.yearly }}">{{ row.name }}</button>
+							{% endfor %}
+						</div>
+					</div>
+					<p class="order-card__note">
+						<span data-en="Payment is manual by bank transfer after your trial. No card required today." data-ar="الدفع يدوي عبر التحويل البنكي بعد التجربة. لا حاجة لبطاقة اليوم.">Payment is manual by bank transfer after your trial. No card required today.</span>
+					</p>
+				</div>
+			</div>
+
+			<div class="subscribe__main">
+				<div class="card">
+					<div class="card__head">
+						<h2>
+							<span class="lang-en">{{ 'Confirm plan change' if is_change else 'Workspace details' }}</span>
+							<span class="lang-ar">{{ 'تأكيد تغيير الخطة' if is_change else 'تفاصيل مساحة العمل' }}</span>
+						</h2>
+						<p>
+							<span class="lang-en">{{ 'We will update your subscription immediately.' if is_change else 'This information appears on your invoices and in your workspace.' }}</span>
+							<span class="lang-ar">{{ 'سنحدّث اشتراكك فورًا.' if is_change else 'تظهر هذه المعلومات في فواتيرك ومساحة عملك.' }}</span>
+						</p>
+					</div>
+
+					<form class="form form--grid" id="subscribe-form"
+						data-plan="{{ plan.name }}"
+						data-currency="{{ currency }}"
+						data-cycle="{{ cycle }}"
+						data-existing-tenant="{{ existing_tenant }}"
+						data-domain="{{ domain }}"
+						data-is-change="{{ '1' if is_change else '0' }}"
+						novalidate>
+
+						{% if not is_change %}
+						<label class="field field--full">
+							<span class="field__label" data-en="Company / workspace name" data-ar="اسم الشركة / مساحة العمل">Company / workspace name</span>
+							<div class="field__control">
+								<span class="field__icon">▦</span>
+								<input type="text" name="company_name" required value="{{ prefill.company_name }}" data-en-placeholder="Noura Trading Co." data-ar-placeholder="شركة نورة للتجارة" placeholder="Noura Trading Co.">
+							</div>
+						</label>
+
+						<label class="field field--full">
+							<span class="field__label" data-en="Your workspace address" data-ar="عنوان مساحة عملك">Your workspace address</span>
+							<div class="field__control field__control--subdomain">
+								<span class="field__icon">https://</span>
+								<input type="text" name="subdomain" id="subdomain-input" required value="{{ suggested_subdomain }}" pattern="[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])?" data-en-placeholder="your-company" data-ar-placeholder="شركتك" placeholder="your-company" autocomplete="off">
+								<span class="field__suffix">.{{ domain }}</span>
+								<span class="field__status" id="subdomain-status"></span>
+							</div>
+							<span class="field__hint">
+								<span data-en="Lowercase letters, numbers and hyphens. This becomes your ERP login address." data-ar="أحرف صغيرة وأرقام وشرطات. سيصبح هذا عنوان دخولك إلى ERP.">Lowercase letters, numbers and hyphens. This becomes your ERP login address.</span>
+							</span>
+						</label>
+						{% else %}
+						<div class="existing-site field--full">
+							<span class="field__icon">◎</span>
+							<div>
+								<small data-en="Current workspace" data-ar="مساحة العمل الحالية">Current workspace</small>
+								<b>{{ tenant.tenant_name }}</b>
+								<span>{{ tenant.subdomain }}.{{ domain }}</span>
+							</div>
+							<span class="badge badge--soft">{{ tenant.status }}</span>
+						</div>
+						{% endif %}
+
+						<label class="field">
+							<span class="field__label" data-en="Phone" data-ar="الهاتف">Phone</span>
+							<div class="field__control">
+								<span class="field__icon">☎</span>
+								<input type="tel" name="phone" value="{{ prefill.phone }}" data-en-placeholder="+966 5X XXX XXXX" data-ar-placeholder="+966 5X XXX XXXX" placeholder="+966 5X XXX XXXX">
+							</div>
+						</label>
+
+						<label class="field">
+							<span class="field__label" data-en="Country" data-ar="الدولة">Country</span>
+							<div class="field__control field__control--select">
+								<span class="field__icon">◍</span>
+								<select name="country">
+									<option value="" data-en="Select a country" data-ar="اختر دولة">Select a country</option>
+									{% for country in countries %}
+									<option value="{{ country.name }}" {% if country.name == prefill.country %}selected{% endif %}>{{ country.name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</label>
+
+						<input type="hidden" name="language" value="{{ lang }}">
+						<div class="form__error field--full" data-form-error hidden></div>
+
+						<div class="subscribe__summary field--full">
+							<div>
+								<small data-en="Due after trial" data-ar="المستحق بعد التجربة">Due after trial</small>
+								<strong data-summary-amount>{{ prices.currency }} {{ "{:,.0f}".format(prices.yearly if cycle == 'Yearly' else prices.monthly) }}</strong>
+							</div>
+							<div>
+								<small data-en="Trial ends" data-ar="تنتهي التجربة">Trial ends</small>
+								<strong>{{ frappe.utils.add_days(frappe.utils.today(), plan.trial_days) }}</strong>
+							</div>
+						</div>
+
+						<label class="checkbox field--full">
+							<input type="checkbox" name="terms" required>
+							<span>
+								<span data-en="I agree to the" data-ar="أوافق على">I agree to the</span>
+								<a href="/terms" target="_blank" data-en="Terms of Service" data-ar="شروط الخدمة">Terms of Service</a>
+								<span data-en="and" data-ar="و">and</span>
+								<a href="/privacy" target="_blank" data-en="Privacy Policy" data-ar="سياسة الخصوصية">Privacy Policy</a>.
+							</span>
+						</label>
+
+						<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block field--full" type="submit">
+							<span data-en="{{ 'Confirm plan change' if is_change else 'Create my workspace' }}" data-ar="{{ 'تأكيد تغيير الخطة' if is_change else 'أنشئ مساحة عملي' }}">{{ 'Confirm plan change' if is_change else 'Create my workspace' }}</span>
+							<span class="btn-spinner" hidden></span>
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

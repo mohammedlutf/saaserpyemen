@@ -1,0 +1,154 @@
+{% extends "templates/saas_base.html" %}
+
+{% block title %}{{ _('Plans & pricing') }} — {{ brand_name }}{% endblock %}
+
+{% block page_content %}
+<section class="page-hero">
+	<div class="hero__glow hero__glow--one"></div>
+	<div class="saas-container">
+		<div class="page-hero__inner">
+			<div class="saas-pill"><span data-en="Pricing" data-ar="الأسعار">Pricing</span></div>
+			<h1>
+				<span class="lang-en">Simple plans. <span class="gradient-text">Serious power</span>.</span>
+				<span class="lang-ar">خطط بسيطة. <span class="gradient-text">قوة حقيقية</span>.</span>
+			</h1>
+			<p>
+				<span class="lang-en">Every plan includes the full ERPNext suite and a 30-day free trial. No hidden fees, no surprises.</span>
+				<span class="lang-ar">كل خطة تشمل حزمة ERPNext الكاملة وتجربة مجانية 30 يومًا. بدون رسوم خفية أو مفاجآت.</span>
+			</p>
+		</div>
+	</div>
+</section>
+
+<section class="section section--tight">
+	<div class="saas-container">
+		<div class="pricing-toolbar">
+			<div class="segmented" role="group" aria-label="Billing cycle">
+				<a class="segmented__item {% if cycle == 'Monthly' %}active{% endif %}" href="?cycle=Monthly&currency={{ currency }}{% if change_mode %}&change=1{% endif %}">
+					<span data-en="Monthly" data-ar="شهري">Monthly</span>
+				</a>
+				<a class="segmented__item {% if cycle == 'Yearly' %}active{% endif %}" href="?cycle=Yearly&currency={{ currency }}{% if change_mode %}&change=1{% endif %}">
+					<span data-en="Yearly" data-ar="سنوي">Yearly</span>
+					<span class="segmented__save" data-en="Save 2 months" data-ar="وفّر شهرين">Save 2 months</span>
+				</a>
+			</div>
+			<div class="currency-switch" role="group" aria-label="Currency">
+				{% for row in currencies %}
+				<a class="currency-switch__item {% if row.name == currency %}active{% endif %}" href="?cycle={{ cycle }}&currency={{ row.name }}{% if change_mode %}&change=1{% endif %}">
+					{{ row.symbol or row.name }} {{ row.name }}
+				</a>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="plans plans--wide">
+			{% for plan in plans %}
+			<article class="plan-card {% if plan.featured %}plan-card--featured{% endif %}" style="--accent: {{ plan.color }}">
+				{% if plan.featured %}<span class="plan-card__ribbon" data-en="Most popular" data-ar="الأكثر شيوعًا">Most popular</span>{% endif %}
+				<div class="plan-card__head">
+					<span class="plan-card__icon" style="background: {{ plan.color }}1a; color: {{ plan.color }}">✦</span>
+					<h3>{{ plan.plan_name }}</h3>
+					<p class="plan-card__tagline">
+						<span class="lang-en">{{ plan.tagline_en }}</span>
+						<span class="lang-ar">{{ plan.tagline_ar }}</span>
+					</p>
+				</div>
+				<div class="plan-card__price">
+					<span class="plan-card__amount">{{ "{:,.0f}".format(plan.yearly if cycle == 'Yearly' else plan.monthly) }}</span>
+					<span class="plan-card__currency">{{ plan.currency }}</span>
+					<span class="plan-card__cycle">
+						{% if cycle == 'Yearly' %}<span data-en="/ year" data-ar="/ سنويًا">/ year</span>{% else %}<span data-en="/ month" data-ar="/ شهريًا">/ month</span>{% endif %}
+					</span>
+				</div>
+				{% if cycle == 'Yearly' and plan.yearly_discount %}
+				<p class="plan-card__save"><span data-en="Save {{ plan.yearly_discount }}% vs monthly" data-ar="وفّر {{ plan.yearly_discount }}% مقارنةً بالشهري">Save {{ plan.yearly_discount }}% vs monthly</span></p>
+				{% endif %}
+				<ul class="plan-card__features">
+					{% for feature in plan.features %}
+					<li class="{% if not feature.included %}muted{% endif %}">
+						<span class="tick">{% if feature.included %}✓{% else %}–{% endif %}</span>
+						<span class="lang-en">{{ feature.en }}</span>
+						<span class="lang-ar">{{ feature.ar }}</span>
+					</li>
+					{% endfor %}
+				</ul>
+				{% if change_mode %}
+				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/subscribe?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}{% if selected_tenant %}&tenant={{ selected_tenant }}{% endif %}">
+					<span data-en="Choose this plan" data-ar="اختر هذه الخطة">Choose this plan</span>
+				</a>
+				{% else %}
+				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/signup?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}">
+					<span data-en="Start free trial" data-ar="ابدأ التجربة المجانية">Start free trial</span>
+				</a>
+				{% endif %}
+				<p class="plan-card__note">
+					<span data-en="{{ plan.trial_days }} days free · cancel anytime" data-ar="{{ plan.trial_days }} يومًا مجانًا · إلغاء في أي وقت">{{ plan.trial_days }} days free · cancel anytime</span>
+				</p>
+			</article>
+			{% endfor %}
+		</div>
+
+		<div class="compare">
+			<h2>
+				<span class="lang-en">Compare plans</span>
+				<span class="lang-ar">قارن الخطط</span>
+			</h2>
+			<div class="compare__scroll">
+				<table class="compare__table">
+					<thead>
+						<tr>
+							<th></th>
+							{% for plan in plans %}<th style="--accent: {{ plan.color }}">{{ plan.plan_name }}</th>{% endfor %}
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td data-en="Users" data-ar="المستخدمون">Users</td>
+							{% for plan in plans %}<td>{% if plan.max_users %}{{ plan.max_users }}{% else %}<span data-en="Unlimited" data-ar="غير محدود">Unlimited</span>{% endif %}</td>{% endfor %}
+						</tr>
+						<tr>
+							<td data-en="Branches" data-ar="الفروع">Branches</td>
+							{% for plan in plans %}<td>{% if plan.max_branches %}{{ plan.max_branches }}{% else %}<span data-en="Unlimited" data-ar="غير محدود">Unlimited</span>{% endif %}</td>{% endfor %}
+						</tr>
+						<tr>
+							<td data-en="Companies" data-ar="الشركات">Companies</td>
+							{% for plan in plans %}<td>{% if plan.max_companies %}{{ plan.max_companies }}{% else %}<span data-en="Unlimited" data-ar="غير محدود">Unlimited</span>{% endif %}</td>{% endfor %}
+						</tr>
+						<tr>
+							<td data-en="Storage" data-ar="المساحة">Storage</td>
+							{% for plan in plans %}<td>{{ plan.storage_gb }} GB</td>{% endfor %}
+						</tr>
+						<tr>
+							<td data-en="Free trial" data-ar="التجربة المجانية">Free trial</td>
+							{% for plan in plans %}<td>{{ plan.trial_days }} <span data-en="days" data-ar="يومًا">days</span></td>{% endfor %}
+						</tr>
+						{% for feature in compare_features %}
+						<tr>
+							<td class="compare__feature">
+								<span class="lang-en">{{ feature.en }}</span>
+								<span class="lang-ar">{{ feature.ar }}</span>
+							</td>
+							{% for included in feature.included %}
+							<td>
+								{% if included %}<span class="tick">✓</span>{% else %}<span class="muted">—</span>{% endif %}
+							</td>
+							{% endfor %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="pricing-help">
+			<div>
+				<h3 data-en="Not sure which plan fits?" data-ar="لست متأكدًا من الخطة المناسبة؟">Not sure which plan fits?</h3>
+				<p data-en="Tell us about your team and we will recommend the right plan — or build a custom one for you." data-ar="أخبرنا عن فريقك وسنوصي بالخطة المناسبة — أو نصمم خطة مخصصة لك.">Tell us about your team and we will recommend the right plan — or build a custom one for you.</p>
+			</div>
+			<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'support@shopzadmarket.com' }}">
+				<span data-en="Talk to our team" data-ar="تحدث مع فريقنا">Talk to our team</span>
+			</a>
+		</div>
+	</div>
+</section>
+{% endblock %}
