@@ -35,8 +35,8 @@ def get_context(context):
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "SaaS payment context")
 
-	context.title = "Manual payment — Shopzad"
+	context.title = f"Manual payment — {context.brand_name}"
 	context.metatags = {
-		"description": "Complete your Shopzad subscription payment by bank transfer.",
+		"description": f"Complete your {context.brand_name} subscription payment by bank transfer.",
 		"robots": "noindex, nofollow",
 	}

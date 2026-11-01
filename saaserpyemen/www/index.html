@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Shopzad — Cloud ERP for growing businesses') }}{% endblock %}
+{% block title %}{{ brand_name }} — {{ _('Cloud ERP for growing businesses') }}{% endblock %}
 
 {% block page_content %}
 <section class="hero">
@@ -17,8 +17,8 @@
 				<span class="lang-ar">أدر عملك بالكامل على <span class="gradient-text">منصة واحدة أنيقة</span>.</span>
 			</h1>
 			<p class="hero__subtitle">
-				<span class="lang-en">{{ settings.hero_subtitle_en if settings.hero_subtitle_en else 'Shopzad gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.' }}</span>
-				<span class="lang-ar">{{ settings.hero_subtitle_ar if settings.hero_subtitle_ar else 'شوب زاد يمنحك مساحة عمل ERPNext كاملة وآمنة للمحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية والمزيد — جاهزة في دقائق.' }}</span>
+				<span class="lang-en">{{ settings.hero_subtitle_en if settings.hero_subtitle_en else 'Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.' }}</span>
+				<span class="lang-ar">{{ settings.hero_subtitle_ar if settings.hero_subtitle_ar else 'سحبيكس يمنحك مساحة عمل ERPNext كاملة وآمنة للمحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية والمزيد — جاهزة في دقائق.' }}</span>
 			</p>
 			<div class="hero__actions">
 				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/signup">
@@ -39,8 +39,8 @@
 					<span style="--i:0">A</span><span style="--i:1">M</span><span style="--i:2">S</span><span style="--i:3">+</span>
 				</div>
 				<p>
-					<span class="lang-en"><b>1,200+</b> businesses already grow with Shopzad</span>
-					<span class="lang-ar"><b>1,200+</b> شركة تنمو بالفعل مع شوب زاد</span>
+					<span class="lang-en"><b>1,200+</b> businesses already grow with Sahbix</span>
+					<span class="lang-ar"><b>1,200+</b> شركة تنمو بالفعل مع سحبيكس</span>
 				</p>
 			</div>
 		</div>
@@ -49,7 +49,7 @@
 			<div class="mockup">
 				<div class="mockup__bar">
 					<span class="mockup__dots"><i></i><i></i><i></i></span>
-					<span class="mockup__url">app.shopzadmarket.com</span>
+					<span class="mockup__url">app.{{ domain }}</span>
 					<span class="mockup__badge">Live</span>
 				</div>
 				<div class="mockup__body">
@@ -141,7 +141,7 @@
 
 		<div class="features">
 			<article class="feature">
-				<span class="feature__icon" style="--c:#6366f1">◈</span>
+				<span class="feature__icon" style="--c:#02a474">◈</span>
 				<h3 data-en="Accounting &amp; finance" data-ar="المحاسبة والمالية">Accounting &amp; finance</h3>
 				<p data-en="Invoicing, payments, taxes, multi-currency and real-time financial reports — ready from day one." data-ar="الفواتير والمدفوعات والضرائب وتعدد العملات والتقارير المالية الفورية — جاهزة من اليوم الأول.">Invoicing, payments, taxes, multi-currency and real-time financial reports — ready from day one.</p>
 			</article>
@@ -151,7 +151,7 @@
 				<p data-en="Manage leads, quotations, orders and customer relationships in one connected pipeline." data-ar="أدر العملاء المحتملين وعروض الأسعار والطلبات وعلاقات العملاء في مسار واحد متصل.">Manage leads, quotations, orders and customer relationships in one connected pipeline.</p>
 			</article>
 			<article class="feature">
-				<span class="feature__icon" style="--c:#10b981">▦</span>
+				<span class="feature__icon" style="--c:#02a474">▦</span>
 				<h3 data-en="Inventory &amp; warehouses" data-ar="المخزون والمستودعات">Inventory &amp; warehouses</h3>
 				<p data-en="Track stock across branches and warehouses with barcodes, batches and automatic valuation." data-ar="تتبع المخزون عبر الفروع والمستودعات بالباركود والدفعات والتقييم التلقائي.">Track stock across branches and warehouses with barcodes, batches and automatic valuation.</p>
 			</article>
@@ -166,7 +166,7 @@
 				<p data-en="Employees, attendance, leaves, expenses and payroll — with self-service for your team." data-ar="الموظفون والحضور والإجازات والمصروفات والرواتب — مع خدمة ذاتية لفريقك.">Employees, attendance, leaves, expenses and payroll — with self-service for your team.</p>
 			</article>
 			<article class="feature">
-				<span class="feature__icon" style="--c:#8b5cf6">▤</span>
+				<span class="feature__icon" style="--c:#14b8a6">▤</span>
 				<h3 data-en="Reports &amp; analytics" data-ar="التقارير والتحليلات">Reports &amp; analytics</h3>
 				<p data-en="Beautiful dashboards and 150+ reports turn your data into decisions you can trust." data-ar="لوحات معلومات أنيقة وأكثر من 150 تقريرًا تحوّل بياناتك إلى قرارات موثوقة.">Beautiful dashboards and 150+ reports turn your data into decisions you can trust.</p>
 			</article>
@@ -286,8 +286,8 @@
 			<figure class="testimonial">
 				<div class="testimonial__stars">★★★★★</div>
 				<blockquote>
-					<span class="lang-en">“We replaced spreadsheets and three separate apps with Shopzad. Month-end closing went from five days to one afternoon.”</span>
-					<span class="lang-ar">«استبدلنا جداول البيانات وثلاث تطبيقات منفصلة بشوب زاد. أصبح إغلاق الشهر يستغرق ظهرًا واحدًا بدلًا من خمسة أيام.»</span>
+					<span class="lang-en">“We replaced spreadsheets and three separate apps with Sahbix. Month-end closing went from five days to one afternoon.”</span>
+					<span class="lang-ar">«استبدلنا جداول البيانات وثلاث تطبيقات منفصلة بسحبيكس. أصبح إغلاق الشهر يستغرق ظهرًا واحدًا بدلًا من خمسة أيام.»</span>
 				</blockquote>
 				<figcaption><span class="avatar-dot">S</span><div><b>Sara Al-Harbi</b><small data-en="Finance Director, Riyadh" data-ar="مديرة مالية، الرياض">Finance Director, Riyadh</small></div></figcaption>
 			</figure>
@@ -325,7 +325,7 @@
 		<div class="faq">
 			<details class="faq__item" open>
 				<summary><span data-en="What exactly do I get?" data-ar="ما الذي أحصل عليه بالضبط؟">What exactly do I get?</span></summary>
-				<p data-en="Your own private ERPNext site at yourname.shopzadmarket.com, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more." data-ar="موقع ERPNext خاص بك على yourname.shopzadmarket.com، مع قاعدة بيانات مخصصة وتخزين آمن للملفات ونسخ احتياطي تلقائي وحزمة ERPNext الكاملة: المحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية وإدارة العملاء والمشاريع والمزيد.">Your own private ERPNext site at yourname.shopzadmarket.com, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more.</p>
+				<p data-en="Your own private ERPNext site at yourname.{{ domain }}, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more." data-ar="موقع ERPNext خاص بك على yourname.{{ domain }}، مع قاعدة بيانات مخصصة وتخزين آمن للملفات ونسخ احتياطي تلقائي وحزمة ERPNext الكاملة: المحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية وإدارة العملاء والمشاريع والمزيد.">Your own private ERPNext site at yourname.{{ domain }}, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more.</p>
 			</details>
 			<details class="faq__item">
 				<summary><span data-en="Is the free trial really free?" data-ar="هل التجربة المجانية مجانية فعلًا؟">Is the free trial really free?</span></summary>
@@ -362,15 +362,15 @@
 					<span class="lang-ar">مستعد لإدارة عمل أكثر هدوءًا وذكاءً؟</span>
 				</h2>
 				<p>
-					<span class="lang-en">Join thousands of teams using Shopzad. Your workspace will be ready in minutes.</span>
-					<span class="lang-ar">انضم إلى آلاف الفرق التي تستخدم شوب زاد. ستكون مساحة عملك جاهزة في دقائق.</span>
+					<span class="lang-en">Join thousands of teams using Sahbix. Your workspace will be ready in minutes.</span>
+					<span class="lang-ar">انضم إلى آلاف الفرق التي تستخدم سحبيكس. ستكون مساحة عملك جاهزة في دقائق.</span>
 				</p>
 			</div>
 			<div class="cta__actions">
 				<a class="saas-btn saas-btn--white saas-btn--lg" href="/signup">
 					<span data-en="Start free trial" data-ar="ابدأ التجربة المجانية">Start free trial</span> →
 				</a>
-				<a class="saas-btn saas-btn--ghost-light saas-btn--lg" href="mailto:{{ settings.support_email or 'support@shopzadmarket.com' }}">
+				<a class="saas-btn saas-btn--ghost-light saas-btn--lg" href="mailto:{{ settings.support_email or 'infosahbix@gmail.com' }}">
 					<span data-en="Talk to sales" data-ar="تحدث مع المبيعات">Talk to sales</span>
 				</a>
 			</div>

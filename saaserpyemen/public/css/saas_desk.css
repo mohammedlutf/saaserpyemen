@@ -1,13 +1,13 @@
-/* Shopzad SaaS — Desk Control Center */
+/* Sahbix SaaS — Desk Control Center */
 
 .saas-desk {
 	--sd-ink: #101828;
 	--sd-muted: #667085;
 	--sd-line: #e4e7ec;
 	--sd-surface: #ffffff;
-	--sd-soft: #f8fafc;
-	--sd-primary: #6d28d9;
-	--sd-primary-soft: #f3e8ff;
+	--sd-soft: #f7fbf9;
+	--sd-primary: #026b55;
+	--sd-primary-soft: #e6f7f1;
 	--sd-success: #067647;
 	--sd-success-soft: #dcfae6;
 	--sd-warning: #b54708;
@@ -46,8 +46,8 @@
 	background:
 		radial-gradient(circle at 88% 12%, rgba(255, 255, 255, 0.28), transparent 42%),
 		radial-gradient(circle at 12% 90%, rgba(56, 189, 248, 0.35), transparent 46%),
-		linear-gradient(120deg, #4c1d95 0%, #6d28d9 48%, #2563eb 100%);
-	box-shadow: 0 22px 48px -28px rgba(76, 29, 149, 0.75);
+		linear-gradient(120deg, #013233 0%, #026b55 48%, #02a474 100%);
+	box-shadow: 0 22px 48px -28px rgba(1, 50, 51, 0.75);
 }
 
 .saas-desk-hero::after {
@@ -138,7 +138,7 @@
 	color: #ffffff;
 	text-decoration: none;
 	transform: translateY(-1px);
-	box-shadow: 0 6px 16px -8px rgba(109, 40, 217, 0.7);
+	box-shadow: 0 6px 16px -8px rgba(2, 164, 116, 0.55);
 }
 
 .saas-desk-btn:active {
@@ -309,9 +309,9 @@
 	color: var(--sd-muted);
 }
 
-.saas-desk-kpi.is-violet::before { background: #7c3aed; }
+.saas-desk-kpi.is-violet::before { background: #026b55; }
 .saas-desk-kpi.is-blue::before { background: #2563eb; }
-.saas-desk-kpi.is-green::before { background: #059669; }
+.saas-desk-kpi.is-green::before { background: #017a56; }
 .saas-desk-kpi.is-slate::before { background: #475467; }
 .saas-desk-kpi.is-cyan::before { background: #0891b2; }
 .saas-desk-kpi.is-amber::before { background: #d97706; }
@@ -433,7 +433,7 @@
 	display: block;
 	width: 100%;
 	border-radius: 6px 6px 0 0;
-	background: linear-gradient(180deg, #8b5cf6, #6d28d9);
+	background: linear-gradient(180deg, #02a474, #026b55);
 	transition: height 0.35s ease;
 }
 
@@ -442,7 +442,7 @@
 }
 
 .saas-desk-bar:nth-child(4n) .saas-desk-bar-track span {
-	background: linear-gradient(180deg, #34d399, #059669);
+	background: linear-gradient(180deg, #34d399, #017a56);
 }
 
 .saas-desk-bar-label {
@@ -573,7 +573,7 @@
 	display: block;
 	height: 100%;
 	border-radius: 999px;
-	background: linear-gradient(90deg, #8b5cf6, #2563eb);
+	background: linear-gradient(90deg, #02a474, #2563eb);
 	transition: width 0.4s ease;
 }
 

@@ -30,7 +30,7 @@
 			<div class="provision__steps">
 				<div class="pstep done" data-step="1"><span class="pstep__dot">✓</span><div><b data-en="Account created" data-ar="تم إنشاء الحساب">Account created</b><small data-en="Your customer profile is ready" data-ar="ملفك كعميل جاهز">Your customer profile is ready</small></div></div>
 				<div class="pstep {% if completed %}done{% elif failed %}failed{% else %}active{% endif %}" data-step="2"><span class="pstep__dot">{% if completed %}✓{% elif failed %}!{% else %}<span class="spinner"></span>{% endif %}</span><div><b data-en="Creating your private ERP site" data-ar="إنشاء موقع ERP الخاص بك">Creating your private ERP site</b><small data-en="Isolated database, files and configuration" data-ar="قاعدة بيانات وملفات وإعدادات معزولة">Isolated database, files and configuration</small></div></div>
-				<div class="pstep {% if completed %}done{% endif %}" data-step="3"><span class="pstep__dot">{% if completed %}✓{% else %}3{% endif %}</span><div><b data-en="Applying your plan &amp; defaults" data-ar="تطبيق خطتك والإعدادات">Applying your plan &amp; defaults</b><small data-en="Company, currency, language and limits" data-ar="الشركة والعملة واللغة والحدود">Company, currency, language and limits</small></div></div>
+				<div class="pstep {% if completed %}done{% endif %}" data-step="3"><span class="pstep__dot">{% if completed %}✓{% else %}3{% endif %}</span><div><b data-en="Applying your plan &amp; defaults" data-ar="تطبيق خطتك والإعدادات">Applying your plan &amp; defaults</b><small data-en="Language, limits and preferences" data-ar="اللغة والحدود والتفضيلات">Language, limits and preferences</small></div></div>
 				<div class="pstep {% if completed %}done{% endif %}" data-step="4"><span class="pstep__dot">{% if completed %}✓{% else %}4{% endif %}</span><div><b data-en="Final checks" data-ar="الفحوصات النهائية">Final checks</b><small data-en="Security, backups and credentials" data-ar="الأمان والنسخ الاحتياطي وبيانات الدخول">Security, backups and credentials</small></div></div>
 			</div>
 
@@ -53,7 +53,7 @@
 				<h3 data-en="Setup could not complete" data-ar="تعذر إكمال الإعداد">Setup could not complete</h3>
 				<p data-en="Please contact our support team with the reference below. We usually fix provisioning issues within minutes." data-ar="يرجى التواصل مع فريق الدعم مع المرجع أدناه. عادةً نصلح مشاكل الإعداد في دقائق.">Please contact our support team with the reference below. We usually fix provisioning issues within minutes.</p>
 				<div class="credential-row"><span data-en="Reference" data-ar="المرجع">Reference</span><b>{{ tenant.name }}</b></div>
-				<a class="saas-btn saas-btn--primary" href="mailto:{{ support_email or 'support@shopzadmarket.com' }}?subject=Provisioning%20issue%20{{ tenant.name }}" data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</a>
+				<a class="saas-btn saas-btn--primary" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}?subject=Provisioning%20issue%20{{ tenant.name }}" data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</a>
 			</div>
 			{% endif %}
 

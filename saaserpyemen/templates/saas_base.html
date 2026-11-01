@@ -2,8 +2,8 @@
 
 {% block meta_block %}
 	{{ super() }}
-	<meta name="description" content="{% block meta_description %}{{ _('Shopzad is a complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endblock %}">
-	<meta name="theme-color" content="#4f46e5">
+	<meta name="description" content="{% block meta_description %}{{ brand_name or 'Sahbix' }} — {{ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endblock %}">
+	<meta name="theme-color" content="#013233">
 {% endblock %}
 
 {% block favicon %}

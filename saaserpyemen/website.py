@@ -45,8 +45,8 @@ def base_context(context) -> None:
 	context.is_manager = is_manager()
 	context.logged_in = user != "Guest"
 	context.year = nowdate()[:4]
-	context.brand_name = settings.brand_name or "Shopzad"
-	context.brand_name_ar = settings.brand_name_ar or "شوب زاد"
+	context.brand_name = settings.brand_name or "Sahbix"
+	context.brand_name_ar = settings.brand_name_ar or "سحبيكس"
 	context.support_email = settings.support_email
 	context.support_phone = settings.support_phone
 	try:

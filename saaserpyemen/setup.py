@@ -50,7 +50,7 @@ PLAN_SEED = [
 		"slug": "growth",
 		"sort_order": 20,
 		"is_featured": 1,
-		"color": "#6366f1",
+		"color": "#02a474",
 		"icon": "trending-up",
 		"tagline_en": "The sweet spot for growing teams.",
 		"tagline_ar": "الخيار الأمثل للفرق النامية.",
@@ -385,7 +385,8 @@ def ensure_settings():
 	defaults = {
 		"central_site": frappe.local.site,
 		"website_domain": settings.website_domain or "shopzadmarket.com",
-		"support_email": settings.support_email or "support@shopzadmarket.com",
+		"support_email": settings.support_email or "infosahbix@gmail.com",
+		"support_phone": settings.support_phone or "+957770785816",
 		"template_site": settings.template_site or "saas-default.com",
 		"sites_path": settings.sites_path or (frappe.utils.get_bench_path() + "/sites"),
 		"bench_path": settings.bench_path or frappe.utils.get_bench_path(),
@@ -406,17 +407,17 @@ def ensure_settings():
 		"default_customer_group": _existing_link("Customer Group", customer_group),
 		"default_territory": _existing_link("Territory", territory),
 		"hero_subtitle_en": settings.hero_subtitle_en
-		or "Shopzad gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.",
+		or "Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.",
 		"hero_subtitle_ar": settings.hero_subtitle_ar
-		or "شوب زاد يمنحك مساحة عمل ERPNext كاملة وآمنة للمحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية والمزيد — جاهزة في دقائق.",
+		or "سحبيكس يمنحك مساحة عمل ERPNext كاملة وآمنة للمحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية والمزيد — جاهزة في دقائق.",
 		"footer_about_en": settings.footer_about_en
 		or "The all-in-one cloud ERP platform for ambitious businesses in the Middle East and beyond.",
 		"footer_about_ar": settings.footer_about_ar
 		or "منصة ERP السحابية الشاملة للشركات الطموحة في الشرق الأوسط وخارجه.",
 		"bank_details": settings.bank_details
-		or "<p><strong>Bank transfer</strong><br>Bank: Your Bank Name<br>Account name: Shopzad Market<br>IBAN: YOUR-IBAN-HERE<br>Reference: your subdomain</p>",
+		or "<p><strong>Bank transfer</strong><br>Bank: Your Bank Name<br>Account name: Sahbix<br>IBAN: YOUR-IBAN-HERE<br>Reference: your subdomain</p>",
 		"bank_details_ar": settings.bank_details_ar
-		or "<p><strong>تحويل بنكي</strong><br>البنك: اسم البنك<br>اسم الحساب: شوب زاد ماركت<br>IBAN: YOUR-IBAN-HERE<br>المرجع: النطاق الفرعي الخاص بك</p>",
+		or "<p><strong>تحويل بنكي</strong><br>البنك: اسم البنك<br>اسم الحساب: سحبيكس<br>IBAN: YOUR-IBAN-HERE<br>المرجع: النطاق الفرعي الخاص بك</p>",
 		"payment_note_en": settings.payment_note_en
 		or "After transferring, upload your receipt. Our team reviews manual payments within one business day.",
 		"payment_note_ar": settings.payment_note_ar
@@ -530,7 +531,7 @@ def set_portal_defaults():
 		if cint(website.disable_signup):
 			website.disable_signup = 0
 		if not website.app_name:
-			website.app_name = "Shopzad"
+			website.app_name = "Sahbix"
 		website.flags.ignore_permissions = True
 		website.save(ignore_permissions=True)
 	except Exception:

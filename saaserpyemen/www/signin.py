@@ -47,5 +47,5 @@ def get_context(context):
 	context.disable_signup = frappe.utils.cint(
 		frappe.db.get_single_value("Website Settings", "disable_signup")
 	)
-	context.title = "Sign in — Shopzad"
-	context.metatags = {"description": "Sign in to your Shopzad workspace."}
+	context.title = f"Sign in — {context.brand_name}"
+	context.metatags = {"description": f"Sign in to your {context.brand_name} workspace."}

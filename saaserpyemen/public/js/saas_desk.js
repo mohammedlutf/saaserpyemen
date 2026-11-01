@@ -1,4 +1,4 @@
-// Shopzad SaaS — shared Desk helpers.
+// Sahbix SaaS — shared Desk helpers.
 // Loaded globally in Desk via app_include_js, so keep it defensive and side-effect free.
 (function () {
 	if (window.saas_desk) {

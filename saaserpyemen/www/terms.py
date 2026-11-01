@@ -8,7 +8,7 @@ from saaserpyemen.website import base_context
 def get_context(context):
 	base_context(context)
 	context.updated_on = nowdate()
-	context.title = "Terms of Service — Shopzad"
+	context.title = f"Terms of Service — {context.brand_name}"
 	context.metatags = {
-		"description": "The terms that govern your use of the Shopzad cloud ERP platform.",
+		"description": f"The terms that govern your use of the {context.brand_name} cloud ERP platform.",
 	}

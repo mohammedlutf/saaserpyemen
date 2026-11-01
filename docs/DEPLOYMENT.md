@@ -79,7 +79,7 @@ Open **SaaS Settings** and fill in:
 | Field | Value |
 | --- | --- |
 | Enabled | checked |
-| Brand name / Arabic name | Shopzad / شوب زاد |
+| Brand name / Arabic name | Sahbix / سحبيكس |
 | Website domain | `shopzadmarket.com` |
 | Central site | `shopzadmarket.com` |
 | Default currency | `USD` |

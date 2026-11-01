@@ -21,8 +21,8 @@ def get_context(context):
 				as_dict=True,
 			)
 	context.tenant = get_tenant_for_user() if frappe.session.user != "Guest" else None
-	context.title = "Workspace suspended — Shopzad"
+	context.title = f"Workspace suspended — {context.brand_name}"
 	context.metatags = {
-		"description": "This Shopzad workspace is temporarily suspended.",
+		"description": f"This {context.brand_name} workspace is temporarily suspended.",
 		"robots": "noindex, nofollow",
 	}

@@ -103,7 +103,7 @@
    "fieldname": "color",
    "fieldtype": "Color",
    "label": "Accent Color",
-   "default": "#6366f1"
+   "default": "#02a474"
   },
   {
    "fieldname": "icon",

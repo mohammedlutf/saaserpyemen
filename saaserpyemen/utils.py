@@ -14,17 +14,18 @@ from frappe.utils import add_days, add_months, cint, flt, getdate, nowdate, toda
 
 DEFAULT_SETTINGS = {
 	"enabled": 1,
-	"brand_name": "Shopzad",
-	"brand_name_ar": "شوب زاد",
+	"brand_name": "Sahbix",
+	"brand_name_ar": "سحبيكس",
 	"website_domain": "shopzadmarket.com",
 	"default_currency": "USD",
 	"trial_days": 30,
 	"grace_days": 3,
-	"support_email": "support@shopzadmarket.com",
+	"support_email": "infosahbix@gmail.com",
+	"support_phone": "+957770785816",
 	"site_scheme": "http",
 	"max_tenants_per_user": 0,
 	"min_password_length": 8,
-	"reserved_subdomains": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,shopzad,shopzadmarket",
+	"reserved_subdomains": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,sahbix,sahbixmarket,shopzad,shopzadmarket",
 }
 
 SUBDOMAIN_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])?$")
@@ -335,7 +336,7 @@ def serialize_plan(plan, currency: str | None = None) -> dict:
 		"tagline_ar": plan.tagline_ar or plan.tagline_en,
 		"description_en": plan.description_en,
 		"description_ar": plan.description_ar or plan.description_en,
-		"color": plan.color or "#6366f1",
+		"color": plan.color or "#02a474",
 		"icon": plan.icon or "sparkles",
 		"featured": bool(plan.is_featured),
 		"currency": prices["currency"],

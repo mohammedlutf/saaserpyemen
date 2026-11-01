@@ -64,10 +64,10 @@
 						<span class="panel__big-icon">▦</span>
 					</div>
 					<div class="bank-details lang-en">
-						{{ (data.bank_details or '<p>Bank: Your Bank Name<br>Account name: Shopzad Market<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
+						{{ (data.bank_details or '<p>Bank: Your Bank Name<br>Account name: Sahbix<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
 					</div>
 					<div class="bank-details lang-ar">
-						{{ (data.bank_details_ar or data.bank_details or '<p>البنك: اسم البنك<br>اسم الحساب: شوب زاد ماركت<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
+						{{ (data.bank_details_ar or data.bank_details or '<p>البنك: اسم البنك<br>اسم الحساب: سحبيكس<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
 					</div>
 					{% if data.payment_note_en or data.payment_note_ar %}
 					<p class="muted small">
@@ -92,7 +92,7 @@
 						<div class="empty-state__icon">◷</div>
 						<h3 data-en="We are reviewing your payment" data-ar="نراجع دفعتك حاليًا">We are reviewing your payment</h3>
 						<p data-en="You will be able to submit a new payment after the current one is reviewed. Need help? Contact support." data-ar="ستتمكن من إرسال دفعة جديدة بعد مراجعة الدفعة الحالية. تحتاج مساعدة؟ تواصل مع الدعم.">You will be able to submit a new payment after the current one is reviewed. Need help? Contact support.</p>
-						<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'support@shopzadmarket.com' }}" data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</a>
+						<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}" data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</a>
 					</div>
 					{% else %}
 					<form class="form form--grid" data-payment-form data-tenant="{{ data.tenant.name }}" novalidate>

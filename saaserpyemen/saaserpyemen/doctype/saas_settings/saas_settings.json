@@ -124,25 +124,25 @@
    "fieldname": "brand_name",
    "fieldtype": "Data",
    "label": "Brand Name",
-   "default": "Shopzad"
+   "default": "Sahbix"
   },
   {
    "fieldname": "brand_name_ar",
    "fieldtype": "Data",
    "label": "Brand Name (Arabic)",
-   "default": "شوب زاد"
+   "default": "سحبيكس"
   },
   {
    "fieldname": "tagline_en",
    "fieldtype": "Data",
    "label": "Tagline (English)",
-   "default": "Your business, on a world-class ERP."
+   "default": "Your business, on a modern cloud ERP."
   },
   {
    "fieldname": "tagline_ar",
    "fieldtype": "Data",
    "label": "Tagline (Arabic)",
-   "default": "عملك على نظام ERP عالمي."
+   "default": "عملك على نظام ERP سحابي حديث."
   },
   {
    "fieldname": "logo",
@@ -162,12 +162,13 @@
    "fieldname": "support_email",
    "fieldtype": "Data",
    "label": "Support Email",
-   "default": "support@shopzadmarket.com"
+   "default": "infosahbix@gmail.com"
   },
   {
    "fieldname": "support_phone",
    "fieldtype": "Data",
-   "label": "Support Phone"
+   "label": "Support Phone",
+   "default": "+957770785816"
   },
   {
    "fieldname": "website_domain",
@@ -579,7 +580,7 @@
    "fieldname": "reserved_subdomains",
    "fieldtype": "Small Text",
    "label": "Reserved Subdomains",
-   "default": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,shopzad,shopzadmarket"
+   "default": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,sahbix,sahbixmarket,shopzad,shopzadmarket"
   },
   {
    "fieldname": "internal_notes",

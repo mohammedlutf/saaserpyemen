@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Shopzad SaaS — public website & customer portal behaviour
+   Sahbix SaaS — public website & customer portal behaviour
    ========================================================================== */
 (function () {
 	"use strict";

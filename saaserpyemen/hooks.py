@@ -1,8 +1,8 @@
 app_name = "saaserpyemen"
-app_title = "Shopzad SaaS"
+app_title = "Sahbix SaaS"
 app_publisher = "mohammedlutf"
 app_description = "Turn ERPNext into a complete multi-tenant SaaS platform."
-app_email = "m.lutfdalal@gmail.com"
+app_email = "infosahbix@gmail.com"
 app_license = "mit"
 
 # ---------------------------------------------------------------------------
@@ -101,7 +101,7 @@ add_to_apps_screen = [
 	{
 		"name": "saaserpyemen",
 		"logo": "/assets/saaserpyemen/images/logo.svg",
-		"title": "Shopzad SaaS",
+		"title": "Sahbix SaaS",
 		"route": "/app/saas-control-center",
 		"has_permission": "saaserpyemen.api.has_app_permission",
 	}

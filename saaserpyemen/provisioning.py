@@ -549,7 +549,7 @@ def _send_credentials(tenant_doc, password: str) -> None:
 		url = get_site_url(tenant_doc.subdomain)
 		message = f"""
 			<div style="font-family:Inter,Arial,sans-serif;line-height:1.6">
-				<h2>Your Shopzad workspace is ready</h2>
+				<h2>Your Sahbix workspace is ready</h2>
 				<p>Hello {frappe.utils.escape_html(tenant_doc.admin_full_name or tenant_doc.tenant_name)},</p>
 				<p>Your workspace <b>{frappe.utils.escape_html(tenant_doc.tenant_name)}</b> is live.</p>
 				<ul>
