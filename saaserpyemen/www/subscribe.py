@@ -4,6 +4,7 @@ import frappe
 
 from saaserpyemen.utils import (
 	get_countries,
+	get_owned_tenant,
 	get_plan_by_identifier,
 	get_tenant_for_user,
 	get_tenant_subscription,
@@ -19,9 +20,16 @@ def get_context(context):
 	plans_context(context, args.get("currency"))
 	context.countries = get_countries()
 
-	tenant = get_tenant_for_user()
 	tenant_arg = args.get("tenant")
-	context.tenant = tenant if (tenant and (not tenant_arg or tenant_arg == tenant.name)) else None
+	new_workspace = args.get("new") in ("1", "true", "yes")
+	context.new_workspace = new_workspace
+	if new_workspace:
+		tenant = None
+	elif tenant_arg:
+		tenant = get_owned_tenant(tenant_arg)
+	else:
+		tenant = get_tenant_for_user()
+	context.tenant = tenant
 	context.is_change = bool(context.tenant)
 	context.existing_tenant = context.tenant.name if context.tenant else ""
 
@@ -54,14 +62,18 @@ def get_context(context):
 	user = frappe.get_doc("User", frappe.session.user)
 	context.user = user
 	context.prefill = {
-		"company_name": context.tenant.tenant_name if context.tenant else (user.get("saas_company_name") or ""),
+		"company_name": (
+			context.tenant.tenant_name
+			if context.tenant
+			else ("" if new_workspace else (user.get("saas_company_name") or ""))
+		),
 		"phone": context.tenant.phone if context.tenant else (user.get("saas_phone") or ""),
 		"country": context.tenant.country if context.tenant else (user.get("saas_country") or ""),
 		"email": user.email,
 		"full_name": user.full_name,
 	}
 	context.suggested_subdomain = ""
-	if not context.is_change:
+	if not context.is_change and not new_workspace:
 		import re
 
 		base = (user.get("saas_company_name") or user.full_name or "workspace").lower()

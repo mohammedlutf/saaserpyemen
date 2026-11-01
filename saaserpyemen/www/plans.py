@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import frappe
 
-from saaserpyemen.utils import get_tenant_for_user, get_tenant_subscription
+from saaserpyemen.utils import get_tenant_for_user, get_tenant_subscription, user_has_workspaces
 from saaserpyemen.website import base_context, plans_context
 
 
@@ -38,11 +38,16 @@ def get_context(context):
 	context.compare_features = _build_comparison(context.plans)
 	context.tenant = None
 	context.change_mode = frappe.local.request.args.get("change") in ("1", "true", "yes")
-	context.selected_tenant = frappe.local.request.args.get("tenant")
+	context.new_mode = frappe.local.request.args.get("new") in ("1", "true", "yes")
+	if context.new_mode:
+		context.change_mode = False
+	context.selected_tenant = None if context.new_mode else frappe.local.request.args.get("tenant")
+	context.trial_available = True
 	if context.logged_in:
 		context.tenant = get_tenant_for_user()
 		context.subscription = get_tenant_subscription(context.tenant) if context.tenant else None
+		context.trial_available = not user_has_workspaces()
 	context.title = "Plans & pricing — Shopzad"
 	context.metatags = {
-		"description": "Simple, transparent ERP pricing. Start with a 30-day free trial and choose the plan that fits your team."
+		"description": "Simple, transparent ERP pricing. Choose the plan that fits your team."
 	}

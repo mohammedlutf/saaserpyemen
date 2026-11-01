@@ -67,6 +67,10 @@ class SaaSPayment(Document):
 			frappe.throw(_("This payment is not linked to a subscription."))
 
 		subscription = frappe.get_doc("SaaS Subscription", self.subscription)
+		if subscription.status == "Cancelled":
+			frappe.throw(
+				_("This subscription was cancelled and cannot be activated by a payment.")
+			)
 		subscription.extend(
 			cycle=self.billing_cycle,
 			note=_("Payment {0} approved.").format(self.name),
@@ -104,6 +108,18 @@ class SaaSPayment(Document):
 			tenant_ops.push_limits(tenant.name)
 		except Exception:
 			frappe.log_error(frappe.get_traceback(), "SaaS push limits (payment)")
+
+		# Additional workspaces are created without a site: they are provisioned
+		# only once their first payment is approved.  Skip tenants that are
+		# already being provisioned or whose site already exists.
+		if tenant.provisioning_status in ("Pending", "Failed"):
+			try:
+				from saaserpyemen import provisioning
+
+				if not provisioning._site_exists(tenant.site_name):
+					provisioning.enqueue_provisioning(tenant.name)
+			except Exception:
+				frappe.log_error(frappe.get_traceback(), "SaaS provision after payment")
 
 		log_activity(
 			self.tenant,

@@ -566,7 +566,8 @@
    "fieldname": "max_tenants_per_user",
    "fieldtype": "Int",
    "label": "Max Tenants per User",
-   "default": "1"
+   "default": "0",
+   "description": "Maximum number of workspaces a customer can own. 0 = unlimited. Only the first workspace gets a free trial; additional workspaces require payment."
   },
   {
    "fieldname": "enable_custom_domains",

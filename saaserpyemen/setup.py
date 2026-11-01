@@ -401,7 +401,7 @@ def ensure_settings():
 		"invoice_due_days": settings.invoice_due_days or 7,
 		"signup_rate_limit": settings.signup_rate_limit or 20,
 		"min_password_length": settings.min_password_length or 8,
-		"max_tenants_per_user": settings.max_tenants_per_user or 1,
+		"max_tenants_per_user": cint(settings.max_tenants_per_user),
 		"company": settings.company or frappe.defaults.get_default_value("company"),
 		"default_customer_group": _existing_link("Customer Group", customer_group),
 		"default_territory": _existing_link("Territory", territory),

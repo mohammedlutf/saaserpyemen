@@ -422,6 +422,8 @@ def unsuspend_tenant(tenant: str) -> None:
 	) if tenant_doc.subscription else None
 	if subscription_status == "Trial":
 		tenant_doc.status = "Trial"
+	elif subscription_status == "Pending":
+		tenant_doc.status = "Pending Payment"
 	elif subscription_status in ("Active", "Past Due"):
 		tenant_doc.status = subscription_status
 	else:

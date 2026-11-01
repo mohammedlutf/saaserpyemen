@@ -597,13 +597,23 @@
 		const cancel = $("[data-cancel-subscription]");
 		if (cancel) {
 			cancel.addEventListener("click", async function () {
+				const isPending = cancel.getAttribute("data-pending") === "1";
 				const confirmed = await confirmDialog({
-					title: t("Cancel auto-renewal?", "إلغاء التجديد التلقائي؟"),
-					message: t(
-						"Your workspace will stay active until the end of the current paid period. You can re-enable auto-renewal by making a new payment.",
-						"ستبقى مساحة عملك نشطة حتى نهاية الفترة المدفوعة الحالية. يمكنك إعادة تفعيل التجديد التلقائي بإجراء دفعة جديدة."
-					),
-					confirmText: t("Cancel renewal", "إلغاء التجديد"),
+					title: isPending
+						? t("Cancel this workspace?", "إلغاء مساحة العمل؟")
+						: t("Cancel auto-renewal?", "إلغاء التجديد التلقائي؟"),
+					message: isPending
+						? t(
+							"This workspace has not been activated yet. Cancelling it will close this request and it cannot be paid for later.",
+							"لم يتم تفعيل مساحة العمل هذه بعد. سيؤدي إلغاؤها إلى إغلاق هذا الطلب ولن يمكن الدفع مقابلها لاحقًا."
+						)
+						: t(
+							"Your workspace will stay active until the end of the current paid period. You can re-enable auto-renewal by making a new payment.",
+							"ستبقى مساحة عملك نشطة حتى نهاية الفترة المدفوعة الحالية. يمكنك إعادة تفعيل التجديد التلقائي بإجراء دفعة جديدة."
+						),
+					confirmText: isPending
+						? t("Cancel workspace", "إلغاء مساحة العمل")
+						: t("Cancel renewal", "إلغاء التجديد"),
 					cancelText: t("Keep it", "الإبقاء عليه"),
 				});
 				if (!confirmed) return;

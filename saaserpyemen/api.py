@@ -35,6 +35,7 @@ from saaserpyemen.utils import (
 	normalize_subdomain,
 	sanitize_redirect,
 	serialize_plan,
+	user_has_workspaces,
 	validate_subdomain,
 )
 from saaserpyemen.utils import get_settings
@@ -335,17 +336,16 @@ def create_subscription(
 	if not company_name:
 		frappe.throw(_("Please enter your company or workspace name."))
 
-	existing = get_tenant_for_user()
-	if existing:
-		frappe.throw(
-			_("You already have a workspace ({0}). Use your dashboard to change your plan.").format(
-				existing.tenant_name
-			)
-		)
+	max_tenants = cint(settings.max_tenants_per_user)
+	if max_tenants:
+		tenant_count = frappe.db.count("SaaS Tenant", {"owner_user": frappe.session.user})
+		if tenant_count >= max_tenants:
+			frappe.throw(_("You have reached the maximum number of workspaces for your account."))
 
-	max_tenants = cint(settings.max_tenants_per_user) or 1
-	if len(frappe.get_all("SaaS Tenant", filters={"owner_user": frappe.session.user})) >= max_tenants:
-		frappe.throw(_("You have reached the maximum number of workspaces for your account."))
+	# The free trial belongs to the customer's first workspace only.  Any
+	# additional workspace is a paid subscription: it stays pending until the
+	# first payment is approved, and only then is its site provisioned.
+	is_first_workspace = not user_has_workspaces()
 
 	subdomain = validate_subdomain(subdomain, check_availability=True)
 
@@ -363,7 +363,7 @@ def create_subscription(
 			"country": country or frappe.db.get_value("User", frappe.session.user, "saas_country"),
 			"currency": currency,
 			"language": language,
-			"status": "Provisioning",
+			"status": "Provisioning" if is_first_workspace else "Pending Payment",
 			"provisioning_status": "Pending",
 			"created_via": "Website",
 		}
@@ -371,22 +371,29 @@ def create_subscription(
 	tenant.flags.ignore_permissions = True
 	tenant.insert(ignore_permissions=True)
 
-	trial_end = get_trial_end(plan_doc)
 	amount = get_plan_price(plan_doc, currency, billing_cycle)
+	if is_first_workspace:
+		trial_end = get_trial_end(plan_doc)
+		subscription_status = "Trial"
+		period_end = trial_end
+	else:
+		trial_end = None
+		subscription_status = "Pending"
+		period_end = today()
 
 	subscription = frappe.new_doc("SaaS Subscription")
 	subscription.update(
 		{
 			"tenant": tenant.name,
 			"plan": plan_doc.name,
-			"status": "Trial",
+			"status": subscription_status,
 			"billing_cycle": billing_cycle,
 			"currency": currency,
 			"amount": amount,
 			"start_date": today(),
 			"trial_end_date": trial_end,
-			"end_date": trial_end,
-			"next_billing_date": trial_end,
+			"end_date": period_end,
+			"next_billing_date": period_end if is_first_workspace else None,
 			"payment_status": "Unpaid",
 			"auto_renew": 1,
 		}
@@ -396,23 +403,32 @@ def create_subscription(
 
 	tenant.db_set("subscription", subscription.name, update_modified=False)
 	tenant.db_set("trial_ends_on", trial_end, update_modified=False)
-	tenant.db_set("subscription_ends_on", trial_end, update_modified=False)
+	tenant.db_set("subscription_ends_on", period_end, update_modified=False)
 
 	frappe.db.commit()
 
-	provisioning.enqueue_provisioning(tenant.name)
+	if is_first_workspace:
+		provisioning.enqueue_provisioning(tenant.name)
+		redirect = f"/provisioning?tenant={tenant.name}"
+	else:
+		redirect = f"/payment?tenant={tenant.name}"
 
 	log_activity(
 		tenant.name,
 		"Subscription created",
-		f"Plan: {plan_doc.plan_name}, cycle: {billing_cycle}, trial ends: {trial_end}",
+		(
+			f"Plan: {plan_doc.plan_name}, cycle: {billing_cycle}, trial ends: {trial_end}"
+			if is_first_workspace
+			else f"Plan: {plan_doc.plan_name}, cycle: {billing_cycle}, awaiting first payment"
+		),
 	)
 
 	return {
 		"ok": True,
 		"tenant": tenant.name,
 		"subscription": subscription.name,
-		"redirect": f"/provisioning?tenant={tenant.name}",
+		"requires_payment": not is_first_workspace,
+		"redirect": redirect,
 	}
 
 
@@ -467,7 +483,7 @@ def change_plan(tenant: str, plan: str, billing_cycle: str = "Monthly", currency
 		"Plan changed",
 		f"New plan: {plan_doc.plan_name}, cycle: {billing_cycle}, currency: {currency}",
 	)
-	return {"ok": True, "redirect": "/dashboard?tab=billing"}
+	return {"ok": True, "redirect": f"/dashboard?tenant={tenant_doc.name}&tab=billing"}
 
 
 @frappe.whitelist()
@@ -529,8 +545,10 @@ def get_dashboard(tenant: str | None = None):
 		"usage": usage,
 		"payments": [_serialize_payment(frappe._dict(row)) for row in payments],
 		"pending_payment": _serialize_payment(frappe._dict(pending)) if pending else None,
-		"days_left": get_days_left(
-			(subscription.end_date or subscription.trial_end_date) if subscription else None
+		"days_left": (
+			get_days_left(subscription.end_date or subscription.trial_end_date)
+			if subscription and subscription.status != "Pending"
+			else None
 		),
 		"payment_url": f"/payment?tenant={tenant_doc.name}",
 		"upgrade_url": f"/plans?change=1&tenant={tenant_doc.name}",
@@ -625,10 +643,36 @@ def cancel_subscription(tenant: str, reason: str | None = None):
 	subscription.auto_renew = 0
 	subscription.cancelled_on = today()
 	subscription.cancel_reason = (reason or "").strip() or _("Cancelled by customer")
+	if subscription.status == "Pending":
+		# A workspace that was never paid for has no period to run out: cancel it
+		# immediately so it cannot be paid for or provisioned later.
+		subscription.status = "Cancelled"
 	subscription.flags.ignore_permissions = True
 	subscription.save(ignore_permissions=True)
 	frappe.db.commit()
 	log_activity(tenant_doc.name, "Subscription cancelled", subscription.cancel_reason)
+	if subscription.status == "Cancelled":
+		# Reject any payment that was waiting for review so it cannot be
+		# approved later and silently reactivate a cancelled workspace.
+		current_user = frappe.session.user
+		frappe.set_user("Administrator")
+		try:
+			for payment_name in frappe.get_all(
+				"SaaS Payment",
+				filters={"tenant": tenant_doc.name, "status": "Pending Review"},
+				pluck="name",
+			):
+				frappe.get_doc("SaaS Payment", payment_name).reject(
+					_("Workspace cancelled before activation")
+				)
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), "SaaS reject payments on cancellation")
+		finally:
+			frappe.set_user(current_user)
+		return {
+			"ok": True,
+			"message": _("This workspace was cancelled before activation."),
+		}
 	return {
 		"ok": True,
 		"message": _("Your subscription will not renew. You can keep using the workspace until {0}.").format(
@@ -695,6 +739,10 @@ def submit_payment(
 	subscription = get_tenant_subscription(tenant_doc)
 	if not subscription:
 		frappe.throw(_("This workspace has no subscription."))
+	if subscription.status == "Cancelled":
+		frappe.throw(
+			_("This workspace has been cancelled. Please create a new workspace to continue.")
+		)
 	if frappe.db.exists("SaaS Payment", {"tenant": tenant_doc.name, "status": "Pending Review"}):
 		frappe.throw(
 			_("You already have a payment awaiting review. Please wait for our team to approve it before submitting another one.")

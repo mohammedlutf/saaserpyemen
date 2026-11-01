@@ -11,6 +11,9 @@ Turn ERPNext 15 into a multi-tenant SaaS platform.
   (`<subdomain>.shopzadmarket.com`) cloned from `saas-default.com`, with its own
   database, files and System Manager user. The customer creates the Company,
   chart of accounts and currency through the ERPNext setup wizard.
+- Multiple workspaces per customer: the free trial applies to the first
+  workspace only; additional workspaces are provisioned after their first
+  payment is approved.
 - Plan limits (users, branches, companies, storage), suspension, usage snapshots
   and scheduled lifecycle jobs.
 - Manual billing with receipt upload, admin approval/rejection, subscription

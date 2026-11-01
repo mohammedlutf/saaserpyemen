@@ -281,7 +281,7 @@ html.saas-ar .saas-btn:hover .saas-btn__arrow { transform: scaleX(-1) translateX
 .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .status--active, .status--paid, .status--completed { background: rgba(16, 185, 129, .12); color: #047857; }
 .status--trial, .status--provisioning, .status--pending, .status--pending-review, .status--running { background: rgba(14, 165, 233, .12); color: #0369a1; }
-.status--past-due, .status--unpaid, .status--draft { background: rgba(245, 158, 11, .14); color: #b45309; }
+.status--past-due, .status--unpaid, .status--draft, .status--pending-payment { background: rgba(245, 158, 11, .14); color: #b45309; }
 .status--suspended, .status--expired, .status--failed, .status--rejected, .status--cancelled { background: rgba(239, 68, 68, .12); color: #b91c1c; }
 .status--refunded { background: rgba(148, 163, 184, .18); color: #475569; }
 
@@ -1211,6 +1211,8 @@ html.saas-ar .field__control--subdomain input { padding-inline-end: 140px; paddi
 .portal__workspace a { display: block; font-size: 11.5px; color: var(--saas-muted); word-break: break-all; }
 .portal__workspace .status { margin-inline-start: auto; font-size: 10.5px; padding: 4px 8px; }
 .portal__menu { display: grid; gap: 3px; padding: 7px; background: #fff; border: 1px solid var(--saas-line); border-radius: var(--saas-radius); box-shadow: var(--saas-shadow-sm); }
+.portal__workspaces { display: grid; gap: 3px; padding: 7px; background: #fff; border: 1px solid var(--saas-line); border-radius: var(--saas-radius); box-shadow: var(--saas-shadow-sm); }
+.portal__workspaces small { display: block; padding: 6px 12px 4px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .7px; color: var(--saas-muted-2); font-weight: 700; }
 .portal__nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: var(--saas-ink-2); font-size: 13.5px; font-weight: 550; }
 .portal__nav-item:hover { background: #f6f7fc; color: var(--saas-primary); }
 .portal__nav-item.active { background: var(--saas-primary-soft); color: var(--saas-primary); font-weight: 700; }

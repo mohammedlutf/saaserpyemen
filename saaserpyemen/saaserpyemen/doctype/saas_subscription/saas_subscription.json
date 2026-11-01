@@ -90,7 +90,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Trial\nActive\nPast Due\nExpired\nCancelled",
+   "options": "Trial\nPending\nActive\nPast Due\nExpired\nCancelled",
    "default": "Trial",
    "in_list_view": 1
   },

@@ -7,7 +7,7 @@
 	<div class="saas-container">
 		<div class="subscribe">
 			<div class="subscribe__aside">
-				<a class="saas-link saas-link--sm" href="/plans">← <span data-en="Back to plans" data-ar="العودة إلى الخطط">Back to plans</span></a>
+				<a class="saas-link saas-link--sm" href="/plans{% if new_workspace %}?new=1{% endif %}">← <span data-en="Back to plans" data-ar="العودة إلى الخطط">Back to plans</span></a>
 				<h1>
 					<span class="lang-en">{{ 'Change your plan' if is_change else 'Set up your workspace' }}</span>
 					<span class="lang-ar">{{ 'غيّر خطتك' if is_change else 'أنشئ مساحة عملك' }}</span>
@@ -38,7 +38,9 @@
 					<p class="order-card__save"><span data-en="You save {{ prices.yearly_discount }}% with yearly billing" data-ar="توفر {{ prices.yearly_discount }}% عند الدفع السنوي">You save {{ prices.yearly_discount }}% with yearly billing</span></p>
 					{% endif %}
 					<ul class="order-card__list">
+						{% if not new_workspace and not is_change %}
 						<li><span class="tick">✓</span><span data-en="{{ plan.trial_days }} days free trial" data-ar="{{ plan.trial_days }} يومًا تجربة مجانية">{{ plan.trial_days }} days free trial</span></li>
+						{% endif %}
 						<li><span class="tick">✓</span><span data-en="Full ERPNext suite" data-ar="حزمة ERPNext الكاملة">Full ERPNext suite</span></li>
 						<li><span class="tick">✓</span><span data-en="Daily backups &amp; updates" data-ar="نسخ احتياطي وتحديثات يومية">Daily backups &amp; updates</span></li>
 						<li><span class="tick">✓</span><span data-en="Cancel anytime" data-ar="إلغاء في أي وقت">Cancel anytime</span></li>
@@ -60,7 +62,13 @@
 						</div>
 					</div>
 					<p class="order-card__note">
+						{% if new_workspace %}
+						<span data-en="The free trial applies to your first workspace only. This additional workspace is created after your first payment is approved." data-ar="التجربة المجانية لمساحة عملك الأولى فقط. تُنشأ مساحة العمل الإضافية هذه بعد الموافقة على دفعتك الأولى.">The free trial applies to your first workspace only. This additional workspace is created after your first payment is approved.</span>
+						{% elif is_change %}
+						<span data-en="Your plan and limits update immediately. The new amount will apply to your next payment." data-ar="يتم تحديث خطتك وحدودك على الفور. سيطبق المبلغ الجديد على دفعتك التالية.">Your plan and limits update immediately. The new amount will apply to your next payment.</span>
+						{% else %}
 						<span data-en="Payment is manual by bank transfer after your trial. No card required today." data-ar="الدفع يدوي عبر التحويل البنكي بعد التجربة. لا حاجة لبطاقة اليوم.">Payment is manual by bank transfer after your trial. No card required today.</span>
+						{% endif %}
 					</p>
 				</div>
 			</div>
@@ -146,13 +154,15 @@
 
 						<div class="subscribe__summary field--full">
 							<div>
-								<small data-en="Due after trial" data-ar="المستحق بعد التجربة">Due after trial</small>
+								<small data-en="{{ 'First payment' if new_workspace else ('New plan amount' if is_change else 'Due after trial') }}" data-ar="{{ 'الدفعة الأولى' if new_workspace else ('قيمة الخطة الجديدة' if is_change else 'المستحق بعد التجربة') }}">{{ 'First payment' if new_workspace else ('New plan amount' if is_change else 'Due after trial') }}</small>
 								<strong data-summary-amount>{{ prices.currency }} {{ "{:,.0f}".format(prices.yearly if cycle == 'Yearly' else prices.monthly) }}</strong>
 							</div>
+							{% if not new_workspace and not is_change %}
 							<div>
 								<small data-en="Trial ends" data-ar="تنتهي التجربة">Trial ends</small>
 								<strong>{{ frappe.utils.add_days(frappe.utils.today(), plan.trial_days) }}</strong>
 							</div>
+							{% endif %}
 						</div>
 
 						<label class="checkbox field--full">

@@ -45,11 +45,16 @@ class SaaSSubscription(Document):
 			if self.status == "Trial" and not self.trial_end_date:
 				self.trial_end_date = get_trial_end(plan, self.start_date)
 
-		if not self.trial_end_date:
+		# Only trials carry a trial end date.  Additional (paid) workspaces start
+		# as Pending and must never inherit a free-trial period.
+		if self.status == "Trial" and not self.trial_end_date:
 			self.trial_end_date = self.start_date
+		if self.status == "Pending":
+			self.trial_end_date = None
+
 		if not self.end_date:
-			self.end_date = self.trial_end_date
-		if not self.next_billing_date:
+			self.end_date = self.trial_end_date or self.start_date
+		if not self.next_billing_date and self.status != "Pending":
 			self.next_billing_date = add_days(getdate(self.end_date), 1)
 
 		if getdate(self.end_date) < getdate(self.start_date):
@@ -64,6 +69,7 @@ class SaaSSubscription(Document):
 			return
 		status_map = {
 			"Trial": "Trial",
+			"Pending": "Pending Payment",
 			"Active": "Active",
 			"Past Due": "Past Due",
 			"Expired": "Expired",

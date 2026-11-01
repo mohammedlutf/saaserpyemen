@@ -22,7 +22,7 @@ DEFAULT_SETTINGS = {
 	"grace_days": 3,
 	"support_email": "support@shopzadmarket.com",
 	"site_scheme": "http",
-	"max_tenants_per_user": 1,
+	"max_tenants_per_user": 0,
 	"min_password_length": 8,
 	"reserved_subdomains": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,shopzad,shopzadmarket",
 }
@@ -392,7 +392,13 @@ def get_billing_period(subscription, cycle: str | None = None) -> tuple[date, da
 	current = getdate(today())
 
 	base = current
-	if subscription.status == "Trial" and subscription.trial_end_date:
+	if subscription.status == "Pending":
+		# First payment for an additional workspace: bill from the start date
+		# (or today, whichever is later) and ignore the placeholder end date.
+		start = getdate(subscription.start_date or today())
+		if start > current:
+			base = start
+	elif subscription.status == "Trial" and subscription.trial_end_date:
 		trial_end = getdate(subscription.trial_end_date)
 		if trial_end >= current:
 			base = add_days(trial_end, 1)
@@ -438,6 +444,12 @@ def get_tenant_for_user(user: str | None = None):
 	if not rows:
 		return None
 	return frappe.get_doc("SaaS Tenant", rows[0].name)
+
+
+def user_has_workspaces(user: str | None = None) -> bool:
+	"""Return True when the user has ever created a workspace (trial used)."""
+	user = user or frappe.session.user
+	return bool(frappe.db.exists("SaaS Tenant", {"owner_user": user}))
 
 
 def get_owned_tenant(tenant: str | None = None):

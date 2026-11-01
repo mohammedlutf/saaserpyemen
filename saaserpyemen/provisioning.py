@@ -355,7 +355,11 @@ def provision_tenant(tenant: str) -> dict:
 
 		# -- finish -------------------------------------------------------
 		tenant_doc.reload()
-		tenant_doc.status = "Trial" if tenant_doc.trial_ends_on else "Active"
+		# A paid workspace is active even if it started as a trial; only an
+		# unpaid trial keeps the Trial status.
+		tenant_doc.status = (
+			"Trial" if tenant_doc.trial_ends_on and not cint(tenant_doc.is_paid) else "Active"
+		)
 		tenant_doc.provisioning_status = "Completed"
 		tenant_doc.last_provisioned_on = now_datetime()
 		tenant_doc.ssl_status = "Pending" if cint(settings.enable_ssl) else "Not Requested"

@@ -132,6 +132,15 @@ approved payments should create a Sales Invoice automatically. A hidden
 Replace the default **Bank Details** (English and Arabic) with the real account
 information customers should use; the payment page renders them as HTML.
 
+### Multiple workspaces and trials
+A customer can own more than one workspace. Each workspace is a separate site
+with its own plan and its own limits. The free trial is granted only to the
+customer's **first** workspace. Additional workspaces are created with status
+**Pending Payment** and are not provisioned until their first manual payment is
+approved; once approved, the site is created automatically and becomes active.
+`Max Tenants per User` in **SaaS Settings** caps how many workspaces one account
+may own (`0` = unlimited).
+
 ---
 
 ## 5. DNS, nginx and TLS
