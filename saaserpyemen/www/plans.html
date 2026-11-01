@@ -77,7 +77,7 @@
 					<span data-en="Choose this plan" data-ar="اختر هذه الخطة">Choose this plan</span>
 				</a>
 				{% else %}
-				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/signup?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}">
+				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/subscribe?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}">
 					<span data-en="Start free trial" data-ar="ابدأ التجربة المجانية">Start free trial</span>
 				</a>
 				{% endif %}

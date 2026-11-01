@@ -197,8 +197,9 @@ Provisioning does the following for every tenant:
 5. Ensure `saas_client` is installed (and remove any legacy `saaserpyemen`
    installation from the tenant).
 6. `bench --site <site> execute saas_client.setup.setup_tenant_site ...`
-   — creates the Company + chart of accounts, Transit warehouse, currency,
-   country, Global Defaults and the customer's System Manager user.
+   — sets the language, country, branding (`app_name`) and the customer's
+   System Manager user. It does **not** create a Company or default currency:
+   the tenant picks those in the ERPNext setup wizard on first login.
 7. `bench set-admin-password` with a unique per-tenant password.
 
 > **Encryption key:** passwords stored in the template database were encrypted

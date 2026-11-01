@@ -309,7 +309,7 @@ def provision_tenant(tenant: str) -> dict:
 		output += "\n" + _ensure_client_app(site, tenant, timeout=timeout)
 
 		# -- run the tenant-side setup -----------------------------------
-		_append_log(tenant, "Configuring company, currency, language and admin user.")
+		_append_log(tenant, "Configuring language, branding and admin user.")
 		args = json.dumps(
 			[
 				tenant_doc.name,

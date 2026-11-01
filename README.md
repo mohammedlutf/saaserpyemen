@@ -9,7 +9,8 @@ Turn ERPNext 15 into a multi-tenant SaaS platform.
   credentials and subdomain.
 - Automatic tenant provisioning: each customer gets an isolated ERPNext site
   (`<subdomain>.shopzadmarket.com`) cloned from `saas-default.com`, with its own
-  database, files, Company, chart of accounts and System Manager user.
+  database, files and System Manager user. The customer creates the Company,
+  chart of accounts and currency through the ERPNext setup wizard.
 - Plan limits (users, branches, companies, storage), suspension, usage snapshots
   and scheduled lifecycle jobs.
 - Manual billing with receipt upload, admin approval/rejection, subscription
