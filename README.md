@@ -28,8 +28,18 @@ checklist.
 ```bash
 cd /home/frappe/frappe-bench
 bench get-app /path/to/saaserpyemen
+bench get-app /path/to/saas_client
 bench --site shopzadmarket.com install-app saaserpyemen
 bench --site shopzadmarket.com migrate
+```
+
+The central site runs the full platform app. Tenant sites only need the
+lightweight `saas_client` app, which enforces plan limits, guards suspended
+sites and performs first-run setup. Install it once on the template site so
+every new tenant inherits it:
+
+```bash
+bench --site saas-default.com install-app saas_client
 ```
 
 Then configure **SaaS Settings** in Desk. The first migrate seeds four plans

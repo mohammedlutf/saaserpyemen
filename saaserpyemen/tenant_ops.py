@@ -468,7 +468,7 @@ def update_site_company(tenant: str, company_name: str) -> dict:
 		"--site",
 		tenant_doc.site_name,
 		"execute",
-		"saaserpyemen.tenant_ops.rename_company",
+		"saas_client.setup.rename_company",
 		"--args",
 		args,
 		timeout=300,
@@ -479,19 +479,6 @@ def update_site_company(tenant: str, company_name: str) -> dict:
 		frappe.log_error(str(exc), "SaaS rename company")
 		return {"ok": False, "error": str(exc)}
 	return {"ok": True}
-
-
-def rename_company(company_name: str) -> dict:
-	"""Executed on the tenant site."""
-	company = frappe.db.get_value("Company", {}, "name", order_by="creation asc")
-	if not company:
-		return {"ok": False}
-	frappe.db.set_value("Company", company, "company_name", company_name, update_modified=False)
-	frappe.db.set_value("System Settings", "System Settings", "app_name", company_name, update_modified=False)
-	frappe.db.set_value("Website Settings", "Website Settings", "app_name", company_name, update_modified=False)
-	frappe.db.commit()
-	frappe.clear_cache()
-	return {"ok": True, "company": company}
 
 
 # ---------------------------------------------------------------------------

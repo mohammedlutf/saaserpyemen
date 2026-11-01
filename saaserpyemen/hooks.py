@@ -35,12 +35,15 @@ after_install = "saaserpyemen.setup.after_install"
 after_migrate = "saaserpyemen.setup.setup_saas"
 
 # ---------------------------------------------------------------------------
-# Request lifecycle (tenant sites only — the function exits early on central)
+# Legacy tenant hooks
 # ---------------------------------------------------------------------------
+# New tenants run the lightweight `saas_client` app, which owns the request
+# guard and the limit hooks.  These entries only act as a fallback for older
+# tenant sites that still have the full platform app installed.
 before_request = ["saaserpyemen.tenant_ops.before_request"]
 
 # ---------------------------------------------------------------------------
-# Limits enforced inside each tenant site
+# Limits enforced inside each tenant site (legacy fallback)
 # ---------------------------------------------------------------------------
 doc_events = {
 	"User": {

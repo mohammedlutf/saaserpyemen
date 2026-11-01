@@ -173,12 +173,18 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ## 6. Template site
 
-`saas-default.com` is the source of every tenant. Keep it lean:
+`saas-default.com` is the source of every tenant. Keep it lean, and install the
+lightweight tenant app on it once so every clone inherits it:
 
 ```bash
+bench --site saas-default.com install-app saas_client
 bench --site saas-default.com migrate
 bench --site saas-default.com backup      # verify a backup works
 ```
+
+`saas_client` is the only app that runs inside a tenant. It enforces plan
+limits, guards suspended sites and performs the first-run tenant setup. The
+full `saaserpyemen` platform app stays on the central site only.
 
 Provisioning does the following for every tenant:
 
@@ -188,8 +194,9 @@ Provisioning does the following for every tenant:
 4. Write tenant flags to `site_config.json` (`saas_tenant`, `saas_plan`,
    `saas_max_users`, `saas_max_branches`, `saas_max_companies`,
    `saas_storage_gb`, `host_name`, `pause_scheduler`).
-5. `bench --site <site> install-app saaserpyemen`.
-6. `bench --site <site> execute saaserpyemen.provisioning.setup_tenant_site ...`
+5. Ensure `saas_client` is installed (and remove any legacy `saaserpyemen`
+   installation from the tenant).
+6. `bench --site <site> execute saas_client.setup.setup_tenant_site ...`
    — creates the Company + chart of accounts, Transit warehouse, currency,
    country, Global Defaults and the customer's System Manager user.
 7. `bench set-admin-password` with a unique per-tenant password.
@@ -246,11 +253,15 @@ Every tenant site redirects `/` and all marketing routes to `/app` via
 `before_request`; only `/app`, `/login`, `/logout`, `/api`, assets, files,
 `/.well-known` and similar paths are allowed.
 
-Limits are enforced inside the tenant by `doc_events` and a scheduler job:
+Limits are enforced inside the tenant by the `saas_client` app's `doc_events`:
 
-- `max_users` — blocks creating users beyond the plan.
+- `max_users` — blocks creating users beyond the plan (including re-enabling a
+  disabled user or converting a Website User into a desk user).
 - `max_branches` / `max_companies` — blocks extra Branch/Company records.
-- `storage_gb` — usage reported back to the central site.
+- `storage_gb` — blocks new File uploads when the workspace storage is full.
+
+The central site still reports usage and sends limit notifications through its
+scheduled jobs.
 
 Suspension sets `saas_suspended` in the tenant's `site_config.json`; the guard
 then redirects users to `/suspended` on the central site. Unsuspending clears it.

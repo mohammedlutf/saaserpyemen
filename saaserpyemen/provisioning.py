@@ -36,6 +36,8 @@ from saaserpyemen.utils import (
 )
 
 DEFAULT_TEMPLATE_SITE = "saas-default.com"
+CLIENT_APP = "saas_client"
+LEGACY_TENANT_APP = "saaserpyemen"
 
 
 # ---------------------------------------------------------------------------
@@ -303,14 +305,8 @@ def provision_tenant(tenant: str) -> dict:
 		frappe.db.commit()
 		_append_log(tenant, "Site configuration written (tenant isolation enabled).")
 
-		# -- install the app on the tenant ------------------------------
-		installed = _installed_apps(site, timeout=timeout)
-		if "saaserpyemen" not in installed:
-			_append_log(tenant, "Installing saaserpyemen on the tenant site.")
-			result = _bench("--site", site, "install-app", "saaserpyemen", timeout=timeout)
-			output += "\n" + _check(result, "bench install-app")
-		else:
-			_append_log(tenant, "saaserpyemen is already installed on the tenant site.")
+		# -- install the tenant-side client app --------------------------
+		output += "\n" + _ensure_client_app(site, tenant, timeout=timeout)
 
 		# -- run the tenant-side setup -----------------------------------
 		_append_log(tenant, "Configuring company, currency, language and admin user.")
@@ -331,7 +327,7 @@ def provision_tenant(tenant: str) -> dict:
 			"--site",
 			site,
 			"execute",
-			"saaserpyemen.provisioning.setup_tenant_site",
+			"saas_client.setup.setup_tenant_site",
 			"--args",
 			args,
 			timeout=timeout,
@@ -451,6 +447,47 @@ def _installed_apps(site: str, timeout: int = 300) -> list[str]:
 		return apps
 	except Exception:
 		return []
+
+
+def _ensure_client_app(site: str, tenant: str, timeout: int = 1800) -> str:
+	"""Install the lightweight tenant app and drop the legacy platform app.
+
+	Tenant sites only need :mod:`saas_client` (limits, suspension guard and
+	first-run setup).  The full SaaS platform app stays on the central site.
+	"""
+	output = []
+	installed = _installed_apps(site, timeout=timeout)
+
+	if LEGACY_TENANT_APP in installed:
+		_append_log(tenant, f"Removing legacy {LEGACY_TENANT_APP} app from the tenant site.")
+		result = _bench(
+			"--site",
+			site,
+			"uninstall-app",
+			LEGACY_TENANT_APP,
+			"--yes",
+			"--no-backup",
+			timeout=timeout,
+		)
+		if result.returncode == 0:
+			output.append(result.stdout or "")
+			_append_log(tenant, f"Legacy {LEGACY_TENANT_APP} app removed.")
+		else:
+			_append_log(
+				tenant,
+				f"Could not remove legacy {LEGACY_TENANT_APP} app; continuing with {CLIENT_APP}. "
+				+ ((result.stderr or result.stdout or "")[-2000:]),
+			)
+		installed = _installed_apps(site, timeout=timeout)
+
+	if CLIENT_APP not in installed:
+		_append_log(tenant, f"Installing {CLIENT_APP} on the tenant site.")
+		result = _bench("--site", site, "install-app", CLIENT_APP, timeout=timeout)
+		output.append(_check(result, "bench install-app"))
+	else:
+		_append_log(tenant, f"{CLIENT_APP} is already installed on the tenant site.")
+
+	return "\n".join(part for part in output if part)
 
 
 def _drop_site(site: str, timeout: int = 900) -> None:
