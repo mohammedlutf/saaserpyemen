@@ -1,9 +1,10 @@
 {% set brand = settings.brand_name if settings and settings.brand_name else 'Sahbix' %}
 {% set brand_ar = settings.brand_name_ar if settings and settings.brand_name_ar else 'سحبيكس' %}
+{% set logo = '/assets/saaserpyemen/images/rtlhorizontallogo.png' if lang == 'ar' else '/assets/saaserpyemen/images/ltlhorizontallogo.png' %}
 <header class="saas-nav" id="saas-nav">
 	<div class="saas-container saas-nav__inner">
 		<a class="saas-brand" href="/" aria-label="{{ brand }} — {{ brand_ar }}">
-			<img class="saas-brand__logo" src="/assets/saaserpyemen/images/horizontal%20logo.png" alt="{{ brand }}" width="1184" height="300">
+			<img class="saas-brand__logo" src="{{ logo }}" alt="{{ brand }}" width="993" height="251">
 		</a>
 
 		<button class="saas-nav__toggle" type="button" aria-label="Menu" aria-expanded="false" data-nav-toggle>
@@ -20,8 +21,12 @@
 
 		<div class="saas-nav__actions">
 			<button class="saas-lang" type="button" data-lang-toggle aria-label="Switch language">
-				<span class="saas-lang__icon">◎</span>
-				<span class="saas-lang__label" data-lang-label>العربية</span>
+				<svg class="saas-lang__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<circle cx="12" cy="12" r="9"></circle>
+					<path d="M3 12h18"></path>
+					<path d="M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"></path>
+				</svg>
+				<span class="saas-lang__label" data-lang-label>{% if lang == 'ar' %}English{% else %}العربية{% endif %}</span>
 			</button>
 
 			{% if frappe.session.user != 'Guest' %}

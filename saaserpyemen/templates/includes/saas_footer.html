@@ -3,12 +3,13 @@
 {% set support_email = settings.support_email if settings and settings.support_email else 'infosahbix@gmail.com' %}
 {% set support_phone = settings.support_phone if settings and settings.support_phone else '+957770785816' %}
 {% set whatsapp_number = support_phone | replace('+', '') | replace(' ', '') | replace('-', '') %}
+{% set logo = '/assets/saaserpyemen/images/rtlhorizontallogo.png' if lang == 'ar' else '/assets/saaserpyemen/images/ltlhorizontallogo.png' %}
 <footer class="saas-footer" id="contact">
 	<div class="saas-container">
 		<div class="saas-footer__grid">
 			<div class="saas-footer__brand">
 				<a class="saas-brand" href="/" aria-label="{{ brand }} — {{ brand_ar }}">
-					<img class="saas-footer__logo" src="/assets/saaserpyemen/images/horizontal%20logo.png" alt="{{ brand }}" width="1184" height="300">
+					<img class="saas-footer__logo" src="{{ logo }}" alt="{{ brand }}" width="993" height="251">
 				</a>
 				<p class="saas-footer__about">
 					<span class="lang-en">{{ settings.footer_about_en if settings and settings.footer_about_en else 'The all-in-one cloud ERP platform for ambitious businesses in the Middle East and beyond.' }}</span>
@@ -40,11 +41,7 @@
 
 			<div class="saas-footer__col saas-footer__contact">
 				<h4 data-en="Get in touch" data-ar="تواصل معنا">Get in touch</h4>
-				<a href="mailto:{{ support_email }}">{{ support_email }}</a>
-				<a href="tel:{{ support_phone }}">{{ support_phone }}</a>
-				{% if settings and settings.address %}
-					<p>{{ settings.address }}</p>
-				{% endif %}
+				<p class="saas-footer__contact-note" data-en="We reply within one business day." data-ar="نرد خلال يوم عمل واحد.">We reply within one business day.</p>
 				<div class="saas-footer__contact-actions">
 					<a href="mailto:{{ support_email }}">
 						<span aria-hidden="true">✉</span>
@@ -59,6 +56,11 @@
 						<span data-en="WhatsApp" data-ar="واتساب">WhatsApp</span>
 					</a>
 				</div>
+				<a href="mailto:{{ support_email }}">{{ support_email }}</a>
+				<a href="tel:{{ support_phone }}">{{ support_phone }}</a>
+				{% if settings and settings.address %}
+					<p>{{ settings.address }}</p>
+				{% endif %}
 				<div class="saas-footer__badges">
 					<span>🔒 SSL</span>
 					<span>☁ Cloud</span>

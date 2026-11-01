@@ -24,12 +24,23 @@ from saaserpyemen.utils import (
 
 
 def get_language() -> str:
-	user = frappe.session.user
+	# The website language toggle writes the `preferred_language` cookie.
+	# Respect it for guests and signed-in users so the page direction, CSS
+	# bundle and logo can switch together on reload.
 	lang = None
-	if user and user != "Guest":
-		lang = frappe.db.get_value("User", user, "language")
-	lang = lang or frappe.local.lang or "en"
-	return "ar" if str(lang).lower().startswith("ar") else "en"
+	try:
+		lang = frappe.request.cookies.get("preferred_language")
+	except Exception:
+		lang = None
+	if lang not in ("en", "ar"):
+		user = frappe.session.user
+		if user and user != "Guest":
+			lang = frappe.db.get_value("User", user, "language")
+		lang = lang or frappe.local.lang or "en"
+	resolved = "ar" if str(lang).lower().startswith("ar") else "en"
+	# Keep server-side translations in sync with the language toggle.
+	frappe.local.lang = resolved
+	return resolved
 
 
 def base_context(context) -> None:
@@ -39,6 +50,15 @@ def base_context(context) -> None:
 	context.body_class = "saas-site"
 	context.settings = settings
 	context.lang = get_language()
+	# `boot.lang` drives the server-rendered <html lang> attribute. Keep it
+	# aligned with the website toggle, especially for signed-in users whose
+	# User.language may differ from the selected cookie.
+	try:
+		if getattr(context, "boot", None):
+			context.boot["lang"] = context.lang
+		frappe.boot.lang = context.lang
+	except Exception:
+		pass
 	context.domain = get_domain()
 	context.default_currency = settings.default_currency or "USD"
 	context.currencies = get_enabled_currencies()

@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Setting up your workspace') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}جارٍ إعداد مساحة عملك — {{ brand_name_ar }}{% else %}{{ _('Setting up your workspace') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">

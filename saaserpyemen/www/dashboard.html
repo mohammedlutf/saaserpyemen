@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('My workspace') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}مساحة عملي — {{ brand_name_ar }}{% else %}{{ _('My workspace') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 {% set status_ar = {'Trial': 'تجربة', 'Pending': 'قيد الانتظار', 'Pending Payment': 'بانتظار الدفع', 'Active': 'نشط', 'Past Due': 'متأخر السداد', 'Suspended': 'موقوف', 'Expired': 'منتهي', 'Provisioning': 'قيد الإعداد', 'Failed': 'فشل', 'Draft': 'مسودة', 'Cancelled': 'ملغي'} %}

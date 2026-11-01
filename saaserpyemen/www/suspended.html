@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Workspace suspended') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}مساحة العمل موقوفة — {{ brand_name_ar }}{% else %}{{ _('Workspace suspended') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">

@@ -172,7 +172,7 @@ def send_expiry_reminders() -> None:
 					label, frappe.utils.escape_html(tenant.tenant_name), row.end_date, days
 				)}</p>
 				<p>{_('To keep your workspace active, please complete your payment before the end date.')}</p>
-				<p><a href="{payment_url}" style="display:inline-block;padding:12px 22px;border-radius:10px;background:#02a474;color:#fff;text-decoration:none">
+				<p><a href="{payment_url}" style="display:inline-block;padding:12px 22px;border-radius:10px;background:#0d9488;color:#fff;text-decoration:none">
 					{_('Pay now')}
 				</a></p>
 			</div>

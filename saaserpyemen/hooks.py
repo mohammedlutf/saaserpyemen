@@ -11,8 +11,8 @@ app_license = "mit"
 app_include_css = "/assets/saaserpyemen/css/saas_desk.css"
 app_include_js = "/assets/saaserpyemen/js/saas_desk.js"
 
-web_include_css = "/assets/saaserpyemen/css/saas.css"
-web_include_js = "/assets/saaserpyemen/js/saas.js"
+web_include_css = "/assets/saaserpyemen/css/saas.css?v=20261101"
+web_include_js = "/assets/saaserpyemen/js/saas.js?v=20261101"
 
 # ---------------------------------------------------------------------------
 # Website

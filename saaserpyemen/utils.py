@@ -336,7 +336,7 @@ def serialize_plan(plan, currency: str | None = None) -> dict:
 		"tagline_ar": plan.tagline_ar or plan.tagline_en,
 		"description_en": plan.description_en,
 		"description_ar": plan.description_ar or plan.description_en,
-		"color": plan.color or "#02a474",
+		"color": plan.color or "#0d9488",
 		"icon": plan.icon or "sparkles",
 		"featured": bool(plan.is_featured),
 		"currency": prices["currency"],

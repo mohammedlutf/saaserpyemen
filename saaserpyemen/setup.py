@@ -50,7 +50,7 @@ PLAN_SEED = [
 		"slug": "growth",
 		"sort_order": 20,
 		"is_featured": 1,
-		"color": "#02a474",
+		"color": "#0d9488",
 		"icon": "trending-up",
 		"tagline_en": "The sweet spot for growing teams.",
 		"tagline_ar": "الخيار الأمثل للفرق النامية.",

@@ -5,7 +5,6 @@
 	"use strict";
 
 	const root = document.documentElement;
-	const LANG_KEY = "saas_lang";
 	const DEFAULT_LANG = (window.saas && window.saas.lang) || "en";
 
 	/* ----------------------------------------------------------------------
@@ -233,7 +232,13 @@
 	/* ----------------------------------------------------------------------
 	   Language
 	   ---------------------------------------------------------------------- */
-	function applyLanguage(lang, persist) {
+	function setLanguageCookie(lang) {
+		try {
+			document.cookie = "preferred_language=" + encodeURIComponent(lang) + "; path=/; max-age=31536000; SameSite=Lax";
+		} catch (e) { /* ignore */ }
+	}
+
+	function applyLanguage(lang) {
 		const arabic = lang === "ar";
 		root.classList.toggle("saas-ar", arabic);
 		root.setAttribute("lang", arabic ? "ar" : "en");
@@ -260,20 +265,19 @@
 			el.textContent = arabic ? "English" : "العربية";
 		});
 
-		if (persist) {
-			try { localStorage.setItem(LANG_KEY, arabic ? "ar" : "en"); } catch (e) { /* ignore */ }
-		}
 		document.dispatchEvent(new CustomEvent("saas:language", { detail: { lang: arabic ? "ar" : "en" } }));
 	}
 
 	function initLanguage() {
-		let stored = null;
-		try { stored = localStorage.getItem(LANG_KEY); } catch (e) { stored = null; }
-		const initial = stored || (DEFAULT_LANG === "ar" ? "ar" : "en");
-		applyLanguage(initial, false);
+		applyLanguage(DEFAULT_LANG === "ar" ? "ar" : "en");
 		$$("[data-lang-toggle]").forEach(function (button) {
 			button.addEventListener("click", function () {
-				applyLanguage(isArabic() ? "en" : "ar", true);
+				const next = isArabic() ? "en" : "ar";
+				setLanguageCookie(next);
+				// Reload so Frappe serves the matching LTR/RTL stylesheet and
+				// the server-rendered logo, instead of leaving the old
+				// direction-specific bundles in place.
+				window.location.reload();
 			});
 		});
 	}

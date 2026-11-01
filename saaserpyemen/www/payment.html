@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Manual payment') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}الدفع اليدوي — {{ brand_name_ar }}{% else %}{{ _('Manual payment') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 {% set payment_status_ar = {'Pending Review': 'بانتظار المراجعة', 'Paid': 'مدفوع', 'Rejected': 'مرفوض', 'Refunded': 'مسترد'} %}

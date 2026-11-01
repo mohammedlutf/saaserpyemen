@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Terms of Service') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}شروط الخدمة — {{ brand_name_ar }}{% else %}{{ _('Terms of Service') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="page-hero page-hero--compact">

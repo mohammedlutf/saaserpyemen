@@ -2,12 +2,13 @@
 
 {% block meta_block %}
 	{{ super() }}
-	<meta name="description" content="{% block meta_description %}{{ brand_name or 'Sahbix' }} — {{ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endblock %}">
-	<meta name="theme-color" content="#013233">
+	<meta name="description" content="{% block meta_description %}{% if lang == 'ar' %}{{ brand_name_ar or 'سحبيكس' }} — منصة ERP سحابية شاملة للشركات النامية — المحاسبة والمبيعات والمخزون والموارد البشرية والمزيد.{% else %}{{ brand_name or 'Sahbix' }} — {{ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endif %}{% endblock %}">
+	<meta name="theme-color" content="#ffffff">
 {% endblock %}
 
 {% block favicon %}
-	<link rel="shortcut icon" href="{{ (favicon or '/assets/saaserpyemen/images/favicon.svg') | abs_url }}" type="image/svg+xml">
+	<link rel="shortcut icon" href="/assets/saaserpyemen/images/favicon-square.png" type="image/png">
+	<link rel="apple-touch-icon" href="/assets/saaserpyemen/images/favicon-square.png">
 {% endblock %}
 
 {% block head_include %}
@@ -18,12 +19,11 @@
 	<script>
 		(function () {
 			try {
-				var stored = localStorage.getItem("saas_lang") || {{ (lang or 'en') | tojson }};
-				if (stored === "ar") {
-					document.documentElement.classList.add("saas-ar");
-					document.documentElement.lang = "ar";
-					document.documentElement.dir = "rtl";
-				}
+				var lang = {{ (lang or 'en') | tojson }};
+				var arabic = lang === "ar";
+				document.documentElement.classList.toggle("saas-ar", arabic);
+				document.documentElement.lang = arabic ? "ar" : "en";
+				document.documentElement.dir = arabic ? "rtl" : "ltr";
 			} catch (e) { /* ignore */ }
 		})();
 	</script>

@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Choose your workspace') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}اختر مساحة عملك — {{ brand_name_ar }}{% else %}{{ _('Choose your workspace') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">

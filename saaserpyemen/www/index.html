@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ brand_name }} — {{ _('Cloud ERP for growing businesses') }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}{{ brand_name_ar }} — منصة ERP سحابية للشركات النامية{% else %}{{ brand_name }} — {{ _('Cloud ERP for growing businesses') }}{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="hero">

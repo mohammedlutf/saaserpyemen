@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{{ _('Plans & pricing') }} — {{ brand_name }}{% endblock %}
+{% block title %}{% if lang == 'ar' %}الخطط والأسعار — {{ brand_name_ar }}{% else %}{{ _('Plans & pricing') }} — {{ brand_name }}{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="page-hero">
