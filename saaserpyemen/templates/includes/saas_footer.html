@@ -46,17 +46,17 @@
 						<span aria-hidden="true">✉</span>
 						<span>{{ _('Email') }}</span>
 					</a>
-					<a href="tel:{{ support_phone }}">
+					<!-- <a href="tel:{{ support_phone }}">
 						<span aria-hidden="true">☎</span>
 						<span>{{ _('Call') }}</span>
-					</a>
+					</a> -->
 					<a class="wa" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">
 						<span aria-hidden="true">◉</span>
 						<span>{{ _('WhatsApp') }}</span>
 					</a>
 				</div>
-				<a href="mailto:{{ support_email }}">{{ support_email }}</a>
-				<a href="tel:{{ support_phone }}">{{ support_phone }}</a>
+				<!-- <a href="mailto:{{ support_email }}">{{ support_email }}</a>
+				<a href="tel:{{ support_phone }}">{{ support_phone }}</a> -->
 				{% if settings and settings.address %}
 					<p>{{ settings.address }}</p>
 				{% endif %}
@@ -74,11 +74,11 @@
 				{% if lang == 'ar' %}{{ brand_ar }}{% else %}{{ brand }}{% endif %}
 				· {{ _('All rights reserved.') }}
 			</p>
-			<p class="saas-footer__made">
+			<!-- <p class="saas-footer__made">
 				<span>{{ _('Built on ERPNext') }}</span>
 				<span class="dot"></span>
 				<span>{{ _('Made for the Middle East') }}</span>
-			</p>
+			</p> -->
 		</div>
 	</div>
 </footer>

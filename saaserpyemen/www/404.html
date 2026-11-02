@@ -1,0 +1,39 @@
+{% set lang = boot.lang or 'en' %}
+{% set settings = get_settings() %}
+{% set switch_language_url = switch_language_url(lang) %}
+{% extends "templates/saas_base.html" %}
+
+{% block title %}{{ _("Page not found") }} — {{ (settings.brand_name_ar or 'سحبيكس') if lang == 'ar' else (settings.brand_name or 'Sahbix') }}{% endblock %}
+
+{% block meta_block %}
+    <meta name="description"
+          content="{{ _("The page you are looking for does not exist or has been moved.") }}">
+
+    <meta name="theme-color" content="#ffffff">
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block page_content %}
+<section class="section section--top">
+    <div class="saas-container saas-container--narrow">
+        <div class="empty-state empty-state--lg">
+            <div class="empty-state__icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M20 20l-3.6-3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <span class="saas-pill">404</span>
+
+            <h2>{{ _("Page not found") }}</h2>
+            <p>{{ _("The page you are looking for does not exist or has been moved.") }}</p>
+
+            <div class="suspended__actions">
+                <a class="saas-btn saas-btn--primary" href="{{ saas_url('/') }}">{{ _("Back to home") }}</a>
+                <a class="saas-btn saas-btn--ghost" href="{{ saas_url('/') }}#contact">{{ _("Contact support") }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
