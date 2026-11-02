@@ -179,7 +179,8 @@
 
 			$("h3", modal).textContent = options.title || t("Please confirm", "يرجى التأكيد");
 			$("p", modal).textContent = options.message || "";
-			$("[data-modal-cancel]", modal).textContent = options.cancelText || t("Cancel", "إلغاء");
+			$('.saas-btn--outline[data-modal-cancel]', modal).textContent =
+   				 options.cancelText || t("Cancel", "إلغاء");
 			$("[data-modal-confirm]", modal).textContent = options.confirmText || t("Confirm", "تأكيد");
 
 			function close(result) {

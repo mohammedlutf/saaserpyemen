@@ -910,7 +910,7 @@ html.saas-ar .plan-card__ribbon { transform: translateX(50%); }
 .auth__panel { position: relative; display: flex; flex-direction: column; }
 .auth__panel--brand {
 	overflow: hidden;
-	padding: 52px clamp(28px, 5vw, 70px);
+	padding: 5px clamp(28px, 5vw, 70px);
 	background: linear-gradient(150deg, #013233 0%, #013233 48%, #026b55 100%);
 	color: #fff;
 	justify-content: center;
