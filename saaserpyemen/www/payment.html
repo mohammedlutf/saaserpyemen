@@ -1,9 +1,8 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}الدفع اليدوي — {{ brand_name_ar }}{% else %}{{ _('Manual payment') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Manual payment') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
-{% set payment_status_ar = {'Pending Review': 'بانتظار المراجعة', 'Paid': 'مدفوع', 'Rejected': 'مرفوض', 'Refunded': 'مسترد'} %}
 <section class="section section--top">
 	<div class="saas-container">
 		<div class="portal__head portal__head--compact">
@@ -27,7 +26,7 @@
 			<div>
 				<b>{{ _("You already have a payment under review") }}</b>
 				<p>
-					{% if lang == 'ar' %}تم إرسال الدفعة {{ data.pending_payment.name }} في {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. سنفعّل اشتراكك بمجرد الموافقة عليها.{% else %}Payment {{ data.pending_payment.name }} was submitted on {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. We will activate your subscription as soon as it is approved.{% endif %}
+					{{ _("Payment {0} was submitted on {1}. We will activate your subscription as soon as it is approved.").format(data.pending_payment.name, frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy')) }}
 				</p>
 			</div>
 			<span class="status status--pending-review">{{ _("Pending Review") }}</span>
@@ -62,10 +61,13 @@
 						<span class="panel__big-icon">▦</span>
 					</div>
 					<div class="bank-details">
+						{% set bank_default %}
+						<p>{{ _("Bank") }}: {{ _("Your Bank Name") }}<br>{{ _("Account name") }}: {{ brand_name_ar if lang == 'ar' else brand_name }}<br>{{ _("IBAN") }}: YOUR-IBAN-HERE</p>
+						{% endset %}
 						{% if lang == 'ar' %}
-						{{ (data.bank_details_ar or data.bank_details or '<p>البنك: اسم البنك<br>اسم الحساب: سحبيكس<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
+						{{ (data.bank_details_ar or data.bank_details or bank_default) | safe }}
 						{% else %}
-						{{ (data.bank_details or '<p>Bank: Your Bank Name<br>Account name: Sahbix<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
+						{{ (data.bank_details or bank_default) | safe }}
 						{% endif %}
 					</div>
 					{% if data.payment_note_en or data.payment_note_ar %}

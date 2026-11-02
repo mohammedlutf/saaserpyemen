@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}أنشئ حسابك — {{ brand_name_ar }}{% else %}{{ _('Create your account') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Create your account') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 {% set logo = '/assets/saaserpyemen/images/rtlhorizontallogo.png' if lang == 'ar' else '/assets/saaserpyemen/images/ltlhorizontallogo.png' %}
@@ -86,7 +86,7 @@
 					<div class="field__control">
 						<span class="field__icon">⌁</span>
 						<input type="password" name="password" id="signup-password" autocomplete="new-password" minlength="8" required placeholder="{{ _("At least 8 characters") }}">
-						<button type="button" class="field__toggle" data-toggle-password aria-label="Show password">👁</button>
+						<button type="button" class="field__toggle" data-toggle-password aria-label="{{ _('Show password') }}">👁</button>
 					</div>
 					<div class="password-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 				</label>

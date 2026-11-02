@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}{{ brand_name_ar }} — منصة ERP سحابية للشركات النامية{% else %}{{ brand_name }} — {{ _('Cloud ERP for growing businesses') }}{% endif %}{% endblock %}
+{% block title %}{{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }} — {{ _('Cloud ERP for growing businesses') }}{% endblock %}
 
 {% block page_content %}
 <section class="hero">
@@ -13,12 +13,10 @@
 				<span>{{ _("30-day free trial · No credit card required") }}</span>
 			</div>
 			<h1 class="hero__title">
-				<span class="lang-en">Run your entire business on <span class="gradient-text">one beautiful platform</span>.</span>
-				<span class="lang-ar">أدر عملك بالكامل على <span class="gradient-text">منصة واحدة أنيقة</span>.</span>
+				{{ _("Run your entire business on") }} <span class="gradient-text">{{ _("one beautiful platform") }}</span>.
 			</h1>
 			<p class="hero__subtitle">
-				<span class="lang-en">{{ settings.hero_subtitle_en if settings.hero_subtitle_en else 'Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.' }}</span>
-				<span class="lang-ar">{{ settings.hero_subtitle_ar if settings.hero_subtitle_ar else 'سحبيكس يمنحك مساحة عمل ERPNext كاملة وآمنة للمحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية والمزيد — جاهزة في دقائق.' }}</span>
+				{% if lang == 'ar' %}{{ settings.hero_subtitle_ar if settings.hero_subtitle_ar else _('Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.') }}{% else %}{{ settings.hero_subtitle_en if settings.hero_subtitle_en else _('Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.') }}{% endif %}
 			</p>
 			<div class="hero__actions">
 				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/signup">
@@ -39,8 +37,7 @@
 					<span style="--i:0">A</span><span style="--i:1">M</span><span style="--i:2">S</span><span style="--i:3">+</span>
 				</div>
 				<p>
-					<span class="lang-en"><b>1,200+</b> businesses already grow with Sahbix</span>
-					<span class="lang-ar"><b>1,200+</b> شركة تنمو بالفعل مع سحبيكس</span>
+					<b>1,200+</b> {{ _("businesses already grow with Sahbix") }}
 				</p>
 			</div>
 		</div>
@@ -50,7 +47,7 @@
 				<div class="mockup__bar">
 					<span class="mockup__dots"><i></i><i></i><i></i></span>
 					<span class="mockup__url">app.{{ domain }}</span>
-					<span class="mockup__badge">Live</span>
+					<span class="mockup__badge">{{ _("Live") }}</span>
 				</div>
 				<div class="mockup__body">
 					<div class="mockup__side">
@@ -64,32 +61,32 @@
 					<div class="mockup__main">
 						<div class="mockup__head">
 							<div>
-								<span class="mockup__eyebrow">Dashboard</span>
-								<strong>Good morning, Sara</strong>
+								<span class="mockup__eyebrow">{{ _("Dashboard") }}</span>
+								<strong>{{ _("Good morning, Sara") }}</strong>
 							</div>
-							<span class="mockup__pill">This month</span>
+							<span class="mockup__pill">{{ _("This month") }}</span>
 						</div>
 						<div class="mockup__stats">
 							<div class="mockup__stat">
-								<span>Revenue</span>
+								<span>{{ _("Revenue") }}</span>
 								<strong>SAR 184,250</strong>
 								<em class="up">+18.4%</em>
 							</div>
 							<div class="mockup__stat">
-								<span>Invoices</span>
+								<span>{{ _("Invoices") }}</span>
 								<strong>342</strong>
 								<em class="up">+9.1%</em>
 							</div>
 							<div class="mockup__stat">
-								<span>Customers</span>
+								<span>{{ _("Customers") }}</span>
 								<strong>1,048</strong>
 								<em class="up">+12.7%</em>
 							</div>
 						</div>
 						<div class="mockup__chart">
 							<div class="mockup__chart-head">
-								<span>Cash flow</span>
-								<span class="mockup__legend"><i></i>Income <i class="alt"></i>Expense</span>
+								<span>{{ _("Cash flow") }}</span>
+								<span class="mockup__legend"><i></i>{{ _("Income") }} <i class="alt"></i>{{ _("Expense") }}</span>
 							</div>
 							<div class="mockup__bars">
 								<i style="--h:42%"></i><i style="--h:58%"></i><i style="--h:48%"></i><i style="--h:72%"></i>
@@ -98,19 +95,19 @@
 							</div>
 						</div>
 						<div class="mockup__rows">
-							<div class="mockup__row"><span class="avatar-dot">N</span><span>Noura Trading</span><b>SAR 12,400</b><em class="ok">Paid</em></div>
-							<div class="mockup__row"><span class="avatar-dot alt">A</span><span>Al Noor Services</span><b>SAR 8,950</b><em class="warn">Pending</em></div>
+							<div class="mockup__row"><span class="avatar-dot">N</span><span>Noura Trading</span><b>SAR 12,400</b><em class="ok">{{ _("Paid") }}</em></div>
+							<div class="mockup__row"><span class="avatar-dot alt">A</span><span>Al Noor Services</span><b>SAR 8,950</b><em class="warn">{{ _("Pending") }}</em></div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="float-card float-card--one">
 				<span class="float-card__icon">⚡</span>
-				<div><b>Live in 3 minutes</b><small>Automatic provisioning</small></div>
+				<div><b>{{ _("Live in 3 minutes") }}</b><small>{{ _("Automatic provisioning") }}</small></div>
 			</div>
 			<div class="float-card float-card--two">
 				<span class="float-card__icon green">✓</span>
-				<div><b>Payment approved</b><small>Subscription renewed</small></div>
+				<div><b>{{ _("Payment approved") }}</b><small>{{ _("Subscription renewed") }}</small></div>
 			</div>
 		</div>
 	</div>
@@ -120,7 +117,7 @@
 	<div class="saas-container">
 		<p>{{ _("Everything your team needs — from the first invoice to a full finance department.") }}</p>
 		<div class="trustbar__modules">
-			<span>Accounting</span><span>Sales</span><span>Purchasing</span><span>Inventory</span><span>HR</span><span>CRM</span><span>Projects</span><span>Manufacturing</span>
+			<span>{{ _("Accounting") }}</span><span>{{ _("Sales") }}</span><span>{{ _("Purchasing") }}</span><span>{{ _("Inventory") }}</span><span>{{ _("HR") }}</span><span>{{ _("CRM") }}</span><span>{{ _("Projects") }}</span><span>{{ _("Manufacturing") }}</span>
 		</div>
 	</div>
 </section>
@@ -130,8 +127,7 @@
 		<div class="section__head">
 			<div class="saas-pill"><span>{{ _("One platform") }}</span></div>
 			<h2>
-				<span class="lang-en">Replace ten tools with <span class="gradient-text">one workspace</span>.</span>
-				<span class="lang-ar">استبدل عشرة أدوات بـ<span class="gradient-text">مساحة عمل واحدة</span>.</span>
+				{{ _("Replace ten tools with") }} <span class="gradient-text">{{ _("one workspace") }}</span>.
 			</h2>
 			<p>
 				{{ _("ERPNext is the world's most complete open-source ERP. We host it, secure it, update it and back it up — so you can focus on your business.") }}
@@ -178,8 +174,7 @@
 		<div class="section__head">
 			<div class="saas-pill"><span>{{ _("How it works") }}</span></div>
 			<h2>
-				<span class="lang-en">From signup to your own ERP in <span class="gradient-text">three minutes</span>.</span>
-				<span class="lang-ar">من التسجيل إلى نظام ERP الخاص بك في <span class="gradient-text">ثلاث دقائق</span>.</span>
+				{{ _("From signup to your own ERP in") }} <span class="gradient-text">{{ _("three minutes") }}</span>.
 			</h2>
 		</div>
 		<div class="steps">
@@ -208,8 +203,7 @@
 		<div class="section__head">
 			<div class="saas-pill"><span>{{ _("Simple pricing") }}</span></div>
 			<h2>
-				<span class="lang-en">Plans that grow <span class="gradient-text">with you</span>.</span>
-				<span class="lang-ar">خطط تنمو <span class="gradient-text">معك</span>.</span>
+				{{ _("Plans that grow") }} <span class="gradient-text">{{ _("with you") }}</span>.
 			</h2>
 			<p>
 				{{ _("Start free for 30 days. Upgrade, downgrade or cancel any time. All prices are monthly unless stated.") }}
@@ -245,7 +239,7 @@
 					<span>{{ _("Start free trial") }}</span>
 				</a>
 				<p class="plan-card__note">
-					<span data-en="{{ plan.trial_days }} days free · cancel anytime" data-ar="{{ plan.trial_days }} يومًا مجانًا · إلغاء في أي وقت">{{ plan.trial_days }} days free · cancel anytime</span>
+					<span>{{ plan.trial_days }} {{ _("days free · cancel anytime") }}</span>
 				</p>
 			</article>
 			{% endfor %}
@@ -263,7 +257,7 @@
 	<div class="saas-container">
 		<div class="stats">
 			<div class="stat"><strong>99.9%</strong><span>{{ _("Uptime SLA") }}</span></div>
-			<div class="stat"><strong>3 min</strong><span>{{ _("Average setup time") }}</span></div>
+			<div class="stat"><strong>{{ _("3 min") }}</strong><span>{{ _("Average setup time") }}</span></div>
 			<div class="stat"><strong>150+</strong><span>{{ _("Built-in reports") }}</span></div>
 			<div class="stat"><strong>24/7</strong><span>{{ _("Monitoring & backups") }}</span></div>
 		</div>
@@ -276,8 +270,7 @@
 		<div class="section__head">
 			<div class="saas-pill"><span>{{ _("Customer stories") }}</span></div>
 			<h2>
-				<span class="lang-en">Teams that switched — and <span class="gradient-text">never looked back</span>.</span>
-				<span class="lang-ar">فرق انتقلت إلينا — <span class="gradient-text">ولم تنظر للخلف</span>.</span>
+				{{ _("Teams that switched — and") }} <span class="gradient-text">{{ _("never looked back") }}</span>.
 			</h2>
 		</div>
 		<div class="testimonials">
@@ -313,14 +306,13 @@
 		<div class="section__head">
 			<div class="saas-pill"><span>{{ _("FAQ") }}</span></div>
 			<h2>
-				<span class="lang-en">Questions? <span class="gradient-text">We have answers</span>.</span>
-				<span class="lang-ar">لديك أسئلة؟ <span class="gradient-text">لدينا الإجابات</span>.</span>
+				{{ _("Questions?") }} <span class="gradient-text">{{ _("We have answers") }}</span>.
 			</h2>
 		</div>
 		<div class="faq">
 			<details class="faq__item" open>
 				<summary><span>{{ _("What exactly do I get?") }}</span></summary>
-				<p data-en="Your own private ERPNext site at yourname.{{ domain }}, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more." data-ar="موقع ERPNext خاص بك على yourname.{{ domain }}، مع قاعدة بيانات مخصصة وتخزين آمن للملفات ونسخ احتياطي تلقائي وحزمة ERPNext الكاملة: المحاسبة والمبيعات والمشتريات والمخزون والموارد البشرية وإدارة العملاء والمشاريع والمزيد.">Your own private ERPNext site at yourname.{{ domain }}, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more.</p>
+				<p>{{ _("Your own private ERPNext site at yourname.{0}, with a dedicated database, secure file storage, automatic backups, and the full ERPNext suite: accounting, sales, purchasing, inventory, HR, CRM, projects and more.").format(domain) }}</p>
 			</details>
 			<details class="faq__item">
 				<summary><span>{{ _("Is the free trial really free?") }}</span></summary>

@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}تسجيل الدخول — {{ brand_name_ar }}{% else %}{{ _('Sign in') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Sign in') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 {% set logo = '/assets/saaserpyemen/images/rtlhorizontallogo.png' if lang == 'ar' else '/assets/saaserpyemen/images/ltlhorizontallogo.png' %}
@@ -32,7 +32,7 @@
 		<div class="auth__form-wrap">
 			<div class="saas-pill"><span>{{ _("Sign in") }}</span></div>
 			<h1>
-				{% if lang == 'ar' %}تسجيل الدخول إلى {{ brand_name_ar }}{% else %}Sign in to {{ brand_name }}{% endif %}
+				{{ _("Sign in to {0}").format(brand_name_ar if lang == 'ar' else brand_name) }}
 			</h1>
 			<p class="auth__sub">
 				<span>{{ _("Use your email or username and password.") }}</span>
@@ -45,7 +45,7 @@
 					{% if provider.is_google %}
 					<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84Z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38Z"/></svg>
 					{% else %}<span class="social-btn__icon">◎</span>{% endif %}
-					<span>{% if lang == 'ar' %}المتابعة باستخدام {{ provider.provider_name }}{% else %}Continue with {{ provider.provider_name }}{% endif %}</span>
+					<span>{{ _("Continue with {0}").format(provider.provider_name) }}</span>
 				</a>
 				{% endfor %}
 			</div>
@@ -65,7 +65,7 @@
 					<div class="field__control">
 						<span class="field__icon">⌁</span>
 						<input type="password" name="pwd" autocomplete="current-password" required placeholder="{{ _("Your password") }}">
-						<button type="button" class="field__toggle" data-toggle-password aria-label="Show password">👁</button>
+						<button type="button" class="field__toggle" data-toggle-password aria-label="{{ _('Show password') }}">👁</button>
 					</div>
 				</label>
 				<div class="form__row">
@@ -81,7 +81,7 @@
 
 			{% if not disable_signup %}
 			<p class="auth__switch">
-				<span>{% if lang == 'ar' %}جديد على {{ brand_name_ar }}؟{% else %}New to {{ brand_name }}?{% endif %}</span>
+				<span>{{ _("New to {0}?").format(brand_name_ar if lang == 'ar' else brand_name) }}</span>
 				<a href="{{ saas_url('/signup', lang) }}">{{ _("Create a free account") }}</a>
 			</p>
 			{% endif %}

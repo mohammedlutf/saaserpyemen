@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}جارٍ إعداد مساحة عملك — {{ brand_name_ar }}{% else %}{{ _('Setting up your workspace') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Setting up your workspace') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">
@@ -14,10 +14,10 @@
 					<span>{{ _("Automatic setup") }}</span>
 				</div>
 				<h1>
-					{% if lang == 'ar' %}{% if completed %}مساحة عملك جاهزة!{% elif failed %}حدث خطأ ما{% else %}نحن نبني مساحة عملك…{% endif %}{% else %}{% if completed %}Your workspace is ready!{% elif failed %}Something went wrong{% else %}We are building your workspace…{% endif %}{% endif %}
+					{% if completed %}{{ _("Your workspace is ready!") }}{% elif failed %}{{ _("Something went wrong") }}{% else %}{{ _("We are building your workspace…") }}{% endif %}
 				</h1>
 				<p>
-					{% if lang == 'ar' %}{% if completed %}كل شيء جاهز. سجّل الدخول بالبيانات أدناه وابدأ العمل.{% elif failed %}تم إخطار فريقنا. يمكنك التواصل مع الدعم وسنصلح الأمر فورًا.{% else %}يستغرق هذا عادةً أقل من ثلاث دقائق. يرجى إبقاء هذه الصفحة مفتوحة — سنحدّثها تلقائيًا.{% endif %}{% else %}{% if completed %}Everything is configured. Sign in with the credentials below and start working.{% elif failed %}Our team has been notified. You can contact support and we will fix it right away.{% else %}This usually takes less than three minutes. Please keep this page open — we will update it automatically.{% endif %}{% endif %}
+					{% if completed %}{{ _("Everything is configured. Sign in with the credentials below and start working.") }}{% elif failed %}{{ _("Our team has been notified. You can contact support and we will fix it right away.") }}{% else %}{{ _("This usually takes less than three minutes. Please keep this page open — we will update it automatically.") }}{% endif %}
 				</p>
 				<div class="provision__site">
 					<span class="field__icon">◎</span>
@@ -60,7 +60,7 @@
 					<span>{{ _("Setup log") }}</span>
 					<span class="chev">⌄</span>
 				</button>
-				<pre class="provision__log" id="provision-log" data-log>{{ tenant.provisioning_log or 'Waiting for the first step…' }}</pre>
+				<pre class="provision__log" id="provision-log" data-log>{{ tenant.provisioning_log or _('Waiting for the first step…') }}</pre>
 			</div>
 
 			{% if not completed and not failed %}

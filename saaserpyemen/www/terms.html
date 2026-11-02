@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}شروط الخدمة — {{ brand_name_ar }}{% else %}{{ _('Terms of Service') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Terms of Service') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 <section class="page-hero page-hero--compact">
@@ -9,10 +9,10 @@
 		<div class="page-hero__inner">
 			<div class="saas-pill"><span>{{ _("Legal") }}</span></div>
 			<h1>
-				{% if lang == 'ar' %}شروط <span class="gradient-text">الخدمة</span>{% else %}Terms of <span class="gradient-text">Service</span>{% endif %}
+				{{ _('Terms of') }} <span class="gradient-text">{{ _('Service') }}</span>
 			</h1>
 			<p>
-				{% if lang == 'ar' %}تحكم هذه الشروط وصولك إلى منصة {{ brand_name_ar }} السحابية واستخدامك لها.{% else %}These terms govern your access to and use of the {{ brand_name }} cloud ERP platform.{% endif %}
+				{{ _("These terms govern your access to and use of the {0} cloud ERP platform.").format(brand_name_ar if lang == 'ar' else brand_name) }}
 			</p>
 			<p class="legal__meta">
 				<span>{{ _("Last updated") }}</span>:
@@ -25,7 +25,7 @@
 <section class="section section--tight">
 	<div class="saas-container">
 		<div class="legal">
-			<aside class="legal__toc" aria-label="Contents">
+			<aside class="legal__toc" aria-label="{{ _('Contents') }}">
 				<h3>{{ _("On this page") }}</h3>
 				<a href="#acceptance">{{ _("1. Acceptance") }}</a>
 				<a href="#service">{{ _("2. The service") }}</a>
@@ -49,19 +49,19 @@
 
 				<article class="legal-card" id="service">
 					<h2><span class="legal__num">2</span><span>{{ _("The service") }}</span></h2>
-					<p>{% if lang == 'ar' %}{{ brand_name_ar }} توفر منصة ERP مستضافة متعددة المستأجرين مبنية على ERPNext. تعمل كل مساحة عمل على موقع وقاعدة بيانات وتخزين ملفات معزولة خاصة بها تحت نطاق فرعي من {{ domain }}. نحن نستضيف المنصة ونؤمّنها ونحدّثها وننسخها احتياطيًا حتى تتفرغ لإدارة عملك.{% else %}{{ brand_name }} provides a hosted, multi-tenant ERP platform built on ERPNext. Each workspace runs on its own isolated site, database and file storage under a subdomain of {{ domain }}. We host, secure, update and back up the platform so you can focus on running your business.{% endif %}</p>
+					<p>{{ _("{0} provides a hosted, multi-tenant ERP platform built on ERPNext. Each workspace runs on its own isolated site, database and file storage under a subdomain of {1}. We host, secure, update and back up the platform so you can focus on running your business.").format(brand_name_ar if lang == 'ar' else brand_name, domain) }}</p>
 					<p>{{ _("The service includes the ERPNext applications enabled for your plan. Certain modules, integrations, storage or user limits may vary by plan, and we may add, improve or retire features over time.") }}</p>
 				</article>
 
 				<article class="legal-card" id="accounts">
 					<h2><span class="legal__num">3</span><span>{{ _("Accounts and security") }}</span></h2>
-					<p>{% if lang == 'ar' %}أنت مسؤول عن الحفاظ على سرية بيانات الدخول وعن جميع الأنشطة التي تتم عبر حسابك. يجب أن تقدم معلومات دقيقة وأن تحافظ على تحديثها. أبلغنا فورًا على {{ support_email or 'infosahbix@gmail.com' }} إذا اشتبهت في وصول غير مصرح به.{% else %}You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must provide accurate information and keep it up to date. Notify us immediately at {{ support_email or 'infosahbix@gmail.com' }} if you suspect unauthorised access.{% endif %}</p>
+					<p>{{ _("You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must provide accurate information and keep it up to date. Notify us immediately at {0} if you suspect unauthorised access.").format(support_email or 'infosahbix@gmail.com') }}</p>
 					<p>{{ _("You must be at least 18 years old and legally capable of entering into a binding contract to use the service.") }}</p>
 				</article>
 
 				<article class="legal-card" id="trial">
 					<h2><span class="legal__num">4</span><span>{{ _("Free trial") }}</span></h2>
-					<p>{% if lang == 'ar' %}تحصل الحسابات الجديدة على تجربة مجانية لمدة {{ settings.trial_days or 30 }} يومًا مع وصول كامل إلى الخطة المختارة. لا يُطلب أي وسيلة دفع للبدء. في نهاية التجربة، تبقى مساحة عملك متاحة فقط إذا تمت الموافقة على دفعة. يحق لنا تغيير عرض التجربة أو إنهائه في أي وقت.{% else %}New accounts receive a free trial of {{ settings.trial_days or 30 }} days with full access to the selected plan. No payment method is required to start. At the end of the trial, your workspace remains available only if a payment has been approved. We may change or end the trial offer at any time.{% endif %}</p>
+					<p>{{ _("New accounts receive a free trial of {0} days with full access to the selected plan. No payment method is required to start. At the end of the trial, your workspace remains available only if a payment has been approved. We may change or end the trial offer at any time.").format(settings.trial_days or 30) }}</p>
 				</article>
 
 				<article class="legal-card" id="billing">
@@ -103,7 +103,7 @@
 
 				<article class="legal-card" id="contact">
 					<h2><span class="legal__num">12</span><span>{{ _("Contact us") }}</span></h2>
-					<p>{% if lang == 'ar' %}لديك أسئلة حول هذه الشروط؟ راسلنا على {{ support_email or 'infosahbix@gmail.com' }} وسنسعد بمساعدتك.{% else %}Questions about these terms? Email us at {{ support_email or 'infosahbix@gmail.com' }} and we will be glad to help.{% endif %}</p>
+					<p>{{ _("Questions about these terms? Email us at {0} and we will be glad to help.").format(support_email or 'infosahbix@gmail.com') }}</p>
 					<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
 						<span>{{ _("Email support") }}</span>
 					</a>

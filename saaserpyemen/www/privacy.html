@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}سياسة الخصوصية — {{ brand_name_ar }}{% else %}{{ _('Privacy Policy') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Privacy Policy') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 <section class="page-hero page-hero--compact">
@@ -9,10 +9,10 @@
 		<div class="page-hero__inner">
 			<div class="saas-pill"><span>{{ _("Legal") }}</span></div>
 			<h1>
-				{% if lang == 'ar' %}سياسة <span class="gradient-text">الخصوصية</span>{% else %}Privacy <span class="gradient-text">Policy</span>{% endif %}
+				{{ _('Privacy') }} <span class="gradient-text">{{ _('Policy') }}</span>
 			</h1>
 			<p>
-				{% if lang == 'ar' %}كيف تجمع {{ brand_name_ar }} معلوماتك وتستخدمها وتخزنها وتحميها.{% else %}How {{ brand_name }} collects, uses, stores and protects your information.{% endif %}
+				{{ _("How {0} collects, uses, stores and protects your information.").format(brand_name_ar if lang == 'ar' else brand_name) }}
 			</p>
 			<p class="legal__meta">
 				<span>{{ _("Last updated") }}</span>:
@@ -25,7 +25,7 @@
 <section class="section section--tight">
 	<div class="saas-container">
 		<div class="legal">
-			<aside class="legal__toc" aria-label="Contents">
+			<aside class="legal__toc" aria-label="{{ _('Contents') }}">
 				<h3>{{ _("On this page") }}</h3>
 				<a href="#who">{{ _("1. Who we are") }}</a>
 				<a href="#collect">{{ _("2. What we collect") }}</a>
@@ -44,7 +44,7 @@
 			<div class="legal__body">
 				<article class="legal-card" id="who">
 					<h2><span class="legal__num">1</span><span>{{ _("Who we are") }}</span></h2>
-					<p>{% if lang == 'ar' %}{{ brand_name_ar }} تشغّل منصة ERP مستضافة مبنية على ERPNext. نعمل كمسؤول عن بيانات الحساب والفوترة، وكمعالج لبيانات الأعمال التي تخزنها داخل مساحة عملك. توضح هذه السياسة ممارساتنا عبر الموقع التسويقي وبوابة العملاء.{% else %}{{ brand_name }} operates a hosted ERP platform built on ERPNext. We act as the data controller for account and billing information, and as a data processor for the business data you store inside your workspace. This policy explains our practices across the marketing website and the customer portal.{% endif %}</p>
+					<p>{{ _("{0} operates a hosted ERP platform built on ERPNext. We act as the data controller for account and billing information, and as a data processor for the business data you store inside your workspace. This policy explains our practices across the marketing website and the customer portal.").format(brand_name_ar if lang == 'ar' else brand_name) }}</p>
 				</article>
 
 				<article class="legal-card" id="collect">
@@ -94,7 +94,7 @@
 
 				<article class="legal-card" id="rights">
 					<h2><span class="legal__num">8</span><span>{{ _("Your rights") }}</span></h2>
-					<p>{% if lang == 'ar' %}وفقًا للقانون المعمول به، يمكنك طلب الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها، والاعتراض على معالجة معينة أو تقييدها، وطلب نسخة قابلة للنقل من بياناتك. يمكنك تحديث ملف شركتك من لوحة التحكم. لممارسة الحقوق الأخرى، راسل {{ support_email or 'infosahbix@gmail.com' }} وسنرد خلال المدة التي يقتضيها القانون.{% else %}Subject to applicable law, you may request access to, correction of, or deletion of your personal data, object to or restrict certain processing, and request a portable copy of your data. You can update your company profile from your dashboard. To exercise other rights, email {{ support_email or 'infosahbix@gmail.com' }} and we will respond within the time required by law.{% endif %}</p>
+					<p>{{ _("Subject to applicable law, you may request access to, correction of, or deletion of your personal data, object to or restrict certain processing, and request a portable copy of your data. You can update your company profile from your dashboard. To exercise other rights, email {0} and we will respond within the time required by law.").format(support_email or 'infosahbix@gmail.com') }}</p>
 				</article>
 
 				<article class="legal-card" id="retention">
@@ -114,7 +114,7 @@
 
 				<article class="legal-card" id="contact">
 					<h2><span class="legal__num">12</span><span>{{ _("Contact us") }}</span></h2>
-					<p>{% if lang == 'ar' %}لأي سؤال أو طلب يتعلق بالخصوصية، راسل {{ support_email or 'infosahbix@gmail.com' }}. نأخذ الخصوصية على محمل الجد وسنبذل قصارى جهدنا للمساعدة.{% else %}For any privacy question or request, email {{ support_email or 'infosahbix@gmail.com' }}. We take privacy seriously and will do our best to help.{% endif %}</p>
+					<p>{{ _("For any privacy question or request, email {0}. We take privacy seriously and will do our best to help.").format(support_email or 'infosahbix@gmail.com') }}</p>
 					<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
 						<span>{{ _("Contact privacy team") }}</span>
 					</a>

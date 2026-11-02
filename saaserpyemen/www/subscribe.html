@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}اختر مساحة عملك — {{ brand_name_ar }}{% else %}{{ _('Choose your workspace') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Choose your workspace') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">
@@ -9,10 +9,10 @@
 			<div class="subscribe__aside">
 				<a class="saas-link saas-link--sm" href="{{ saas_url('/plans', lang) }}{% if new_workspace %}?new=1{% endif %}">← <span>{{ _("Back to plans") }}</span></a>
 				<h1>
-					{% if lang == 'ar' %}{{ 'غيّر خطتك' if is_change else 'أنشئ مساحة عملك' }}{% else %}{{ 'Change your plan' if is_change else 'Set up your workspace' }}{% endif %}
+					{{ _('Change your plan') if is_change else _('Set up your workspace') }}
 				</h1>
 				<p>
-					{% if lang == 'ar' %}{{ 'انتقل إلى خطة تناسب فريقك. تبقى بياناتك وإعداداتك كما هي تمامًا.' if is_change else 'خطوة أخيرة قبل أن يصبح نظام ERP جاهزًا. اختر نطاقك الفرعي وأكد بياناتك.' }}{% else %}{{ 'Move to a plan that fits your team. Your data and settings stay exactly where they are.' if is_change else 'One last step before your ERP is live. Choose your subdomain and confirm your details.' }}{% endif %}
+					{{ _('Move to a plan that fits your team. Your data and settings stay exactly where they are.') if is_change else _('One last step before your ERP is live. Choose your subdomain and confirm your details.') }}
 				</p>
 
 				<div class="order-card">
@@ -33,11 +33,11 @@
 						</small>
 					</div>
 					{% if cycle == 'Yearly' and prices.yearly_discount %}
-					<p class="order-card__save"><span>{% if lang == 'ar' %}توفر {{ prices.yearly_discount }}% عند الدفع السنوي{% else %}You save {{ prices.yearly_discount }}% with yearly billing{% endif %}</span></p>
+					<p class="order-card__save"><span>{{ _("You save {0}% with yearly billing").format(prices.yearly_discount) }}</span></p>
 					{% endif %}
 					<ul class="order-card__list">
 						{% if not new_workspace and not is_change %}
-						<li><span class="tick">✓</span><span>{% if lang == 'ar' %}{{ plan.trial_days }} يومًا تجربة مجانية{% else %}{{ plan.trial_days }} days free trial{% endif %}</span></li>
+						<li><span class="tick">✓</span><span>{{ plan.trial_days }} {{ _("days free trial") }}</span></li>
 						{% endif %}
 						<li><span class="tick">✓</span><span>{{ _("Full ERPNext suite") }}</span></li>
 						<li><span class="tick">✓</span><span>{{ _("Daily backups & updates") }}</span></li>
@@ -75,10 +75,10 @@
 				<div class="card">
 					<div class="card__head">
 						<h2>
-							{% if lang == 'ar' %}{{ 'تأكيد تغيير الخطة' if is_change else 'تفاصيل مساحة العمل' }}{% else %}{{ 'Confirm plan change' if is_change else 'Workspace details' }}{% endif %}
+							{{ _('Confirm plan change') if is_change else _('Workspace details') }}
 						</h2>
 						<p>
-							{% if lang == 'ar' %}{{ 'سنحدّث اشتراكك فورًا.' if is_change else 'تظهر هذه المعلومات في فواتيرك ومساحة عملك.' }}{% else %}{{ 'We will update your subscription immediately.' if is_change else 'This information appears on your invoices and in your workspace.' }}{% endif %}
+							{{ _('We will update your subscription immediately.') if is_change else _('This information appears on your invoices and in your workspace.') }}
 						</p>
 					</div>
 
@@ -150,7 +150,7 @@
 
 						<div class="subscribe__summary field--full">
 							<div>
-								<small>{% if lang == 'ar' %}{{ 'الدفعة الأولى' if new_workspace else ('قيمة الخطة الجديدة' if is_change else 'المستحق بعد التجربة') }}{% else %}{{ 'First payment' if new_workspace else ('New plan amount' if is_change else 'Due after trial') }}{% endif %}</small>
+								<small>{{ _('First payment') if new_workspace else (_('New plan amount') if is_change else _('Due after trial')) }}</small>
 								<strong data-summary-amount>{{ prices.currency }} {{ "{:,.0f}".format(prices.yearly if cycle == 'Yearly' else prices.monthly) }}</strong>
 							</div>
 							{% if not new_workspace and not is_change %}
@@ -172,7 +172,7 @@
 						</label>
 
 						<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block field--full" type="submit">
-							<span>{% if lang == 'ar' %}{{ 'تأكيد تغيير الخطة' if is_change else 'أنشئ مساحة عملي' }}{% else %}{{ 'Confirm plan change' if is_change else 'Create my workspace' }}{% endif %}</span>
+							<span>{{ _('Confirm plan change') if is_change else _('Create my workspace') }}</span>
 							<span class="btn-spinner" hidden></span>
 						</button>
 					</form>

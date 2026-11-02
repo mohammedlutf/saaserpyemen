@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}الخطط والأسعار — {{ brand_name_ar }}{% else %}{{ _('Plans & pricing') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Plans & pricing') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 <section class="page-hero">
@@ -9,12 +9,10 @@
 		<div class="page-hero__inner">
 			<div class="saas-pill"><span>{{ _("Pricing") }}</span></div>
 			<h1>
-				<span class="lang-en">Simple plans. <span class="gradient-text">Serious power</span>.</span>
-				<span class="lang-ar">خطط بسيطة. <span class="gradient-text">قوة حقيقية</span>.</span>
+				{{ _("Simple plans.") }} <span class="gradient-text">{{ _("Serious power") }}</span>.
 			</h1>
 			<p>
-				<span class="lang-en">{% if new_mode %}Additional workspaces are paid subscriptions — the free trial applies to your first workspace only.{% elif trial_available %}Every plan includes the full ERPNext suite and a free trial. No hidden fees, no surprises.{% else %}Choose a plan for your workspace. You can change it again at any time.{% endif %}</span>
-				<span class="lang-ar">{% if new_mode %}مساحات العمل الإضافية اشتراكات مدفوعة — التجربة المجانية لمساحة عملك الأولى فقط.{% elif trial_available %}كل خطة تشمل حزمة ERPNext الكاملة وتجربة مجانية. بدون رسوم خفية أو مفاجآت.{% else %}اختر خطة لمساحة عملك. يمكنك تغييرها مرة أخرى في أي وقت.{% endif %}</span>
+				{% if new_mode %}{{ _("Additional workspaces are paid subscriptions — the free trial applies to your first workspace only.") }}{% elif trial_available %}{{ _("Every plan includes the full ERPNext suite and a free trial. No hidden fees, no surprises.") }}{% else %}{{ _("Choose a plan for your workspace. You can change it again at any time.") }}{% endif %}
 			</p>
 		</div>
 	</div>
@@ -23,7 +21,7 @@
 <section class="section section--tight">
 	<div class="saas-container">
 		<div class="pricing-toolbar">
-			<div class="segmented" role="group" aria-label="Billing cycle">
+			<div class="segmented" role="group" aria-label="{{ _('Billing cycle') }}">
 				<a class="segmented__item {% if cycle == 'Monthly' %}active{% endif %}" href="?cycle=Monthly&currency={{ currency }}{% if change_mode %}&change=1{% endif %}{% if new_mode %}&new=1{% endif %}">
 					<span>{{ _("Monthly") }}</span>
 				</a>
@@ -32,7 +30,7 @@
 					<span class="segmented__save">{{ _("Save 2 months") }}</span>
 				</a>
 			</div>
-			<div class="currency-switch" role="group" aria-label="Currency">
+			<div class="currency-switch" role="group" aria-label="{{ _('Currency') }}">
 				{% for row in currencies %}
 				<a class="currency-switch__item {% if row.name == currency %}active{% endif %}" href="?cycle={{ cycle }}&currency={{ row.name }}{% if change_mode %}&change=1{% endif %}{% if new_mode %}&new=1{% endif %}">
 					{{ row.symbol or row.name }} {{ row.name }}
@@ -61,7 +59,7 @@
 					</span>
 				</div>
 				{% if cycle == 'Yearly' and plan.yearly_discount %}
-				<p class="plan-card__save"><span data-en="Save {{ plan.yearly_discount }}% vs monthly" data-ar="وفّر {{ plan.yearly_discount }}% مقارنةً بالشهري">Save {{ plan.yearly_discount }}% vs monthly</span></p>
+				<p class="plan-card__save"><span>{{ _("Save {0}% vs monthly").format(plan.yearly_discount) }}</span></p>
 				{% endif %}
 				<ul class="plan-card__features">
 					{% for feature in plan.features %}
@@ -78,12 +76,12 @@
 				</a>
 				{% else %}
 				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/subscribe?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}{% if new_mode %}&new=1{% endif %}">
-					<span data-en="{{ 'Choose this plan' if new_mode or not trial_available else 'Start free trial' }}" data-ar="{{ 'اختر هذه الخطة' if new_mode or not trial_available else 'ابدأ التجربة المجانية' }}">{{ 'Choose this plan' if new_mode or not trial_available else 'Start free trial' }}</span>
+					<span>{{ _('Choose this plan') if new_mode or not trial_available else _('Start free trial') }}</span>
 				</a>
 				{% endif %}
 				{% if not new_mode and trial_available %}
 				<p class="plan-card__note">
-					<span data-en="{{ plan.trial_days }} days free · cancel anytime" data-ar="{{ plan.trial_days }} يومًا مجانًا · إلغاء في أي وقت">{{ plan.trial_days }} days free · cancel anytime</span>
+					<span>{{ plan.trial_days }} {{ _("days free · cancel anytime") }}</span>
 				</p>
 				{% endif %}
 			</article>

@@ -1,17 +1,15 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}مساحة عملي — {{ brand_name_ar }}{% else %}{{ _('My workspace') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('My workspace') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
-{% set status_ar = {'Trial': 'تجربة', 'Pending': 'قيد الانتظار', 'Pending Payment': 'بانتظار الدفع', 'Active': 'نشط', 'Past Due': 'متأخر السداد', 'Suspended': 'موقوف', 'Expired': 'منتهي', 'Provisioning': 'قيد الإعداد', 'Failed': 'فشل', 'Draft': 'مسودة', 'Cancelled': 'ملغي'} %}
-{% set payment_status_ar = {'Pending Review': 'بانتظار المراجعة', 'Paid': 'مدفوع', 'Rejected': 'مرفوض', 'Refunded': 'مسترد', 'Unpaid': 'غير مدفوع'} %}
 <section class="portal">
 	<div class="saas-container">
 		<div class="portal__head">
 			<div>
 				<div class="saas-pill"><span>{{ _("Customer portal") }}</span></div>
 				<h1>
-					{% if lang == 'ar' %}مرحبًا بعودتك، {{ (account_user.first_name or account_user.full_name or 'بك') }}.{% else %}Welcome back, {{ (account_user.first_name or account_user.full_name or 'there') }}.
+					{{ _("Welcome back, {0}.").format(account_user.first_name or account_user.full_name or _('there')) }}
 				</h1>
 				<p>
 					{{ _("Everything about your workspace, plan and billing in one place.") }}
@@ -87,7 +85,7 @@
 					<span class="status status--{{ data.tenant.status | lower | replace(' ', '-') }}">{{ status_label(data.tenant.status, lang) }}</span>
 				</div>
 
-				<nav class="portal__menu" aria-label="Dashboard sections">
+				<nav class="portal__menu" aria-label="{{ _('Dashboard sections') }}">
 					<a class="portal__nav-item {% if active_tab == 'overview' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=overview">
 						<span class="portal__nav-icon">◈</span><span>{{ _("Overview") }}</span>
 					</a>
@@ -134,7 +132,7 @@
 					<div>
 						<b>{{ _("Payment under review") }}</b>
 						<p>
-							{% if lang == 'ar' %}استلمنا دفعتك {{ data.pending_payment.name }} وسنراجعها خلال يوم عمل واحد.{% else %}We received your payment {{ data.pending_payment.name }} and will review it within one business day.{% endif %}
+							{{ _("We received your payment {0} and will review it within one business day.").format(data.pending_payment.name) }}
 						</p>
 					</div>
 					<a class="saas-btn saas-btn--sm saas-btn--outline" href="{{ saas_url('/payment', lang) }}?tenant={{ data.tenant.name }}">{{ _("View") }}</a>
@@ -168,7 +166,7 @@
 					<span class="alert__icon">!</span>
 					<div>
 						<b>{{ _("Your workspace needs attention") }}</b>
-						<p>{% if lang == 'ar' %}اشتراكك {{ status_ar.get(data.tenant.status, data.tenant.status) }}. أكمل الدفع لمواصلة استخدام نظام ERP.{% else %}Your subscription is {{ data.tenant.status }}. Complete your payment to keep using your ERP.{% endif %}</p>
+						<p>{{ _("Your subscription is {0}. Complete your payment to keep using your ERP.").format(status_label(data.tenant.status, lang)) }}</p>
 					</div>
 					<a class="saas-btn saas-btn--sm saas-btn--primary" href="{{ data.payment_url }}">{{ _("Pay now") }}</a>
 				</div>
@@ -182,7 +180,7 @@
 								<small>{{ _("Current plan") }}</small>
 								<h2>{{ data.plan.plan_name if data.plan else data.tenant.plan }}</h2>
 							</div>
-							<span class="badge badge--accent">{{ data.subscription.billing_cycle if data.subscription else 'Monthly' }}</span>
+							<span class="badge badge--accent">{{ data.subscription.billing_cycle if data.subscription else _('Monthly') }}</span>
 						</div>
 						<div class="plan-summary">
 							<div>
@@ -358,7 +356,7 @@
 						{% endif %}
 					</div>
 					<p class="muted small">
-						{% if lang == 'ar' %}آخر مزامنة: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'لم تتم المزامنة بعد' }}{% else %}Last synced: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'not synced yet' }}{% endif %}
+						{{ _("Last synced: {0}").format(frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else _('not synced yet')) }}
 					</p>
 				</div>
 
@@ -381,7 +379,7 @@
 							<div><dt>{{ _("Trial ends") }}</dt><dd>{% if data.subscription and data.subscription.status == 'Trial' %}{{ frappe.utils.formatdate(data.subscription.trial_end_date, 'dd MMM yyyy') if data.subscription.trial_end_date else '—' }}{% else %}—{% endif %}</dd></div>
 							<div><dt>{{ _("Current period ends") }}</dt><dd>{{ frappe.utils.formatdate(data.subscription.end_date, 'dd MMM yyyy') if data.subscription and data.subscription.end_date else '—' }}</dd></div>
 							<div><dt>{{ _("Next billing date") }}</dt><dd>{{ frappe.utils.formatdate(data.subscription.next_billing_date, 'dd MMM yyyy') if data.subscription and data.subscription.next_billing_date else '—' }}</dd></div>
-							<div><dt>{{ _("Auto renew") }}</dt><dd><span>{{ 'On' if data.subscription and data.subscription.auto_renew else 'Off' }}</span></dd></div>
+							<div><dt>{{ _("Auto renew") }}</dt><dd><span>{{ _('On') if data.subscription and data.subscription.auto_renew else _('Off') }}</span></dd></div>
 						</dl>
 					</div>
 
@@ -399,7 +397,7 @@
 						</div>
 						{% if data.subscription and data.subscription.auto_renew %}
 						<button class="saas-link saas-link--danger" type="button" data-cancel-subscription data-tenant="{{ data.tenant.name }}" data-pending="{{ '1' if data.tenant.status == 'Pending Payment' else '0' }}">
-							<span>{{ 'Cancel workspace' if data.tenant.status == 'Pending Payment' else 'Cancel auto-renewal' }}</span>
+							<span>{{ _('Cancel workspace') if data.tenant.status == 'Pending Payment' else _('Cancel auto-renewal') }}</span>
 						</button>
 						{% endif %}
 					</div>

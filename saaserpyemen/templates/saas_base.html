@@ -1,60 +1,98 @@
-{% extends "templates/base.html" %}
 
-{% block meta_block %}
-	{{ super() }}
-	<meta name="description" content="{% block meta_description %}{% if lang == 'ar' %}{{ brand_name_ar or 'سحبيكس' }} — منصة ERP سحابية شاملة للشركات النامية — المحاسبة والمبيعات والمخزون والموارد البشرية والمزيد.{% else %}{{ brand_name or 'Sahbix' }} — {{ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endif %}{% endblock %}">
-	<meta name="theme-color" content="#ffffff">
-{% endblock %}
+<!DOCTYPE html>
+<html lang="{{ lang or 'en' }}"
+      dir="{{ 'rtl' if (lang or 'en') == 'ar' else 'ltr' }}"
+      class="{% if (lang or 'en') == 'ar' %}saas-ar{% endif %}">
 
-{% block favicon %}
-	<link rel="shortcut icon" href="/assets/saaserpyemen/images/favicon-square.png" type="image/png">
-	<link rel="apple-touch-icon" href="/assets/saaserpyemen/images/favicon-square.png">
-{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block head_include %}
-	{{ super() }}
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-	<script>
-		(function () {
-			try {
-				var lang = {{ (lang or 'en') | tojson }};
-				var arabic = lang === "ar";
-				document.documentElement.classList.toggle("saas-ar", arabic);
-				document.documentElement.lang = arabic ? "ar" : "en";
-				document.documentElement.dir = arabic ? "rtl" : "ltr";
-			} catch (e) { /* ignore */ }
-		})();
-	</script>
-{% endblock %}
+    <title>{% block title %}{{ brand_name or 'Sahbix' }}{% endblock %}</title>
 
-{% block navbar %}
-	{% include "templates/includes/saas_nav.html" %}
-{% endblock %}
+    {% block meta_block %}
+        <meta name="description"
+              content="{% block meta_description %}{{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }} — {{ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endblock %}">
 
-{% block content %}
-	<main id="saas-main" class="saas-main">
-		{% block page_content %}{{ content }}{% endblock %}
-	</main>
-{% endblock %}
+        <meta name="theme-color" content="#ffffff">
+        <meta name="robots" content="index, follow">
+    {% endblock %}
 
-{% block footer %}
-	{% include "templates/includes/saas_footer.html" %}
-{% endblock %}
+    {% block favicon %}
+        <link rel="icon"
+              href="/assets/saaserpyemen/images/favicon-square.png"
+              type="image/png">
 
-{% block script %}
-	{{ super() }}
-	<script>
-		window.saas = Object.assign(window.saas || {}, {
-			csrf_token: {{ (frappe.session.csrf_token or '') | tojson }},
-			site_url: {{ (frappe.utils.get_url() or '') | tojson }},
-			user: {{ (frappe.session.user or 'Guest') | tojson }},
-			is_manager: {{ (is_manager if is_manager is defined else false) | tojson }},
-			logged_in: {{ (frappe.session.user != 'Guest') | tojson }},
-			lang: {{ (lang or 'en') | tojson }},
-			currency: {{ (default_currency or 'USD') | tojson }},
-			domain: {{ (domain or '') | tojson }}
-		});
-	</script>
-{% endblock %}
+        <link rel="apple-touch-icon"
+              href="/assets/saaserpyemen/images/favicon-square.png">
+    {% endblock %}
+
+    {% block head_include %}
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+              rel="stylesheet">
+
+        <link rel="stylesheet"
+              href="/assets/saaserpyemen/css/saas.css">
+
+        <script>
+            (function () {
+                var lang = {{ (lang or 'en') | tojson }};
+                var arabic = lang === "ar";
+
+                document.documentElement.classList.toggle("saas-ar", arabic);
+                document.documentElement.lang = arabic ? "ar" : "en";
+                document.documentElement.dir = arabic ? "rtl" : "ltr";
+            })();
+        </script>
+
+    {% endblock %}
+
+    {% block extra_head %}{% endblock %}
+
+</head>
+
+<body class="{% block body_class %}saas-website{% endblock %}">
+
+    {% block navbar %}
+        {% include "templates/includes/saas_nav.html" %}
+    {% endblock %}
+
+    {% block content %}
+
+        <main id="saas-main" class="saas-main">
+
+            {% block page_content %}
+                {{ content or '' }}
+            {% endblock %}
+
+        </main>
+
+    {% endblock %}
+
+    {% block footer %}
+        {% include "templates/includes/saas_footer.html" %}
+    {% endblock %}
+
+    <script>
+        window.saas = Object.assign(window.saas || {}, {
+            csrf_token: {{ (frappe.session.csrf_token or '') | tojson }},
+            site_url: {{ (frappe.utils.get_url() or '') | tojson }},
+            user: {{ (frappe.session.user or 'Guest') | tojson }},
+            is_manager: {{ (is_manager if is_manager is defined else false) | tojson }},
+            logged_in: {{ (frappe.session.user != 'Guest') | tojson }},
+            lang: {{ (lang or 'en') | tojson }},
+            currency: {{ (default_currency or 'USD') | tojson }},
+            domain: {{ (domain or '') | tojson }}
+        });
+    </script>
+
+    <script src="/assets/saaserpyemen/js/saas.js"></script>
+
+    {% block script %}{% endblock %}
+
+</body>
+</html>

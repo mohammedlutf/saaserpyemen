@@ -1,6 +1,6 @@
 {% extends "templates/saas_base.html" %}
 
-{% block title %}{% if lang == 'ar' %}مساحة العمل موقوفة — {{ brand_name_ar }}{% else %}{{ _('Workspace suspended') }} — {{ brand_name }}{% endif %}{% endblock %}
+{% block title %}{{ _('Workspace suspended') }} — {{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }}{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">
@@ -20,11 +20,7 @@
 				{{ _("This workspace is taking a short break.") }}
 			</h1>
 			<p class="suspended__lead">
-				{% if lang == 'ar' %}
-				تم إيقاف الوصول إلى <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'مساحة العمل هذه' }}</b> مؤقتًا. يحدث هذا عادةً عند انتهاء الاشتراك أو انتظار الموافقة على دفعة.
-				{% else %}
-				Access to <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'this workspace' }}</b> is temporarily paused. This usually happens when a subscription has expired or a payment is awaiting approval.
-				{% endif %}
+				{{ _("Access to") }} <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or _('this workspace') }}</b> {{ _("is temporarily paused. This usually happens when a subscription has expired or a payment is awaiting approval.") }}
 			</p>
 
 			{% if suspended_tenant %}
