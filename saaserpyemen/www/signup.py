@@ -39,4 +39,4 @@ def get_context(context):
 	from frappe import _
 
 	context.title = f"{_('Create your account')} — {context.brand_name}"
-	context.metatags = {"description": _("Create your free {0} account and start a 30-day trial.").format(context.brand_name)}
+	context.metatags = {"description": _("Create your free {0} account and start a 14-day trial.").format(context.brand_name)}
