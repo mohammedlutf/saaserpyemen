@@ -123,7 +123,7 @@ def require_login(context, redirect: str | None = None) -> None:
 	else:
 		lang = getattr(context, "lang", None) or get_language()
 	target = quote(target, safe="")
-	frappe.local.flags.redirect_location = i18n.localized_url("/signin", lang) + "?redirect=" + target
+	frappe.local.flags.redirect_location = i18n.localized_url("/login", lang) + "?redirect=" + target
 	raise frappe.Redirect
 
 

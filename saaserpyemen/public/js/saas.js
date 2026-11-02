@@ -356,8 +356,8 @@
 	/* ----------------------------------------------------------------------
 	   Sign in
 	   ---------------------------------------------------------------------- */
-	function initSignin() {
-		const form = $("#signin-form");
+	function initlogin() {
+		const form = $("#login-form");
 		if (!form) return;
 		form.addEventListener("submit", async function (event) {
 			event.preventDefault();
@@ -841,7 +841,7 @@
 		initLogout();
 		initPasswordToggles();
 		initPasswordMeter();
-		initSignin();
+		initlogin();
 		initSignup();
 		initSubscribe();
 		initDashboard();

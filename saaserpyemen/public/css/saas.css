@@ -1579,7 +1579,7 @@ html.saas-ar .saas-footer__bottom { direction: rtl; }
 	}
 	.saas-nav__links.open { display: flex; }
 	.saas-nav__links a { padding: 11px 14px; }
-	.saas-nav__actions .saas-nav__signin { display: none; }
+	.saas-nav__actions .saas-nav__login { display: none; }
 	.saas-nav__cta { padding: 10px 16px; font-size: 13.5px; }
 	.saas-lang { padding: 9px 12px; }
 }

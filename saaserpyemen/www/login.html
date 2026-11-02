@@ -52,7 +52,7 @@
 			<div class="auth__divider"><span>{{ _("or continue with email") }}</span></div>
 			{% endif %}
 
-			<form class="form" id="signin-form" data-redirect="{{ redirect_to }}" novalidate>
+			<form class="form" id="login-form" data-redirect="{{ redirect_to }}" novalidate>
 				<label class="field">
 					<span class="field__label">{{ _("Email or username") }}</span>
 					<div class="field__control">
@@ -86,7 +86,7 @@
 			</p>
 			{% endif %}
 			<p class="auth__help">
-				<span>{{ _("Trouble signing in?") }}</span>
+				<span>{{ _("Trouble loging in?") }}</span>
 				<a href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">{{ _("Contact support") }}</a>
 			</p>
 		</div>
