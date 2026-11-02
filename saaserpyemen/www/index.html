@@ -235,7 +235,7 @@
 					</li>
 					{% endfor %}
 				</ul>
-				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/signup?plan={{ plan.slug }}">
+				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="{{ saas_url('//signup?plan={{ plan.slug }}') }}">
 					<span>{{ _("Start free trial") }}</span>
 				</a>
 				<p class="plan-card__note">
@@ -245,7 +245,7 @@
 			{% endfor %}
 		</div>
 		<div class="section__foot">
-			<a class="saas-link" href="/plans">
+			<a class="saas-link" href="{{ saas_url('/plans') }}">
 				<span>{{ _("Compare all features in detail") }}</span> →
 			</a>
 		</div>
@@ -352,7 +352,7 @@
 				</p>
 			</div>
 			<div class="cta__actions">
-				<a class="saas-btn saas-btn--white saas-btn--lg" href="/signup">
+				<a class="saas-btn saas-btn--white saas-btn--lg" href="{{ saas_url('/signup') }}">
 					<span>{{ _("Start free trial") }}</span> →
 				</a>
 				<a class="saas-btn saas-btn--ghost-light saas-btn--lg" href="mailto:{{ settings.support_email or 'infosahbix@gmail.com' }}">

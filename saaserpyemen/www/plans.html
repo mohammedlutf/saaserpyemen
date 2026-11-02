@@ -45,7 +45,7 @@
 				{% if plan.featured %}<span class="plan-card__ribbon">{{ _("Most popular") }}</span>{% endif %}
 				<div class="plan-card__head">
 					<span class="plan-card__icon" style="background: {{ plan.color }}1a; color: {{ plan.color }}">✦</span>
-					<h3>{{ plan.plan_name }}</h3>
+					<h3>{{ _(plan.plan_name) }}</h3>
 					<p class="plan-card__tagline">
 						<span class="lang-en">{{ plan.tagline_en }}</span>
 						<span class="lang-ar">{{ plan.tagline_ar }}</span>
@@ -71,11 +71,11 @@
 					{% endfor %}
 				</ul>
 				{% if change_mode %}
-				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/subscribe?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}{% if selected_tenant %}&tenant={{ selected_tenant }}{% endif %}">
+				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="{{ saas_url('/subscribe?plan=' ~ plan.slug ~ '&cycle=' ~ cycle ~ '&currency=' ~ currency ~ ('&tenant=' ~ selected_tenant if selected_tenant else ''), lang) }}">
 					<span>{{ _("Choose this plan") }}</span>
 				</a>
 				{% else %}
-				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="/subscribe?plan={{ plan.slug }}&cycle={{ cycle }}&currency={{ currency }}{% if new_mode %}&new=1{% endif %}">
+				<a class="saas-btn {% if plan.featured %}saas-btn--primary{% else %}saas-btn--outline{% endif %} saas-btn--block" href="{{ saas_url('/subscribe?plan=' ~ plan.slug ~ '&cycle=' ~ cycle ~ '&currency=' ~ currency ~ ('&new=1' if new_mode else ''), lang) }}">
 					<span>{{ _('Choose this plan') if new_mode or not trial_available else _('Start free trial') }}</span>
 				</a>
 				{% endif %}
@@ -97,7 +97,7 @@
 					<thead>
 						<tr>
 							<th></th>
-							{% for plan in plans %}<th style="--accent: {{ plan.color }}">{{ plan.plan_name }}</th>{% endfor %}
+							{% for plan in plans %}<th style="--accent: {{ plan.color }}">{{ _(plan.plan_name) }}</th>{% endfor %}
 						</tr>
 					</thead>
 					<tbody>

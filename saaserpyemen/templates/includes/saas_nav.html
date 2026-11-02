@@ -31,10 +31,10 @@
 
 			{% if frappe.session.user != 'Guest' %}
 				<a class="saas-btn saas-btn--primary saas-nav__cta" href="{{ saas_url('/dashboard') }}">{{ _('Dashboard') }}</a>
-				<button class="saas-btn saas-btn--ghost saas-nav__logout" type="button" data-logout>
+				<!-- <button class="saas-btn saas-btn--ghost saas-nav__logout" type="button" data-logout>
 					<span class="saas-nav__logout-icon" aria-hidden="true">⏻</span>
 					<span>{{ _('Sign out') }}</span>
-				</button>
+				</button> -->
 			{% else %}
 				<a class="saas-btn saas-btn--ghost saas-nav__login" href="{{ saas_url('/login') }}">{{ _('Sign in') }}</a>
 				<a class="saas-btn saas-btn--primary saas-nav__cta" href="{{ saas_url('/signup') }}">{{ _('Start free trial') }}</a>

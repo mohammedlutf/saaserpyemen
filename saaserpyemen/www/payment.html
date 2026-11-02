@@ -41,10 +41,10 @@
 							<small>{{ _("Amount due") }}</small>
 							<h2 class="pay-amount">{{ format_money(data.amount, data.currency) }}</h2>
 						</div>
-						<span class="badge badge--accent">{{ data.subscription.billing_cycle }}</span>
+						<span class="badge badge--accent">{{ _(data.subscription.billing_cycle) }}</span>
 					</div>
 					<dl class="detail-list detail-list--compact">
-						<div><dt>{{ _("Plan") }}</dt><dd>{{ data.plan.plan_name if data.plan else data.subscription.plan }}</dd></div>
+						<div><dt>{{ _("Plan") }}</dt><dd>{{ _(data.plan.plan_name) if data.plan else _(data.subscription.plan) }}</dd></div>
 						<div><dt>{{ _("Billing period") }}</dt><dd>{{ frappe.utils.formatdate(data.period_start, 'dd MMM yyyy') }} – {{ frappe.utils.formatdate(data.period_end, 'dd MMM yyyy') }}</dd></div>
 						<div><dt>{{ _("Workspace") }}</dt><dd>{{ data.tenant.subdomain }}.{{ domain }}</dd></div>
 						<div><dt>{{ _("Reference") }}</dt><dd><b>{{ data.tenant.subdomain }}</b></dd></div>

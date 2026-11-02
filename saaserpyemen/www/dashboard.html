@@ -17,16 +17,16 @@
 			</div>
 			<div class="portal__head-actions">
 				{% if data %}
-				<a class="saas-btn saas-btn--outline" href="{{ data.upgrade_url }}">
+				<a class="saas-btn saas-btn--outline" href="{{ saas_url(data.upgrade_url) }}">
 					<span>{{ _("Change plan") }}</span>
 				</a>
 				{% if data.tenant.provisioning_status == 'Completed' %}
-				<a class="saas-btn saas-btn--primary" href="{{ data.tenant.site_url }}/app" target="_blank" rel="noopener">
+				<a class="saas-btn saas-btn--primary" href="{{ saas_url(data.tenant.site_url) }}/app" target="_blank" rel="noopener">
 					<span>{{ _("Open my ERP") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
 				{% elif data.tenant.status == 'Pending Payment' %}
-				<a class="saas-btn saas-btn--primary" href="{{ data.payment_url }}">
+				<a class="saas-btn saas-btn--primary" href="{{ saas_url(data.payment_url) }}">
 					<span>{{ _("Pay now") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
@@ -178,9 +178,9 @@
 						<div class="panel__head">
 							<div>
 								<small>{{ _("Current plan") }}</small>
-								<h2>{{ data.plan.plan_name if data.plan else data.tenant.plan }}</h2>
+								<h2>{{ _(data.plan.plan_name) if data.plan else _(data.tenant.plan) }}</h2>
 							</div>
-							<span class="badge badge--accent">{{ data.subscription.billing_cycle if data.subscription else _('Monthly') }}</span>
+							<span class="badge badge--accent">{{ _(data.subscription.billing_cycle) if data.subscription else _('Monthly') }}</span>
 						</div>
 						<div class="plan-summary">
 							<div>
@@ -203,8 +203,8 @@
 							</div>
 						</div>
 						<div class="panel__actions">
-							<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.payment_url }}">{{ _("Make a payment") }}</a>
-							<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ data.upgrade_url }}">{{ _("Upgrade or change") }}</a>
+							<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.payment_url) }}">{{ _("Make a payment") }}</a>
+							<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ saas_url(data.upgrade_url) }}">{{ _("Upgrade or change") }}</a>
 						</div>
 					</div>
 
@@ -314,7 +314,7 @@
 							<small>{{ _("Live usage") }}</small>
 							<h2>{{ _("Plan usage & limits") }}</h2>
 						</div>
-						<span class="badge badge--soft">{{ data.plan.plan_name if data.plan else '' }}</span>
+						<span class="badge badge--soft">{{ _(data.plan.plan_name) if data.plan else '' }}</span>
 					</div>
 					<p class="panel__lead">{{ _("Usage is synced from your ERP workspace automatically. Limits are enforced when you create new users, branches or companies.") }}</p>
 
@@ -350,7 +350,7 @@
 					</div>
 
 					<div class="panel__actions">
-						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.upgrade_url }}">{{ _("Upgrade my plan") }}</a>
+						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.upgrade_url) }}">{{ _("Upgrade my plan") }}</a>
 						{% if data.tenant.provisioning_status == 'Completed' %}
 						<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ data.tenant.site_url }}/app" target="_blank" rel="noopener">{{ _("Manage in ERP") }}</a>
 						{% endif %}
@@ -371,8 +371,8 @@
 							<strong class="status status--{{ (data.subscription.status if data.subscription else data.tenant.status) | lower | replace(' ', '-') }}">{{ status_label(data.subscription.status if data.subscription else data.tenant.status, lang) }}</strong>
 						</div>
 						<dl class="detail-list">
-							<div><dt>{{ _("Plan") }}</dt><dd>{{ data.plan.plan_name if data.plan else data.tenant.plan }}</dd></div>
-							<div><dt>{{ _("Billing cycle") }}</dt><dd>{{ data.subscription.billing_cycle if data.subscription else '—' }}</dd></div>
+							<div><dt>{{ _("Plan") }}</dt><dd>{{ _(data.plan.plan_name) if data.plan else _(data.tenant.plan) }}</dd></div>
+							<div><dt>{{ _("Billing cycle") }}</dt><dd>{{ _(data.subscription.billing_cycle) if data.subscription else '—' }}</dd></div>
 							<div><dt>{{ _("Amount") }}</dt><dd>{{ format_money(data.subscription.amount, data.subscription.currency) if data.subscription else '—' }}</dd></div>
 							<div><dt>{{ _("Payment status") }}</dt><dd><span>{{ status_label(data.subscription.payment_status if data.subscription else 'Unpaid', lang) }}</span></dd></div>
 							<div><dt>{{ _("Started on") }}</dt><dd>{{ frappe.utils.formatdate(data.subscription.start_date, 'dd MMM yyyy') if data.subscription and data.subscription.start_date else '—' }}</dd></div>
@@ -392,8 +392,8 @@
 						</div>
 						<p>{{ _("Pay by bank transfer and upload your receipt. Our team reviews manual payments within one business day.") }}</p>
 						<div class="panel__actions panel__actions--column">
-							<a class="saas-btn saas-btn--primary saas-btn--block" href="{{ data.payment_url }}">{{ _("Pay / renew now") }}</a>
-							<a class="saas-btn saas-btn--outline saas-btn--block" href="{{ data.upgrade_url }}">{{ _("Change plan") }}</a>
+							<a class="saas-btn saas-btn--primary saas-btn--block" href="{{ saas_url(data.payment_url) }}">{{ _("Pay / renew now") }}</a>
+							<a class="saas-btn saas-btn--outline saas-btn--block" href="{{ saas_url(data.upgrade_url) }}">{{ _("Change plan") }}</a>
 						</div>
 						{% if data.subscription and data.subscription.auto_renew %}
 						<button class="saas-link saas-link--danger" type="button" data-cancel-subscription data-tenant="{{ data.tenant.name }}" data-pending="{{ '1' if data.tenant.status == 'Pending Payment' else '0' }}">
@@ -410,7 +410,7 @@
 							<small>{{ _("Billing") }}</small>
 							<h2>{{ _("Payments & receipts") }}</h2>
 						</div>
-						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.payment_url }}">{{ _("New payment") }}</a>
+						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.payment_url) }}">{{ _("New payment") }}</a>
 					</div>
 					{% if data.payments %}
 					<div class="table-wrap">
@@ -444,11 +444,12 @@
 						<div class="empty-state__icon">◎</div>
 						<h3>{{ _("No payments yet") }}</h3>
 						<p>{{ _("When you submit a manual payment it will appear here with its status.") }}</p>
-						<a class="saas-btn saas-btn--outline" href="{{ data.payment_url }}">{{ _("Make your first payment") }}</a>
+						<a class="saas-btn saas-btn--outline" href="{{ saas_url(data.payment_url) }}">{{ _("Make your first payment") }}</a>
 					</div>
 					{% endif %}
 				</div>
 
+				<!-- login credentioals start -->
 				{% elif active_tab == 'credentials' %}
 				{% if data.tenant.provisioning_status != 'Completed' %}
 				<div class="panel panel--wide">
@@ -504,7 +505,7 @@
 					</div>
 				</div>
 				{% endif %}
-
+				<!-- login credentioal ends -->
 				{% elif active_tab == 'profile' %}
 				<div class="portal__grid">
 					<div class="panel">
