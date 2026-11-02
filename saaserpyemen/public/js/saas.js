@@ -55,7 +55,7 @@
 		return "";
 	}
 
-	async function call(method, args) {
+	async function callFull(method, args) {
 		args = args || {};
 		const url = "/api/method/" + String(method).replace(/^\/+/, "");
 		const body = new URLSearchParams();
@@ -86,6 +86,11 @@
 			error.status = response.status;
 			throw error;
 		}
+		return data;
+	}
+
+	async function call(method, args) {
+		const data = await callFull(method, args);
 		return data.message;
 	}
 
@@ -339,17 +344,20 @@
 	}
 
 	function initPasswordMeter() {
-		const input = $("#signup-password");
-		const meter = $(".password-meter");
-		if (!input || !meter) return;
-		input.addEventListener("input", function () {
-			const value = input.value || "";
-			let score = 0;
-			if (value.length >= 8) score += 1;
-			if (value.length >= 12) score += 1;
-			if (/[A-Z]/.test(value) && /[a-z]/.test(value)) score += 1;
-			if (/[0-9]/.test(value) && /[^A-Za-z0-9]/.test(value)) score += 1;
-			meter.setAttribute("data-score", String(Math.min(score, 4)));
+		const inputs = [$("#signup-password")].concat($$("[data-password-meter]"));
+		inputs.filter(Boolean).forEach(function (input) {
+			const field = input.closest(".field");
+			const meter = field ? $(".password-meter", field) : null;
+			if (!meter) return;
+			input.addEventListener("input", function () {
+				const value = input.value || "";
+				let score = 0;
+				if (value.length >= 8) score += 1;
+				if (value.length >= 12) score += 1;
+				if (/[A-Z]/.test(value) && /[a-z]/.test(value)) score += 1;
+				if (/[0-9]/.test(value) && /[^A-Za-z0-9]/.test(value)) score += 1;
+				meter.setAttribute("data-score", String(Math.min(score, 4)));
+			});
 		});
 	}
 
@@ -374,6 +382,106 @@
 				await call("login", { usr: usr, pwd: pwd });
 				const redirect = form.getAttribute("data-redirect") || "/dashboard";
 				window.location.href = redirect;
+			} catch (error) {
+				showError(form, error.message);
+				setLoading(button, false);
+			}
+		});
+	}
+
+	/* ----------------------------------------------------------------------
+	   Forgot password (login#forgot) & update password
+	   ---------------------------------------------------------------------- */
+	function initAuthPanes() {
+		const forgot = $('[data-pane="forgot"]');
+		if (!forgot || !forgot.parentElement) return;
+		const wrap = forgot.parentElement;
+
+		function apply() {
+			const active = window.location.hash === "#forgot";
+			forgot.hidden = !active;
+			wrap.setAttribute("data-pane-active", active ? "forgot" : "");
+			if (active) {
+				const input = $("#forgot-form input", forgot);
+				if (input) {
+					try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+				}
+			}
+		}
+
+		window.addEventListener("hashchange", apply);
+		apply();
+	}
+
+	function initForgot() {
+		const form = $("#forgot-form");
+		if (!form) return;
+		form.addEventListener("submit", async function (event) {
+			event.preventDefault();
+			clearError(form);
+			const email = (form.usr.value || "").trim();
+			if (!email) {
+				showError(form, t("Please enter your email address.", "يرجى إدخال عنوان بريدك الإلكتروني."));
+				return;
+			}
+			const button = $('button[type="submit"]', form);
+			setLoading(button, true);
+			try {
+				const data = await callFull("frappe.core.doctype.user.user.reset_password", { user: email });
+				const message = serverMessage(data) || t(
+					"If this email is registered with us, we have sent password reset instructions to it. Please check your inbox.",
+					"إذا كان هذا البريد مسجلاً لدينا، فأرسلنا تعليمات إعادة تعيين كلمة المرور إليه. يرجى فتح صندوق الوارد."
+				);
+				const box = $("[data-forgot-message]");
+				if (box) box.textContent = message;
+				form.hidden = true;
+				const success = $("[data-forgot-success]");
+				if (success) success.hidden = false;
+			} catch (error) {
+				showError(form, error.message);
+				setLoading(button, false);
+			}
+		});
+	}
+
+	function initUpdatePassword() {
+		const form = $("#update-password-form");
+		if (!form) return;
+		const key = form.getAttribute("data-key") || "";
+
+		form.addEventListener("submit", async function (event) {
+			event.preventDefault();
+			clearError(form);
+			const oldPassword = form.old_password ? form.old_password.value || "" : "";
+			const newPassword = form.new_password.value || "";
+			const confirmPassword = form.confirm_password.value || "";
+
+			if (!key && !oldPassword) return showError(form, t("Please enter your current password.", "يرجى إدخال كلمة مرورك الحالية."));
+			if (!newPassword) return showError(form, t("Please enter your new password.", "يرجى إدخال كلمة مرورك الجديدة."));
+			if (newPassword.length < 8) return showError(form, t("Password must be at least 8 characters long.", "يجب أن تكون كلمة المرور 8 أحرف على الأقل."));
+			if (!key && oldPassword && newPassword === oldPassword) {
+				return showError(form, t("The new password cannot be the same as your current password.", "لا يمكن أن تكون كلمة المرور الجديدة نفس الحالية."));
+			}
+			if (newPassword !== confirmPassword) return showError(form, t("The passwords do not match.", "كلمتا المرور غير متطابقتين."));
+
+			const button = $('button[type="submit"]', form);
+			setLoading(button, true);
+			try {
+				const result = await call("frappe.core.doctype.user.user.update_password", {
+					key: key || "",
+					old_password: oldPassword,
+					new_password: newPassword,
+					confirm_password: confirmPassword,
+					logout_all_sessions: 1
+				});
+				form.hidden = true;
+				const success = $("[data-update-success]");
+				if (success) success.hidden = false;
+				let target = typeof result === "string" ? result.trim() : "";
+				if (!target || target === "/") {
+					target = form.getAttribute("data-fallback") || "/dashboard";
+				}
+				window.setTimeout(function () { window.location.href = target; }, 1800);
 			} catch (error) {
 				showError(form, error.message);
 				setLoading(button, false);
@@ -842,6 +950,9 @@
 		initPasswordToggles();
 		initPasswordMeter();
 		initlogin();
+		initAuthPanes();
+		initForgot();
+		initUpdatePassword();
 		initSignup();
 		initSubscribe();
 		initDashboard();

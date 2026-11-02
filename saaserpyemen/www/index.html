@@ -19,11 +19,11 @@
 				{% if lang == 'ar' %}{{ settings.hero_subtitle_ar if settings.hero_subtitle_ar else _('Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.') }}{% else %}{{ settings.hero_subtitle_en if settings.hero_subtitle_en else _('Sahbix gives you a complete, secure ERPNext workspace for accounting, sales, purchasing, inventory, HR and more — live in minutes.') }}{% endif %}
 			</p>
 			<div class="hero__actions">
-				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/signup">
+				<a class="saas-btn saas-btn--primary saas-btn--lg" href="{{ saas_url('/signup') }}">
 					<span>{{ _("Start your free trial") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
-				<a class="saas-btn saas-btn--glass saas-btn--lg" href="/plans">
+				<a class="saas-btn saas-btn--glass saas-btn--lg" href="{{ saas_url('/plans') }}">
 					<span>{{ _("Explore plans") }}</span>
 				</a>
 			</div>

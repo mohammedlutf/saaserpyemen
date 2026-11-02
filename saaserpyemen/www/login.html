@@ -70,7 +70,7 @@
 				</label>
 				<div class="form__row">
 					<label class="checkbox"><input type="checkbox" name="remember" checked><span>{{ _("Remember me") }}</span></label>
-					<a class="saas-link saas-link--sm" href="/login#forgot">{{ _("Forgot password?") }}</a>
+					<a class="saas-link saas-link--sm" href="{{ saas_url('/login#forgot', lang) }}">{{ _("Forgot password?") }}</a>
 				</div>
 				<div class="form__error" data-form-error hidden></div>
 				<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block" type="submit">
@@ -89,6 +89,39 @@
 				<span>{{ _("Trouble loging in?") }}</span>
 				<a href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">{{ _("Contact support") }}</a>
 			</p>
+
+			<div class="auth__forgot" data-pane="forgot" hidden>
+				<div class="saas-pill"><span>{{ _("Forgot password?") }}</span></div>
+				<h1>{{ _("Reset your password") }}</h1>
+				<p class="auth__sub">
+					<span>{{ _("Enter your email address and we will send you a link to reset your password.") }}</span>
+				</p>
+
+				<form class="form" id="forgot-form" novalidate>
+					<label class="field">
+						<span class="field__label">{{ _("Email") }}</span>
+						<div class="field__control">
+							<span class="field__icon">@</span>
+							<input type="email" name="usr" autocomplete="email" required placeholder="{{ _("you@company.com") }}">
+						</div>
+					</label>
+					<div class="form__error" data-form-error hidden></div>
+					<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block" type="submit">
+						<span>{{ _("Send reset link") }}</span>
+						<span class="btn-spinner" hidden></span>
+					</button>
+				</form>
+
+				<div class="form__success" data-forgot-success hidden>
+					<b>{{ _("Check your email") }}</b>
+					<span data-forgot-message></span>
+					<p>{{ _("The link may take a minute to arrive. If you do not see it, check your spam folder.") }}</p>
+				</div>
+
+				<p class="auth__switch">
+					<a href="{{ saas_url('/login', lang) }}">{{ _("Back to sign in") }}</a>
+				</p>
+			</div>
 		</div>
 	</div>
 </section>

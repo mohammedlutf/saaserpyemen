@@ -581,7 +581,7 @@
 							<div><dt>{{ _("Workspace") }}</dt><dd>{{ data.tenant.name }}</dd></div>
 						</dl>
 						<p class="muted small">{{ _("To change your portal password, use the standard password reset page.") }}</p>
-						<a class="saas-link saas-link--sm" href="/login#forgot">{{ _("Reset portal password") }}</a>
+						<a class="saas-link saas-link--sm" href="{{ saas_url('/update-password', lang) }}">{{ _("Reset portal password") }}</a>
 					</div>
 				</div>
 				{% endif %}
