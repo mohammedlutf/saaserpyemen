@@ -76,6 +76,11 @@ scheduler_events = {
 }
 
 # ---------------------------------------------------------------------------
+# Website routing
+# ---------------------------------------------------------------------------
+website_path_resolver = ["saaserpyemen.i18n.resolve_website_path"]
+
+# ---------------------------------------------------------------------------
 # Jinja helpers
 # ---------------------------------------------------------------------------
 jinja = {
@@ -87,6 +92,11 @@ jinja = {
 		"saaserpyemen.utils.get_domain",
 		"saaserpyemen.utils.get_central_url",
 		"saaserpyemen.utils.get_site_url",
+		"saaserpyemen.i18n.localized_url",
+		"saaserpyemen.i18n.saas_url",
+		"saaserpyemen.i18n.switch_language_url",
+		"saaserpyemen.i18n.localized_text",
+		"saaserpyemen.i18n.status_label",
 	]
 }
 

@@ -24,41 +24,69 @@ from saaserpyemen.utils import (
 
 
 def get_language() -> str:
-	# The website language toggle writes the `preferred_language` cookie.
-	# Respect it for guests and signed-in users so the page direction, CSS
-	# bundle and logo can switch together on reload.
-	lang = None
+	# Prefer URL prefix (/en, /ar) over cookies/User language
 	try:
-		lang = frappe.request.cookies.get("preferred_language")
+		lang = getattr(frappe.local.flags, "saas_lang", None)
 	except Exception:
 		lang = None
-	if lang not in ("en", "ar"):
-		user = frappe.session.user
-		if user and user != "Guest":
-			lang = frappe.db.get_value("User", user, "language")
-		lang = lang or frappe.local.lang or "en"
-	resolved = "ar" if str(lang).lower().startswith("ar") else "en"
+	if lang in ("en", "ar"):
+		resolved = lang
+	else:
+		try:
+			req = getattr(frappe.local, "request", None)
+			path = ""
+			if req:
+				path = getattr(req, "path", "") or getattr(req, "full_path", "") or ""
+			from saaserpyemen import i18n
+
+			resolved, _ = i18n._extract_lang_from_path(path)
+		except Exception:
+			# Fallback to cookie/user/language
+			lang = None
+			try:
+				lang = frappe.request.cookies.get("preferred_language")
+			except Exception:
+				lang = None
+			if lang not in ("en", "ar"):
+				user = frappe.session.user
+				if user and user != "Guest":
+					try:
+						lang = frappe.db.get_value("User", user, "language")
+					except Exception:
+						lang = None
+				lang = lang or frappe.local.lang or "en"
+			resolved = "ar" if str(lang).lower().startswith("ar") else "en"
 	# Keep server-side translations in sync with the language toggle.
 	frappe.local.lang = resolved
+	try:
+		frappe.form_dict._lang = resolved
+	except Exception:
+		pass
 	return resolved
 
 
 def base_context(context) -> None:
+	from saaserpyemen import i18n
+
 	settings = get_settings()
 	user = frappe.session.user
 	context.no_cache = 1
 	context.body_class = "saas-site"
 	context.settings = settings
 	context.lang = get_language()
-	# `boot.lang` drives the server-rendered <html lang> attribute. Keep it
-	# aligned with the website toggle, especially for signed-in users whose
-	# User.language may differ from the selected cookie.
+	# `boot.lang` drives the server-rendered <html lang> attribute.
 	try:
 		if getattr(context, "boot", None):
 			context.boot["lang"] = context.lang
 		frappe.boot.lang = context.lang
 	except Exception:
 		pass
+	context.dir = "rtl" if context.lang == "ar" else "ltr"
+	context.other_lang = "ar" if context.lang == "en" else "en"
+	try:
+		context.switch_language_url = i18n.switch_language_url(context.lang)
+	except Exception:
+		context.switch_language_url = "/ar" if context.lang == "en" else "/"
 	context.domain = get_domain()
 	context.default_currency = settings.default_currency or "USD"
 	context.currencies = get_enabled_currencies()
@@ -85,8 +113,17 @@ def current_path() -> str:
 def require_login(context, redirect: str | None = None) -> None:
 	if frappe.session.user != "Guest":
 		return
+	from saaserpyemen import i18n
+
 	target = redirect or current_path()
-	frappe.local.flags.redirect_location = "/signin?redirect=" + quote(target, safe="")
+	if target.startswith("/"):
+		# Keep the current language prefix in the return URL.
+		lang = getattr(context, "lang", None) or get_language()
+		target = i18n.localized_url(target, lang)
+	else:
+		lang = getattr(context, "lang", None) or get_language()
+	target = quote(target, safe="")
+	frappe.local.flags.redirect_location = i18n.localized_url("/signin", lang) + "?redirect=" + target
 	raise frappe.Redirect
 
 

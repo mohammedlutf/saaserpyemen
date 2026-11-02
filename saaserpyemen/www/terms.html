@@ -7,17 +7,15 @@
 	<div class="hero__glow hero__glow--one"></div>
 	<div class="saas-container">
 		<div class="page-hero__inner">
-			<div class="saas-pill"><span data-en="Legal" data-ar="قانوني">Legal</span></div>
+			<div class="saas-pill"><span>{{ _("Legal") }}</span></div>
 			<h1>
-				<span class="lang-en">Terms of <span class="gradient-text">Service</span></span>
-				<span class="lang-ar">شروط <span class="gradient-text">الخدمة</span></span>
+				{% if lang == 'ar' %}شروط <span class="gradient-text">الخدمة</span>{% else %}Terms of <span class="gradient-text">Service</span>{% endif %}
 			</h1>
 			<p>
-				<span class="lang-en">These terms govern your access to and use of the {{ brand_name }} cloud ERP platform.</span>
-				<span class="lang-ar">تحكم هذه الشروط وصولك إلى منصة {{ brand_name_ar }} السحابية واستخدامك لها.</span>
+				{% if lang == 'ar' %}تحكم هذه الشروط وصولك إلى منصة {{ brand_name_ar }} السحابية واستخدامك لها.{% else %}These terms govern your access to and use of the {{ brand_name }} cloud ERP platform.{% endif %}
 			</p>
 			<p class="legal__meta">
-				<span data-en="Last updated" data-ar="آخر تحديث">Last updated</span>:
+				<span>{{ _("Last updated") }}</span>:
 				<b>{{ frappe.utils.formatdate(updated_on, 'dd MMMM yyyy') }}</b>
 			</p>
 		</div>
@@ -28,86 +26,86 @@
 	<div class="saas-container">
 		<div class="legal">
 			<aside class="legal__toc" aria-label="Contents">
-				<h3 data-en="On this page" data-ar="في هذه الصفحة">On this page</h3>
-				<a href="#acceptance" data-en="1. Acceptance" data-ar="1. القبول">1. Acceptance</a>
-				<a href="#service" data-en="2. The service" data-ar="2. الخدمة">2. The service</a>
-				<a href="#accounts" data-en="3. Accounts" data-ar="3. الحسابات">3. Accounts</a>
-				<a href="#trial" data-en="4. Free trial" data-ar="4. التجربة المجانية">4. Free trial</a>
-				<a href="#billing" data-en="5. Fees &amp; payment" data-ar="5. الرسوم والدفع">5. Fees &amp; payment</a>
-				<a href="#acceptable" data-en="6. Acceptable use" data-ar="6. الاستخدام المقبول">6. Acceptable use</a>
-				<a href="#data" data-en="7. Your data" data-ar="7. بياناتك">7. Your data</a>
-				<a href="#availability" data-en="8. Availability" data-ar="8. التوفر">8. Availability</a>
-				<a href="#termination" data-en="9. Suspension &amp; termination" data-ar="9. التعليق والإنهاء">9. Suspension &amp; termination</a>
-				<a href="#liability" data-en="10. Liability" data-ar="10. المسؤولية">10. Liability</a>
-				<a href="#changes" data-en="11. Changes" data-ar="11. التغييرات">11. Changes</a>
-				<a href="#contact" data-en="12. Contact" data-ar="12. التواصل">12. Contact</a>
+				<h3>{{ _("On this page") }}</h3>
+				<a href="#acceptance">{{ _("1. Acceptance") }}</a>
+				<a href="#service">{{ _("2. The service") }}</a>
+				<a href="#accounts">{{ _("3. Accounts") }}</a>
+				<a href="#trial">{{ _("4. Free trial") }}</a>
+				<a href="#billing">{{ _("5. Fees & payment") }}</a>
+				<a href="#acceptable">{{ _("6. Acceptable use") }}</a>
+				<a href="#data">{{ _("7. Your data") }}</a>
+				<a href="#availability">{{ _("8. Availability") }}</a>
+				<a href="#termination">{{ _("9. Suspension & termination") }}</a>
+				<a href="#liability">{{ _("10. Liability") }}</a>
+				<a href="#changes">{{ _("11. Changes") }}</a>
+				<a href="#contact">{{ _("12. Contact") }}</a>
 			</aside>
 
 			<div class="legal__body">
 				<article class="legal-card" id="acceptance">
-					<h2><span class="legal__num">1</span><span data-en="Acceptance of these terms" data-ar="قبول هذه الشروط">Acceptance of these terms</span></h2>
-					<p data-en="By creating an account, starting a free trial or using any part of the platform, you agree to be bound by these Terms of Service. If you are accepting on behalf of a company, you confirm that you have authority to bind that company. If you do not agree, please do not use the service." data-ar="بإنشاء حساب أو بدء تجربة مجانية أو استخدام أي جزء من المنصة، فإنك توافق على الالتزام بشروط الخدمة هذه. إذا كنت تقبل نيابةً عن شركة، فإنك تؤكد أن لديك الصلاحية لإلزام تلك الشركة. إذا كنت لا توافق، يرجى عدم استخدام الخدمة.">By creating an account, starting a free trial or using any part of the platform, you agree to be bound by these Terms of Service. If you are accepting on behalf of a company, you confirm that you have authority to bind that company. If you do not agree, please do not use the service.</p>
+					<h2><span class="legal__num">1</span><span>{{ _("Acceptance of these terms") }}</span></h2>
+					<p>{{ _("By creating an account, starting a free trial or using any part of the platform, you agree to be bound by these Terms of Service. If you are accepting on behalf of a company, you confirm that you have authority to bind that company. If you do not agree, please do not use the service.") }}</p>
 				</article>
 
 				<article class="legal-card" id="service">
-					<h2><span class="legal__num">2</span><span data-en="The service" data-ar="الخدمة">The service</span></h2>
-					<p data-en="{{ brand_name }} provides a hosted, multi-tenant ERP platform built on ERPNext. Each workspace runs on its own isolated site, database and file storage under a subdomain of {{ domain }}. We host, secure, update and back up the platform so you can focus on running your business." data-ar="{{ brand_name_ar }} توفر منصة ERP مستضافة متعددة المستأجرين مبنية على ERPNext. تعمل كل مساحة عمل على موقع وقاعدة بيانات وتخزين ملفات معزولة خاصة بها تحت نطاق فرعي من {{ domain }}. نحن نستضيف المنصة ونؤمّنها ونحدّثها وننسخها احتياطيًا حتى تتفرغ لإدارة عملك.">{{ brand_name }} provides a hosted, multi-tenant ERP platform built on ERPNext. Each workspace runs on its own isolated site, database and file storage under a subdomain of {{ domain }}. We host, secure, update and back up the platform so you can focus on running your business.</p>
-					<p data-en="The service includes the ERPNext applications enabled for your plan. Certain modules, integrations, storage or user limits may vary by plan, and we may add, improve or retire features over time." data-ar="تشمل الخدمة تطبيقات ERPNext المفعّلة في خطتك. قد تختلف بعض الوحدات أو التكاملات أو حدود التخزين أو المستخدمين حسب الخطة، وقد نضيف ميزات أو نحسّنها أو نوقفها بمرور الوقت.">The service includes the ERPNext applications enabled for your plan. Certain modules, integrations, storage or user limits may vary by plan, and we may add, improve or retire features over time.</p>
+					<h2><span class="legal__num">2</span><span>{{ _("The service") }}</span></h2>
+					<p>{% if lang == 'ar' %}{{ brand_name_ar }} توفر منصة ERP مستضافة متعددة المستأجرين مبنية على ERPNext. تعمل كل مساحة عمل على موقع وقاعدة بيانات وتخزين ملفات معزولة خاصة بها تحت نطاق فرعي من {{ domain }}. نحن نستضيف المنصة ونؤمّنها ونحدّثها وننسخها احتياطيًا حتى تتفرغ لإدارة عملك.{% else %}{{ brand_name }} provides a hosted, multi-tenant ERP platform built on ERPNext. Each workspace runs on its own isolated site, database and file storage under a subdomain of {{ domain }}. We host, secure, update and back up the platform so you can focus on running your business.{% endif %}</p>
+					<p>{{ _("The service includes the ERPNext applications enabled for your plan. Certain modules, integrations, storage or user limits may vary by plan, and we may add, improve or retire features over time.") }}</p>
 				</article>
 
 				<article class="legal-card" id="accounts">
-					<h2><span class="legal__num">3</span><span data-en="Accounts and security" data-ar="الحسابات والأمان">Accounts and security</span></h2>
-					<p data-en="You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must provide accurate information and keep it up to date. Notify us immediately at {{ support_email or 'infosahbix@gmail.com' }} if you suspect unauthorised access." data-ar="أنت مسؤول عن الحفاظ على سرية بيانات الدخول وعن جميع الأنشطة التي تتم عبر حسابك. يجب أن تقدم معلومات دقيقة وأن تحافظ على تحديثها. أبلغنا فورًا على {{ support_email or 'infosahbix@gmail.com' }} إذا اشتبهت في وصول غير مصرح به.">You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must provide accurate information and keep it up to date. Notify us immediately at {{ support_email or 'infosahbix@gmail.com' }} if you suspect unauthorised access.</p>
-					<p data-en="You must be at least 18 years old and legally capable of entering into a binding contract to use the service." data-ar="يجب أن يكون عمرك 18 عامًا على الأقل وأن تكون مؤهلًا قانونيًا لإبرام عقد ملزم لاستخدام الخدمة.">You must be at least 18 years old and legally capable of entering into a binding contract to use the service.</p>
+					<h2><span class="legal__num">3</span><span>{{ _("Accounts and security") }}</span></h2>
+					<p>{% if lang == 'ar' %}أنت مسؤول عن الحفاظ على سرية بيانات الدخول وعن جميع الأنشطة التي تتم عبر حسابك. يجب أن تقدم معلومات دقيقة وأن تحافظ على تحديثها. أبلغنا فورًا على {{ support_email or 'infosahbix@gmail.com' }} إذا اشتبهت في وصول غير مصرح به.{% else %}You are responsible for keeping your login credentials confidential and for all activity that occurs under your account. You must provide accurate information and keep it up to date. Notify us immediately at {{ support_email or 'infosahbix@gmail.com' }} if you suspect unauthorised access.{% endif %}</p>
+					<p>{{ _("You must be at least 18 years old and legally capable of entering into a binding contract to use the service.") }}</p>
 				</article>
 
 				<article class="legal-card" id="trial">
-					<h2><span class="legal__num">4</span><span data-en="Free trial" data-ar="التجربة المجانية">Free trial</span></h2>
-					<p data-en="New accounts receive a free trial of {{ settings.trial_days or 30 }} days with full access to the selected plan. No payment method is required to start. At the end of the trial, your workspace remains available only if a payment has been approved. We may change or end the trial offer at any time." data-ar="تحصل الحسابات الجديدة على تجربة مجانية لمدة {{ settings.trial_days or 30 }} يومًا مع وصول كامل إلى الخطة المختارة. لا يُطلب أي وسيلة دفع للبدء. في نهاية التجربة، تبقى مساحة عملك متاحة فقط إذا تمت الموافقة على دفعة. يحق لنا تغيير عرض التجربة أو إنهائه في أي وقت.">New accounts receive a free trial of {{ settings.trial_days or 30 }} days with full access to the selected plan. No payment method is required to start. At the end of the trial, your workspace remains available only if a payment has been approved. We may change or end the trial offer at any time.</p>
+					<h2><span class="legal__num">4</span><span>{{ _("Free trial") }}</span></h2>
+					<p>{% if lang == 'ar' %}تحصل الحسابات الجديدة على تجربة مجانية لمدة {{ settings.trial_days or 30 }} يومًا مع وصول كامل إلى الخطة المختارة. لا يُطلب أي وسيلة دفع للبدء. في نهاية التجربة، تبقى مساحة عملك متاحة فقط إذا تمت الموافقة على دفعة. يحق لنا تغيير عرض التجربة أو إنهائه في أي وقت.{% else %}New accounts receive a free trial of {{ settings.trial_days or 30 }} days with full access to the selected plan. No payment method is required to start. At the end of the trial, your workspace remains available only if a payment has been approved. We may change or end the trial offer at any time.{% endif %}</p>
 				</article>
 
 				<article class="legal-card" id="billing">
-					<h2><span class="legal__num">5</span><span data-en="Fees, billing and refunds" data-ar="الرسوم والفوترة والاسترداد">Fees, billing and refunds</span></h2>
-					<p data-en="Plan prices are shown on the pricing page in the currencies we support. Payments are currently processed manually by bank transfer. After transferring, you must upload your receipt from your dashboard. Our team reviews each payment, usually within one business day, and activates or extends your subscription when it is approved." data-ar="تظهر أسعار الخطط في صفحة الأسعار بالعملات التي ندعمها. تتم المدفوعات حاليًا يدويًا عبر التحويل البنكي. بعد التحويل، يجب عليك رفع إيصالك من لوحة التحكم. يراجع فريقنا كل دفعة، عادةً خلال يوم عمل واحد، ويفعّل اشتراكك أو يمدده عند الموافقة عليها.">Plan prices are shown on the pricing page in the currencies we support. Payments are currently processed manually by bank transfer. After transferring, you must upload your receipt from your dashboard. Our team reviews each payment, usually within one business day, and activates or extends your subscription when it is approved.</p>
-					<p data-en="Subscriptions renew for the billing cycle you selected. You may cancel auto-renewal at any time from your dashboard; access continues until the end of the paid period. Except where required by law, payments are non-refundable. Fees are exclusive of any taxes that may apply." data-ar="تتجدد الاشتراكات حسب دورة الفوترة التي اخترتها. يمكنك إلغاء التجديد التلقائي في أي وقت من لوحة التحكم؛ ويستمر الوصول حتى نهاية الفترة المدفوعة. باستثناء ما يقتضيه القانون، لا تُرد المدفوعات. الرسوم لا تشمل أي ضرائب قد تنطبق.">Subscriptions renew for the billing cycle you selected. You may cancel auto-renewal at any time from your dashboard; access continues until the end of the paid period. Except where required by law, payments are non-refundable. Fees are exclusive of any taxes that may apply.</p>
+					<h2><span class="legal__num">5</span><span>{{ _("Fees, billing and refunds") }}</span></h2>
+					<p>{{ _("Plan prices are shown on the pricing page in the currencies we support. Payments are currently processed manually by bank transfer. After transferring, you must upload your receipt from your dashboard. Our team reviews each payment, usually within one business day, and activates or extends your subscription when it is approved.") }}</p>
+					<p>{{ _("Subscriptions renew for the billing cycle you selected. You may cancel auto-renewal at any time from your dashboard; access continues until the end of the paid period. Except where required by law, payments are non-refundable. Fees are exclusive of any taxes that may apply.") }}</p>
 				</article>
 
 				<article class="legal-card" id="acceptable">
-					<h2><span class="legal__num">6</span><span data-en="Acceptable use" data-ar="الاستخدام المقبول">Acceptable use</span></h2>
-					<p data-en="You agree not to use the service to break any law, infringe intellectual property, distribute malware, attempt to gain unauthorised access to other systems, send spam, or interfere with the platform's operation. You may not resell, sublicense or white-label the service without our written permission." data-ar="توافق على عدم استخدام الخدمة لمخالفة أي قانون أو انتهاك الملكية الفكرية أو نشر البرمجيات الخبيثة أو محاولة الوصول غير المصرح به إلى أنظمة أخرى أو إرسال رسائل مزعجة أو التداخل مع تشغيل المنصة. لا يجوز لك إعادة بيع الخدمة أو ترخيصها من الباطن أو إعادة تسميتها دون إذن كتابي منا.">You agree not to use the service to break any law, infringe intellectual property, distribute malware, attempt to gain unauthorised access to other systems, send spam, or interfere with the platform's operation. You may not resell, sublicense or white-label the service without our written permission.</p>
-					<p data-en="We may suspend or limit a workspace that threatens the security, stability or integrity of the platform or other customers, with notice where reasonably possible." data-ar="يحق لنا تعليق أو تقييد أي مساحة عمل تهدد أمن المنصة أو استقرارها أو سلامتها أو سلامة العملاء الآخرين، مع الإشعار حيثما أمكن ذلك بشكل معقول.">We may suspend or limit a workspace that threatens the security, stability or integrity of the platform or other customers, with notice where reasonably possible.</p>
+					<h2><span class="legal__num">6</span><span>{{ _("Acceptable use") }}</span></h2>
+					<p>{{ _("You agree not to use the service to break any law, infringe intellectual property, distribute malware, attempt to gain unauthorised access to other systems, send spam, or interfere with the platform's operation. You may not resell, sublicense or white-label the service without our written permission.") }}</p>
+					<p>{{ _("We may suspend or limit a workspace that threatens the security, stability or integrity of the platform or other customers, with notice where reasonably possible.") }}</p>
 				</article>
 
 				<article class="legal-card" id="data">
-					<h2><span class="legal__num">7</span><span data-en="Your data and privacy" data-ar="بياناتك والخصوصية">Your data and privacy</span></h2>
-					<p data-en="You own the business data you store in your workspace. We process it only to provide and support the service, as described in our Privacy Policy. Each workspace has its own database and file storage, and customer data is not shared between workspaces. You are responsible for obtaining any consents required for the data you upload." data-ar="أنت تملك بيانات الأعمال التي تخزنها في مساحة عملك. نعالجها فقط لتقديم الخدمة ودعمها، كما هو موضح في سياسة الخصوصية. لكل مساحة عمل قاعدة بيانات وتخزين ملفات خاص بها، ولا تتم مشاركة بيانات العملاء بين مساحات العمل. أنت مسؤول عن الحصول على أي موافقات مطلوبة للبيانات التي ترفعها.">You own the business data you store in your workspace. We process it only to provide and support the service, as described in our Privacy Policy. Each workspace has its own database and file storage, and customer data is not shared between workspaces. You are responsible for obtaining any consents required for the data you upload.</p>
+					<h2><span class="legal__num">7</span><span>{{ _("Your data and privacy") }}</span></h2>
+					<p>{{ _("You own the business data you store in your workspace. We process it only to provide and support the service, as described in our Privacy Policy. Each workspace has its own database and file storage, and customer data is not shared between workspaces. You are responsible for obtaining any consents required for the data you upload.") }}</p>
 				</article>
 
 				<article class="legal-card" id="availability">
-					<h2><span class="legal__num">8</span><span data-en="Availability and support" data-ar="التوفر والدعم">Availability and support</span></h2>
-					<p data-en="We work hard to keep the platform available at all times and target an uptime of 99.9%. Scheduled maintenance, third-party outages and events beyond our reasonable control may occasionally interrupt service. Support is provided by email during business hours; response times depend on your plan." data-ar="نعمل بجد لإبقاء المنصة متاحة في جميع الأوقات ونستهدف توفرًا بنسبة 99.9%. قد تقاطع الصيانة المجدولة أو انقطاعات الأطراف الثالثة أو الأحداث الخارجة عن سيطرتنا المعقولة الخدمة أحيانًا. يُقدم الدعم عبر البريد الإلكتروني خلال ساعات العمل، وتختلف أوقات الاستجابة حسب خطتك.">We work hard to keep the platform available at all times and target an uptime of 99.9%. Scheduled maintenance, third-party outages and events beyond our reasonable control may occasionally interrupt service. Support is provided by email during business hours; response times depend on your plan.</p>
+					<h2><span class="legal__num">8</span><span>{{ _("Availability and support") }}</span></h2>
+					<p>{{ _("We work hard to keep the platform available at all times and target an uptime of 99.9%. Scheduled maintenance, third-party outages and events beyond our reasonable control may occasionally interrupt service. Support is provided by email during business hours; response times depend on your plan.") }}</p>
 				</article>
 
 				<article class="legal-card" id="termination">
-					<h2><span class="legal__num">9</span><span data-en="Suspension and termination" data-ar="التعليق والإنهاء">Suspension and termination</span></h2>
-					<p data-en="If a subscription expires and no approved payment is received, we may suspend your workspace after any grace period. Suspended workspaces can be reactivated by completing payment. We may terminate an account for serious or repeated breaches of these terms. On termination, we will retain your data for a reasonable period to allow export, after which it may be deleted." data-ar="إذا انتهى الاشتراك ولم تُستلم دفعة معتمدة، فقد نعلّق مساحة عملك بعد أي فترة سماح. يمكن إعادة تفعيل مساحات العمل المعلقة بإكمال الدفع. يحق لنا إنهاء حساب في حال المخالفات الجسيمة أو المتكررة لهذه الشروط. عند الإنهاء، سنحتفظ ببياناتك لفترة معقولة للسماح بتصديرها، وبعدها قد تُحذف.">If a subscription expires and no approved payment is received, we may suspend your workspace after any grace period. Suspended workspaces can be reactivated by completing payment. We may terminate an account for serious or repeated breaches of these terms. On termination, we will retain your data for a reasonable period to allow export, after which it may be deleted.</p>
+					<h2><span class="legal__num">9</span><span>{{ _("Suspension and termination") }}</span></h2>
+					<p>{{ _("If a subscription expires and no approved payment is received, we may suspend your workspace after any grace period. Suspended workspaces can be reactivated by completing payment. We may terminate an account for serious or repeated breaches of these terms. On termination, we will retain your data for a reasonable period to allow export, after which it may be deleted.") }}</p>
 				</article>
 
 				<article class="legal-card" id="liability">
-					<h2><span class="legal__num">10</span><span data-en="Disclaimers and liability" data-ar="إخلاء المسؤولية والمسؤولية">Disclaimers and liability</span></h2>
-					<p data-en="The service is provided on an “as is” and “as available” basis. To the maximum extent permitted by law, we disclaim all implied warranties and our total liability for any claim relating to the service will not exceed the fees you paid to us in the twelve months before the claim. We are not liable for indirect or consequential losses, including lost profits or lost data where you have not maintained your own backups." data-ar="تُقدم الخدمة على أساس «كما هي» و«حسب التوفر». إلى أقصى حد يسمح به القانون، نخلي مسؤوليتنا عن جميع الضمانات الضمنية، ولا تتجاوز مسؤوليتنا الإجمالية عن أي مطالبة تتعلق بالخدمة الرسوم التي دفعتها لنا خلال الاثني عشر شهرًا السابقة للمطالبة. لسنا مسؤولين عن الخسائر غير المباشرة أو التبعية، بما في ذلك الأرباح الفائتة أو البيانات المفقودة حيث لم تحتفظ بنسخ احتياطية خاصة بك.">The service is provided on an “as is” and “as available” basis. To the maximum extent permitted by law, we disclaim all implied warranties and our total liability for any claim relating to the service will not exceed the fees you paid to us in the twelve months before the claim. We are not liable for indirect or consequential losses, including lost profits or lost data where you have not maintained your own backups.</p>
+					<h2><span class="legal__num">10</span><span>{{ _("Disclaimers and liability") }}</span></h2>
+					<p>{{ _("The service is provided on an “as is” and “as available” basis. To the maximum extent permitted by law, we disclaim all implied warranties and our total liability for any claim relating to the service will not exceed the fees you paid to us in the twelve months before the claim. We are not liable for indirect or consequential losses, including lost profits or lost data where you have not maintained your own backups.") }}</p>
 				</article>
 
 				<article class="legal-card" id="changes">
-					<h2><span class="legal__num">11</span><span data-en="Changes to these terms" data-ar="التغييرات على هذه الشروط">Changes to these terms</span></h2>
-					<p data-en="We may update these terms from time to time. When we make material changes, we will notify you by email or in your dashboard before they take effect. Continuing to use the service after the changes take effect means you accept the updated terms." data-ar="قد نحدّث هذه الشروط من وقت لآخر. عند إجراء تغييرات جوهرية، سنبلغك عبر البريد الإلكتروني أو من خلال لوحة التحكم قبل سريانها. يعني استمرارك في استخدام الخدمة بعد سريان التغييرات موافقتك على الشروط المحدثة.">We may update these terms from time to time. When we make material changes, we will notify you by email or in your dashboard before they take effect. Continuing to use the service after the changes take effect means you accept the updated terms.</p>
+					<h2><span class="legal__num">11</span><span>{{ _("Changes to these terms") }}</span></h2>
+					<p>{{ _("We may update these terms from time to time. When we make material changes, we will notify you by email or in your dashboard before they take effect. Continuing to use the service after the changes take effect means you accept the updated terms.") }}</p>
 				</article>
 
 				<article class="legal-card" id="contact">
-					<h2><span class="legal__num">12</span><span data-en="Contact us" data-ar="تواصل معنا">Contact us</span></h2>
-					<p data-en="Questions about these terms? Email us at {{ support_email or 'infosahbix@gmail.com' }} and we will be glad to help." data-ar="لديك أسئلة حول هذه الشروط؟ راسلنا على {{ support_email or 'infosahbix@gmail.com' }} وسنسعد بمساعدتك.">Questions about these terms? Email us at {{ support_email or 'infosahbix@gmail.com' }} and we will be glad to help.</p>
+					<h2><span class="legal__num">12</span><span>{{ _("Contact us") }}</span></h2>
+					<p>{% if lang == 'ar' %}لديك أسئلة حول هذه الشروط؟ راسلنا على {{ support_email or 'infosahbix@gmail.com' }} وسنسعد بمساعدتك.{% else %}Questions about these terms? Email us at {{ support_email or 'infosahbix@gmail.com' }} and we will be glad to help.{% endif %}</p>
 					<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
-						<span data-en="Email support" data-ar="راسل الدعم">Email support</span>
+						<span>{{ _("Email support") }}</span>
 					</a>
 				</article>
 			</div>

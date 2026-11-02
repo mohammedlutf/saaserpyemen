@@ -7,39 +7,35 @@
 <section class="auth">
 	<div class="auth__panel auth__panel--brand">
 		<div class="auth__brand-glow"></div>
-		<a class="auth__logo-card" href="/" aria-label="{{ brand_name }} — {{ brand_name_ar }}">
+		<a class="auth__logo-card" href="{{ saas_url('/', lang) }}" aria-label="{{ brand_name }} — {{ brand_name_ar }}">
 			<img src="{{ logo }}" alt="{{ brand_name }}" width="993" height="251">
 		</a>
 		<div class="auth__brand-copy">
 			<h2>
-				<span class="lang-en">Welcome back to your workspace.</span>
-				<span class="lang-ar">مرحبًا بعودتك إلى مساحة عملك.</span>
+				{{ _("Welcome back to your workspace.") }}
 			</h2>
 			<p>
-				<span class="lang-en">Your business, your data, your ERP — secure and always available.</span>
-				<span class="lang-ar">عملك وبياناتك ونظام ERP الخاص بك — آمن ومتاح دائمًا.</span>
+				{{ _("Your business, your data, your ERP — secure and always available.") }}
 			</p>
 		</div>
 		<ul class="auth__points">
-			<li><span class="tick">✓</span><span data-en="Isolated database &amp; files" data-ar="قاعدة بيانات وملفات معزولة">Isolated database &amp; files</span></li>
-			<li><span class="tick">✓</span><span data-en="Daily automatic backups" data-ar="نسخ احتياطي تلقائي يومي">Daily automatic backups</span></li>
-			<li><span class="tick">✓</span><span data-en="Arabic &amp; English support" data-ar="دعم عربي وإنجليزي">Arabic &amp; English support</span></li>
+			<li><span class="tick">✓</span><span>{{ _("Isolated database & files") }}</span></li>
+			<li><span class="tick">✓</span><span>{{ _("Daily automatic backups") }}</span></li>
+			<li><span class="tick">✓</span><span>{{ _("Arabic & English support") }}</span></li>
 		</ul>
 		<p class="auth__quote">
-			<span class="lang-en">“The calmest our finance team has ever been.”</span>
-			<span class="lang-ar">«أكثر وقت هدوءًا مرّ به فريقنا المالي.»</span>
+			{{ _("“The calmest our finance team has ever been.”") }}
 		</p>
 	</div>
 
 	<div class="auth__panel auth__panel--form">
 		<div class="auth__form-wrap">
-			<div class="saas-pill"><span data-en="Sign in" data-ar="تسجيل الدخول">Sign in</span></div>
+			<div class="saas-pill"><span>{{ _("Sign in") }}</span></div>
 			<h1>
-				<span class="lang-en">Sign in to {{ brand_name }}</span>
-				<span class="lang-ar">تسجيل الدخول إلى {{ brand_name_ar }}</span>
+				{% if lang == 'ar' %}تسجيل الدخول إلى {{ brand_name_ar }}{% else %}Sign in to {{ brand_name }}{% endif %}
 			</h1>
 			<p class="auth__sub">
-				<span data-en="Use your email or username and password." data-ar="استخدم بريدك الإلكتروني أو اسم المستخدم وكلمة المرور.">Use your email or username and password.</span>
+				<span>{{ _("Use your email or username and password.") }}</span>
 			</p>
 
 			{% if provider_logins %}
@@ -49,49 +45,49 @@
 					{% if provider.is_google %}
 					<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.65l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84Z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38Z"/></svg>
 					{% else %}<span class="social-btn__icon">◎</span>{% endif %}
-					<span data-en="Continue with {{ provider.provider_name }}" data-ar="المتابعة باستخدام {{ provider.provider_name }}">Continue with {{ provider.provider_name }}</span>
+					<span>{% if lang == 'ar' %}المتابعة باستخدام {{ provider.provider_name }}{% else %}Continue with {{ provider.provider_name }}{% endif %}</span>
 				</a>
 				{% endfor %}
 			</div>
-			<div class="auth__divider"><span data-en="or continue with email" data-ar="أو تابع بالبريد الإلكتروني">or continue with email</span></div>
+			<div class="auth__divider"><span>{{ _("or continue with email") }}</span></div>
 			{% endif %}
 
 			<form class="form" id="signin-form" data-redirect="{{ redirect_to }}" novalidate>
 				<label class="field">
-					<span class="field__label" data-en="Email or username" data-ar="البريد الإلكتروني أو اسم المستخدم">Email or username</span>
+					<span class="field__label">{{ _("Email or username") }}</span>
 					<div class="field__control">
 						<span class="field__icon">@</span>
-						<input type="text" name="usr" autocomplete="username" required data-en-placeholder="you@company.com" data-ar-placeholder="you@company.com" placeholder="you@company.com">
+						<input type="text" name="usr" autocomplete="username" required placeholder="{{ _("you@company.com") }}">
 					</div>
 				</label>
 				<label class="field">
-					<span class="field__label" data-en="Password" data-ar="كلمة المرور">Password</span>
+					<span class="field__label">{{ _("Password") }}</span>
 					<div class="field__control">
 						<span class="field__icon">⌁</span>
-						<input type="password" name="pwd" autocomplete="current-password" required data-en-placeholder="Your password" data-ar-placeholder="كلمة المرور" placeholder="Your password">
+						<input type="password" name="pwd" autocomplete="current-password" required placeholder="{{ _("Your password") }}">
 						<button type="button" class="field__toggle" data-toggle-password aria-label="Show password">👁</button>
 					</div>
 				</label>
 				<div class="form__row">
-					<label class="checkbox"><input type="checkbox" name="remember" checked><span data-en="Remember me" data-ar="تذكرني">Remember me</span></label>
-					<a class="saas-link saas-link--sm" href="/login#forgot" data-en="Forgot password?" data-ar="نسيت كلمة المرور؟">Forgot password?</a>
+					<label class="checkbox"><input type="checkbox" name="remember" checked><span>{{ _("Remember me") }}</span></label>
+					<a class="saas-link saas-link--sm" href="/login#forgot">{{ _("Forgot password?") }}</a>
 				</div>
 				<div class="form__error" data-form-error hidden></div>
 				<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block" type="submit">
-					<span data-en="Sign in" data-ar="تسجيل الدخول">Sign in</span>
+					<span>{{ _("Sign in") }}</span>
 					<span class="btn-spinner" hidden></span>
 				</button>
 			</form>
 
 			{% if not disable_signup %}
 			<p class="auth__switch">
-				<span data-en="New to {{ brand_name }}?" data-ar="جديد على {{ brand_name_ar }}؟">New to {{ brand_name }}?</span>
-				<a href="/signup" data-en="Create a free account" data-ar="أنشئ حسابًا مجانيًا">Create a free account</a>
+				<span>{% if lang == 'ar' %}جديد على {{ brand_name_ar }}؟{% else %}New to {{ brand_name }}?{% endif %}</span>
+				<a href="{{ saas_url('/signup', lang) }}">{{ _("Create a free account") }}</a>
 			</p>
 			{% endif %}
 			<p class="auth__help">
-				<span data-en="Trouble signing in?" data-ar="تواجه مشكلة في تسجيل الدخول؟">Trouble signing in?</span>
-				<a href="mailto:{{ support_email or 'infosahbix@gmail.com' }}" data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</a>
+				<span>{{ _("Trouble signing in?") }}</span>
+				<a href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">{{ _("Contact support") }}</a>
 			</p>
 		</div>
 	</div>

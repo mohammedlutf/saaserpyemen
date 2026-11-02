@@ -15,29 +15,31 @@
 					</svg>
 				</span>
 			</div>
-			<div class="saas-pill"><span data-en="Workspace suspended" data-ar="مساحة العمل موقوفة">Workspace suspended</span></div>
+			<div class="saas-pill"><span>{{ _("Workspace suspended") }}</span></div>
 			<h1>
-				<span class="lang-en">This workspace is taking a short break.</span>
-				<span class="lang-ar">مساحة العمل هذه في استراحة قصيرة.</span>
+				{{ _("This workspace is taking a short break.") }}
 			</h1>
 			<p class="suspended__lead">
-				<span class="lang-en">Access to <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'this workspace' }}</b> is temporarily paused. This usually happens when a subscription has expired or a payment is awaiting approval.</span>
-				<span class="lang-ar">تم إيقاف الوصول إلى <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'مساحة العمل هذه' }}</b> مؤقتًا. يحدث هذا عادةً عند انتهاء الاشتراك أو انتظار الموافقة على دفعة.</span>
+				{% if lang == 'ar' %}
+				تم إيقاف الوصول إلى <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'مساحة العمل هذه' }}</b> مؤقتًا. يحدث هذا عادةً عند انتهاء الاشتراك أو انتظار الموافقة على دفعة.
+				{% else %}
+				Access to <b>{{ (suspended_tenant.tenant_name if suspended_tenant else site) or 'this workspace' }}</b> is temporarily paused. This usually happens when a subscription has expired or a payment is awaiting approval.
+				{% endif %}
 			</p>
 
 			{% if suspended_tenant %}
 			<div class="suspended__details">
 				<div class="credential-row">
-					<span data-en="Workspace" data-ar="مساحة العمل">Workspace</span>
+					<span>{{ _("Workspace") }}</span>
 					<b>{{ suspended_tenant.tenant_name }}</b>
 				</div>
 				<div class="credential-row">
-					<span data-en="Address" data-ar="العنوان">Address</span>
+					<span>{{ _("Address") }}</span>
 					<b>{{ suspended_tenant.subdomain }}.{{ domain }}</b>
 				</div>
 				<div class="credential-row">
-					<span data-en="Status" data-ar="الحالة">Status</span>
-					<span class="status status--{{ suspended_tenant.status | lower | replace(' ', '-') }}" data-en="{{ suspended_tenant.status }}" data-ar="{{ suspended_tenant.status }}">{{ suspended_tenant.status }}</span>
+					<span>{{ _("Status") }}</span>
+					<span class="status status--{{ suspended_tenant.status | lower | replace(' ', '-') }}">{{ status_label(suspended_tenant.status, lang) }}</span>
 				</div>
 			</div>
 			{% endif %}
@@ -46,45 +48,45 @@
 				<div class="suspended__step">
 					<span class="suspended__step-num">1</span>
 					<div>
-						<b data-en="Sign in to the customer portal" data-ar="سجّل الدخول إلى بوابة العملاء">Sign in to the customer portal</b>
-						<p data-en="Use the email address you signed up with to open your dashboard." data-ar="استخدم البريد الإلكتروني الذي سجلت به لفتح لوحة التحكم.">Use the email address you signed up with to open your dashboard.</p>
+						<b>{{ _("Sign in to the customer portal") }}</b>
+						<p>{{ _("Use the email address you signed up with to open your dashboard.") }}</p>
 					</div>
 				</div>
 				<div class="suspended__step">
 					<span class="suspended__step-num">2</span>
 					<div>
-						<b data-en="Complete your payment" data-ar="أكمل دفعتك">Complete your payment</b>
-						<p data-en="Transfer the amount due and upload your receipt. We review payments within one business day." data-ar="حوّل المبلغ المستحق وارفع إيصالك. نراجع المدفوعات خلال يوم عمل واحد.">Transfer the amount due and upload your receipt. We review payments within one business day.</p>
+						<b>{{ _("Complete your payment") }}</b>
+						<p>{{ _("Transfer the amount due and upload your receipt. We review payments within one business day.") }}</p>
 					</div>
 				</div>
 				<div class="suspended__step">
 					<span class="suspended__step-num">3</span>
 					<div>
-						<b data-en="Get back to work" data-ar="عد إلى العمل">Get back to work</b>
-						<p data-en="As soon as your payment is approved, your workspace is reactivated automatically." data-ar="بمجرد الموافقة على دفعتك، تُعاد مساحة عملك إلى العمل تلقائيًا.">As soon as your payment is approved, your workspace is reactivated automatically.</p>
+						<b>{{ _("Get back to work") }}</b>
+						<p>{{ _("As soon as your payment is approved, your workspace is reactivated automatically.") }}</p>
 					</div>
 				</div>
 			</div>
 
 			<div class="suspended__actions">
 				{% if tenant %}
-				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/dashboard?tenant={{ tenant.name }}&tab=billing">
-					<span data-en="Go to my dashboard" data-ar="انتقل إلى لوحتي">Go to my dashboard</span>
+				<a class="saas-btn saas-btn--primary saas-btn--lg" href="{{ saas_url('/dashboard', lang) }}?tenant={{ tenant.name }}&tab=billing">
+					<span>{{ _("Go to my dashboard") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
 				{% else %}
-				<a class="saas-btn saas-btn--primary saas-btn--lg" href="/signin?redirect=/dashboard">
-					<span data-en="Sign in to renew" data-ar="سجّل الدخول للتجديد">Sign in to renew</span>
+				<a class="saas-btn saas-btn--primary saas-btn--lg" href="{{ saas_url('/signin', lang) }}?redirect={{ saas_url('/dashboard', lang) }}">
+					<span>{{ _("Sign in to renew") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
 				{% endif %}
 				<a class="saas-btn saas-btn--outline saas-btn--lg" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
-					<span data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</span>
+					<span>{{ _("Contact support") }}</span>
 				</a>
 			</div>
 
 			<p class="suspended__note">
-				<span data-en="Think this is a mistake? Your payment may already be under review. Contact us and we will check right away." data-ar="تعتقد أن هذا خطأ؟ ربما تكون دفعتك قيد المراجعة بالفعل. تواصل معنا وسنتحقق فورًا.">Think this is a mistake? Your payment may already be under review. Contact us and we will check right away.</span>
+				<span>{{ _("Think this is a mistake? Your payment may already be under review. Contact us and we will check right away.") }}</span>
 			</p>
 		</div>
 	</div>

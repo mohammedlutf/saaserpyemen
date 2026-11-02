@@ -9,40 +9,38 @@
 	<div class="saas-container">
 		<div class="portal__head">
 			<div>
-				<div class="saas-pill"><span data-en="Customer portal" data-ar="بوابة العميل">Customer portal</span></div>
+				<div class="saas-pill"><span>{{ _("Customer portal") }}</span></div>
 				<h1>
-					<span class="lang-en">Welcome back, {{ (account_user.first_name or account_user.full_name or 'there') }}.</span>
-					<span class="lang-ar">مرحبًا بعودتك، {{ (account_user.first_name or account_user.full_name or 'بك') }}.</span>
+					{% if lang == 'ar' %}مرحبًا بعودتك، {{ (account_user.first_name or account_user.full_name or 'بك') }}.{% else %}Welcome back, {{ (account_user.first_name or account_user.full_name or 'there') }}.
 				</h1>
 				<p>
-					<span class="lang-en">Everything about your workspace, plan and billing in one place.</span>
-					<span class="lang-ar">كل ما يخص مساحة عملك وخطتك وفوترتك في مكان واحد.</span>
+					{{ _("Everything about your workspace, plan and billing in one place.") }}
 				</p>
 			</div>
 			<div class="portal__head-actions">
 				{% if data %}
 				<a class="saas-btn saas-btn--outline" href="{{ data.upgrade_url }}">
-					<span data-en="Change plan" data-ar="تغيير الخطة">Change plan</span>
+					<span>{{ _("Change plan") }}</span>
 				</a>
 				{% if data.tenant.provisioning_status == 'Completed' %}
 				<a class="saas-btn saas-btn--primary" href="{{ data.tenant.site_url }}/app" target="_blank" rel="noopener">
-					<span data-en="Open my ERP" data-ar="افتح نظام ERP">Open my ERP</span>
+					<span>{{ _("Open my ERP") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
 				{% elif data.tenant.status == 'Pending Payment' %}
 				<a class="saas-btn saas-btn--primary" href="{{ data.payment_url }}">
-					<span data-en="Pay now" data-ar="ادفع الآن">Pay now</span>
+					<span>{{ _("Pay now") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
 				{% else %}
-				<a class="saas-btn saas-btn--primary" href="/provisioning?tenant={{ data.tenant.name }}">
-					<span data-en="View progress" data-ar="عرض التقدم">View progress</span>
+				<a class="saas-btn saas-btn--primary" href="{{ saas_url('/provisioning', lang) }}?tenant={{ data.tenant.name }}">
+					<span>{{ _("View progress") }}</span>
 					<span class="saas-btn__arrow" aria-hidden="true">→</span>
 				</a>
 				{% endif %}
 				{% endif %}
 				<button class="saas-btn saas-btn--outline" type="button" data-logout>
-					<span data-en="Sign out" data-ar="تسجيل الخروج">Sign out</span>
+					<span>{{ _("Sign out") }}</span>
 				</button>
 			</div>
 		</div>
@@ -52,15 +50,13 @@
 		<div class="empty-state empty-state--lg">
 			<div class="empty-state__icon">✦</div>
 			<h2>
-				<span class="lang-en">Your workspace is one step away</span>
-				<span class="lang-ar">مساحة عملك على بعد خطوة واحدة</span>
+				{{ _("Your workspace is one step away") }}
 			</h2>
 			<p>
-				<span class="lang-en">Choose a plan and a subdomain and we will create your private ERP in minutes.</span>
-				<span class="lang-ar">اختر خطة ونطاقًا فرعيًا وسننشئ نظام ERP الخاص بك في دقائق.</span>
+				{{ _("Choose a plan and a subdomain and we will create your private ERP in minutes.") }}
 			</p>
-			<a class="saas-btn saas-btn--primary saas-btn--lg" href="/plans{% if trial_used %}?new=1{% endif %}">
-				<span data-en="Choose a plan" data-ar="اختر خطة">Choose a plan</span>
+			<a class="saas-btn saas-btn--primary saas-btn--lg" href="{{ saas_url('/plans', lang) }}{% if trial_used %}?new=1{% endif %}">
+				<span>{{ _("Choose a plan") }}</span>
 			</a>
 		</div>
 		{% else %}
@@ -69,16 +65,16 @@
 			<aside class="portal__nav">
 				{% if workspaces %}
 				<div class="portal__workspaces">
-					<small data-en="Your workspaces" data-ar="مساحات عملك">Your workspaces</small>
+					<small>{{ _("Your workspaces") }}</small>
 					{% for ws in workspaces %}
-					<a class="portal__nav-item {% if ws.name == tenant.name %}active{% endif %}" href="/dashboard?tenant={{ ws.name }}&tab={{ active_tab }}">
+					<a class="portal__nav-item {% if ws.name == tenant.name %}active{% endif %}" href="{{ saas_url('/dashboard', lang) }}?tenant={{ ws.name }}&tab={{ active_tab }}">
 						<span class="portal__nav-icon">▣</span>
 						<span>{{ ws.tenant_name }}</span>
 					</a>
 					{% endfor %}
-					<a class="portal__nav-item" href="/plans?new=1">
+					<a class="portal__nav-item" href="{{ saas_url('/plans', lang) }}?new=1">
 						<span class="portal__nav-icon">＋</span>
-						<span data-en="New workspace" data-ar="مساحة عمل جديدة">New workspace</span>
+						<span>{{ _("New workspace") }}</span>
 					</a>
 				</div>
 				{% endif %}
@@ -88,44 +84,44 @@
 						<b>{{ data.tenant.tenant_name }}</b>
 						<a href="{{ data.tenant.site_url }}" target="_blank" rel="noopener">{{ data.tenant.subdomain }}.{{ domain }}</a>
 					</div>
-					<span class="status status--{{ data.tenant.status | lower | replace(' ', '-') }}" data-en="{{ data.tenant.status }}" data-ar="{{ status_ar.get(data.tenant.status, data.tenant.status) }}">{{ data.tenant.status }}</span>
+					<span class="status status--{{ data.tenant.status | lower | replace(' ', '-') }}">{{ status_label(data.tenant.status, lang) }}</span>
 				</div>
 
 				<nav class="portal__menu" aria-label="Dashboard sections">
 					<a class="portal__nav-item {% if active_tab == 'overview' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=overview">
-						<span class="portal__nav-icon">◈</span><span data-en="Overview" data-ar="نظرة عامة">Overview</span>
+						<span class="portal__nav-icon">◈</span><span>{{ _("Overview") }}</span>
 					</a>
 					<a class="portal__nav-item {% if active_tab == 'usage' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=usage">
-						<span class="portal__nav-icon">▤</span><span data-en="Usage &amp; limits" data-ar="الاستخدام والحدود">Usage &amp; limits</span>
+						<span class="portal__nav-icon">▤</span><span>{{ _("Usage & limits") }}</span>
 					</a>
 					<a class="portal__nav-item {% if active_tab == 'billing' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=billing">
-						<span class="portal__nav-icon">◎</span><span data-en="Subscription" data-ar="الاشتراك">Subscription</span>
+						<span class="portal__nav-icon">◎</span><span>{{ _("Subscription") }}</span>
 					</a>
 					<a class="portal__nav-item {% if active_tab == 'payments' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=payments">
-						<span class="portal__nav-icon">⇄</span><span data-en="Payments" data-ar="المدفوعات">Payments</span>
+						<span class="portal__nav-icon">⇄</span><span>{{ _("Payments") }}</span>
 					</a>
 					{% if data.tenant.provisioning_status == 'Completed' %}
 					<a class="portal__nav-item {% if active_tab == 'credentials' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=credentials">
-						<span class="portal__nav-icon">⌘</span><span data-en="Login credentials" data-ar="بيانات الدخول">Login credentials</span>
+						<span class="portal__nav-icon">⌘</span><span>{{ _("Login credentials") }}</span>
 					</a>
 					{% endif %}
 					<a class="portal__nav-item {% if active_tab == 'profile' %}active{% endif %}" href="?tenant={{ data.tenant.name }}&tab=profile">
-						<span class="portal__nav-icon">◉</span><span data-en="Company profile" data-ar="ملف الشركة">Company profile</span>
+						<span class="portal__nav-icon">◉</span><span>{{ _("Company profile") }}</span>
 					</a>
 				</nav>
 
 				<div class="portal__nav-card">
-					<b data-en="Need a hand?" data-ar="تحتاج مساعدة؟">Need a hand?</b>
-					<p data-en="Our team replies within one business day." data-ar="فريقنا يرد خلال يوم عمل واحد.">Our team replies within one business day.</p>
+					<b>{{ _("Need a hand?") }}</b>
+					<p>{{ _("Our team replies within one business day.") }}</p>
 					<a class="saas-link saas-link--sm" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
-						<span data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</span> →
+						<span>{{ _("Contact support") }}</span> →
 					</a>
 					<div class="portal__nav-card-actions">
 						<a href="https://wa.me/{{ (support_phone or '+957770785816') | replace('+', '') | replace(' ', '') | replace('-', '') }}" target="_blank" rel="noopener">
-							<span data-en="WhatsApp" data-ar="واتساب">WhatsApp</span>
+							<span>{{ _("WhatsApp") }}</span>
 						</a>
 						<a href="tel:{{ support_phone or '+957770785816' }}">
-							<span data-en="Call us" data-ar="اتصل بنا">Call us</span>
+							<span>{{ _("Call us") }}</span>
 						</a>
 					</div>
 				</div>
@@ -136,12 +132,12 @@
 				<div class="alert alert--warning">
 					<span class="alert__icon">◷</span>
 					<div>
-						<b data-en="Payment under review" data-ar="الدفع قيد المراجعة">Payment under review</b>
+						<b>{{ _("Payment under review") }}</b>
 						<p>
-							<span data-en="We received your payment {{ data.pending_payment.name }} and will review it within one business day." data-ar="استلمنا دفعتك {{ data.pending_payment.name }} وسنراجعها خلال يوم عمل واحد.">We received your payment {{ data.pending_payment.name }} and will review it within one business day.</span>
+							{% if lang == 'ar' %}استلمنا دفعتك {{ data.pending_payment.name }} وسنراجعها خلال يوم عمل واحد.{% else %}We received your payment {{ data.pending_payment.name }} and will review it within one business day.{% endif %}
 						</p>
 					</div>
-					<a class="saas-btn saas-btn--sm saas-btn--outline" href="/payment?tenant={{ data.tenant.name }}" data-en="View" data-ar="عرض">View</a>
+					<a class="saas-btn saas-btn--sm saas-btn--outline" href="{{ saas_url('/payment', lang) }}?tenant={{ data.tenant.name }}">{{ _("View") }}</a>
 				</div>
 				{% endif %}
 
@@ -149,10 +145,10 @@
 				<div class="alert alert--warning">
 					<span class="alert__icon">◷</span>
 					<div>
-						<b data-en="Payment required" data-ar="الدفع مطلوب">Payment required</b>
-						<p data-en="This is an additional workspace. Its free trial is not included — submit your first payment and we will create the site as soon as it is approved." data-ar="هذه مساحة عمل إضافية. لا تشملها التجربة المجانية — أرسل دفعتك الأولى وسننشئ الموقع بعد الموافقة عليها.">This is an additional workspace. Its free trial is not included — submit your first payment and we will create the site as soon as it is approved.</p>
+						<b>{{ _("Payment required") }}</b>
+						<p>{{ _("This is an additional workspace. Its free trial is not included — submit your first payment and we will create the site as soon as it is approved.") }}</p>
 					</div>
-					<a class="saas-btn saas-btn--sm saas-btn--primary" href="{{ data.payment_url }}" data-en="Pay now" data-ar="ادفع الآن">Pay now</a>
+					<a class="saas-btn saas-btn--sm saas-btn--primary" href="{{ data.payment_url }}">{{ _("Pay now") }}</a>
 				</div>
 				{% endif %}
 
@@ -160,10 +156,10 @@
 				<div class="alert alert--info">
 					<span class="alert__icon"><span class="spinner spinner--sm"></span></span>
 					<div>
-						<b data-en="Your workspace is being prepared" data-ar="يتم تجهيز مساحة عملك">Your workspace is being prepared</b>
-						<p data-en="This usually takes a few minutes. You can follow the progress on the setup page." data-ar="يستغرق هذا عادةً بضع دقائق. يمكنك متابعة التقدم في صفحة الإعداد.">This usually takes a few minutes. You can follow the progress on the setup page.</p>
+						<b>{{ _("Your workspace is being prepared") }}</b>
+						<p>{{ _("This usually takes a few minutes. You can follow the progress on the setup page.") }}</p>
 					</div>
-					<a class="saas-btn saas-btn--sm saas-btn--outline" href="/provisioning?tenant={{ data.tenant.name }}" data-en="View progress" data-ar="عرض التقدم">View progress</a>
+					<a class="saas-btn saas-btn--sm saas-btn--outline" href="{{ saas_url('/provisioning', lang) }}?tenant={{ data.tenant.name }}">{{ _("View progress") }}</a>
 				</div>
 				{% endif %}
 
@@ -171,10 +167,10 @@
 				<div class="alert alert--danger">
 					<span class="alert__icon">!</span>
 					<div>
-						<b data-en="Your workspace needs attention" data-ar="مساحة عملك تحتاج إلى انتباه">Your workspace needs attention</b>
-						<p data-en="Your subscription is {{ data.tenant.status }}. Complete your payment to keep using your ERP." data-ar="اشتراكك {{ status_ar.get(data.tenant.status, data.tenant.status) }}. أكمل الدفع لمواصلة استخدام نظام ERP.">Your subscription is {{ data.tenant.status }}. Complete your payment to keep using your ERP.</p>
+						<b>{{ _("Your workspace needs attention") }}</b>
+						<p>{% if lang == 'ar' %}اشتراكك {{ status_ar.get(data.tenant.status, data.tenant.status) }}. أكمل الدفع لمواصلة استخدام نظام ERP.{% else %}Your subscription is {{ data.tenant.status }}. Complete your payment to keep using your ERP.{% endif %}</p>
 					</div>
-					<a class="saas-btn saas-btn--sm saas-btn--primary" href="{{ data.payment_url }}" data-en="Pay now" data-ar="ادفع الآن">Pay now</a>
+					<a class="saas-btn saas-btn--sm saas-btn--primary" href="{{ data.payment_url }}">{{ _("Pay now") }}</a>
 				</div>
 				{% endif %}
 
@@ -183,34 +179,34 @@
 					<div class="panel panel--plan">
 						<div class="panel__head">
 							<div>
-								<small data-en="Current plan" data-ar="الخطة الحالية">Current plan</small>
+								<small>{{ _("Current plan") }}</small>
 								<h2>{{ data.plan.plan_name if data.plan else data.tenant.plan }}</h2>
 							</div>
 							<span class="badge badge--accent">{{ data.subscription.billing_cycle if data.subscription else 'Monthly' }}</span>
 						</div>
 						<div class="plan-summary">
 							<div>
-								<small data-en="Subscription status" data-ar="حالة الاشتراك">Subscription status</small>
-								<strong class="status status--{{ (data.subscription.status if data.subscription else data.tenant.status) | lower | replace(' ', '-') }}" data-en="{{ data.subscription.status if data.subscription else data.tenant.status }}" data-ar="{{ status_ar.get(data.subscription.status if data.subscription else data.tenant.status, data.subscription.status if data.subscription else data.tenant.status) }}">{{ data.subscription.status if data.subscription else data.tenant.status }}</strong>
+								<small>{{ _("Subscription status") }}</small>
+								<strong class="status status--{{ (data.subscription.status if data.subscription else data.tenant.status) | lower | replace(' ', '-') }}">{{ status_label(data.subscription.status if data.subscription else data.tenant.status, lang) }}</strong>
 							</div>
 							<div>
-								<small data-en="Next billing" data-ar="الفاتورة القادمة">Next billing</small>
+								<small>{{ _("Next billing") }}</small>
 								<strong>{{ frappe.utils.formatdate(data.subscription.next_billing_date, 'dd MMM yyyy') if data.subscription and data.subscription.next_billing_date else '—' }}</strong>
 							</div>
 							<div>
-								<small data-en="Amount" data-ar="المبلغ">Amount</small>
+								<small>{{ _("Amount") }}</small>
 								<strong>{{ format_money(data.subscription.amount, data.subscription.currency) if data.subscription else '—' }}</strong>
 							</div>
 							<div>
-								<small data-en="Days left" data-ar="الأيام المتبقية">Days left</small>
+								<small>{{ _("Days left") }}</small>
 								<strong class="{% if data.days_left is not none and data.days_left <= 7 %}text-danger{% endif %}">
-									{% if data.days_left is not none %}{{ data.days_left }} <span data-en="days" data-ar="يومًا">days</span>{% else %}—{% endif %}
+									{% if data.days_left is not none %}{{ data.days_left }} <span>{{ _("days") }}</span>{% else %}—{% endif %}
 								</strong>
 							</div>
 						</div>
 						<div class="panel__actions">
-							<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.payment_url }}" data-en="Make a payment" data-ar="قم بالدفع">Make a payment</a>
-							<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ data.upgrade_url }}" data-en="Upgrade or change" data-ar="ترقية أو تغيير">Upgrade or change</a>
+							<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.payment_url }}">{{ _("Make a payment") }}</a>
+							<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ data.upgrade_url }}">{{ _("Upgrade or change") }}</a>
 						</div>
 					</div>
 
@@ -219,11 +215,11 @@
 							<div>
 								<small>
 									{% if data.tenant.status == 'Trial' %}
-									<span data-en="Trial ends" data-ar="تنتهي التجربة">Trial ends</span>
+									<span>{{ _("Trial ends") }}</span>
 									{% elif data.tenant.status == 'Pending Payment' %}
-									<span data-en="Awaiting payment" data-ar="بانتظار الدفع">Awaiting payment</span>
+									<span>{{ _("Awaiting payment") }}</span>
 									{% else %}
-									<span data-en="Current period ends" data-ar="تنتهي الفترة الحالية">Current period ends</span>
+									<span>{{ _("Current period ends") }}</span>
 									{% endif %}
 								</small>
 								<h2>
@@ -238,18 +234,18 @@
 							</div>
 							<span class="panel__big-icon">◷</span>
 						</div>
-						<p data-en="Your workspace stays available while your subscription is active. We will remind you before it ends." data-ar="تبقى مساحة عملك متاحة طالما اشتراكك نشط. سنذكّرك قبل انتهائه.">Your workspace stays available while your subscription is active. We will remind you before it ends.</p>
+						<p>{{ _("Your workspace stays available while your subscription is active. We will remind you before it ends.") }}</p>
 						{% if data.tenant.provisioning_status == 'Completed' %}
 						<a class="saas-link" href="{{ data.tenant.site_url }}/app" target="_blank" rel="noopener">
-							<span data-en="Go to your ERP" data-ar="انتقل إلى نظام ERP">Go to your ERP</span> →
+							<span>{{ _("Go to your ERP") }}</span> →
 						</a>
 						{% elif data.tenant.status == 'Pending Payment' %}
 						<a class="saas-link" href="{{ data.payment_url }}">
-							<span data-en="Complete payment" data-ar="أكمل الدفع">Complete payment</span> →
+							<span>{{ _("Complete payment") }}</span> →
 						</a>
 						{% else %}
-						<a class="saas-link" href="/provisioning?tenant={{ data.tenant.name }}">
-							<span data-en="View progress" data-ar="عرض التقدم">View progress</span> →
+						<a class="saas-link" href="{{ saas_url('/provisioning', lang) }}?tenant={{ data.tenant.name }}">
+							<span>{{ _("View progress") }}</span> →
 						</a>
 						{% endif %}
 					</div>
@@ -257,39 +253,39 @@
 					<div class="stat-tiles">
 						<div class="stat-tile">
 							<span class="stat-tile__icon" style="--c:#02a474">◉</span>
-							<div><small data-en="Users" data-ar="المستخدمون">Users</small><strong>{{ data.usage.users.used }}{% if data.usage.users.limit %} / {{ data.usage.users.limit }}{% endif %}</strong></div>
+							<div><small>{{ _("Users") }}</small><strong>{{ data.usage.users.used }}{% if data.usage.users.limit %} / {{ data.usage.users.limit }}{% endif %}</strong></div>
 						</div>
 						<div class="stat-tile">
 							<span class="stat-tile__icon" style="--c:#0ea5e9">▦</span>
-							<div><small data-en="Branches" data-ar="الفروع">Branches</small><strong>{{ data.usage.branches.used }}{% if data.usage.branches.limit %} / {{ data.usage.branches.limit }}{% endif %}</strong></div>
+							<div><small>{{ _("Branches") }}</small><strong>{{ data.usage.branches.used }}{% if data.usage.branches.limit %} / {{ data.usage.branches.limit }}{% endif %}</strong></div>
 						</div>
 						<div class="stat-tile">
 							<span class="stat-tile__icon" style="--c:#02a474">◫</span>
-							<div><small data-en="Companies" data-ar="الشركات">Companies</small><strong>{{ data.usage.companies.used }}{% if data.usage.companies.limit %} / {{ data.usage.companies.limit }}{% endif %}</strong></div>
+							<div><small>{{ _("Companies") }}</small><strong>{{ data.usage.companies.used }}{% if data.usage.companies.limit %} / {{ data.usage.companies.limit }}{% endif %}</strong></div>
 						</div>
 						<div class="stat-tile">
 							<span class="stat-tile__icon" style="--c:#f59e0b">◈</span>
-							<div><small data-en="Storage" data-ar="المساحة">Storage</small><strong>{{ data.usage.storage.used_mb }} MB</strong></div>
+							<div><small>{{ _("Storage") }}</small><strong>{{ data.usage.storage.used_mb }} MB</strong></div>
 						</div>
 					</div>
 
 					<div class="panel panel--wide">
 						<div class="panel__head">
 							<div>
-								<small data-en="Recent payments" data-ar="أحدث المدفوعات">Recent payments</small>
-								<h2 data-en="Billing history" data-ar="سجل الفوترة">Billing history</h2>
+								<small>{{ _("Recent payments") }}</small>
+								<h2>{{ _("Billing history") }}</h2>
 							</div>
-							<a class="saas-link saas-link--sm" href="?tenant={{ data.tenant.name }}&tab=payments" data-en="View all" data-ar="عرض الكل">View all</a>
+							<a class="saas-link saas-link--sm" href="?tenant={{ data.tenant.name }}&tab=payments">{{ _("View all") }}</a>
 						</div>
 						{% if data.payments %}
 						<div class="table-wrap">
 							<table class="table">
 								<thead>
 									<tr>
-										<th data-en="Payment" data-ar="الدفع">Payment</th>
-										<th data-en="Period" data-ar="الفترة">Period</th>
-										<th data-en="Amount" data-ar="المبلغ">Amount</th>
-										<th data-en="Status" data-ar="الحالة">Status</th>
+										<th>{{ _("Payment") }}</th>
+										<th>{{ _("Period") }}</th>
+										<th>{{ _("Amount") }}</th>
+										<th>{{ _("Status") }}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -298,7 +294,7 @@
 										<td><b>{{ payment.name }}</b><br><small>{{ frappe.utils.formatdate(payment.creation, 'dd MMM yyyy') }}</small></td>
 										<td>{{ frappe.utils.formatdate(payment.period_start, 'dd MMM') if payment.period_start else '—' }} – {{ frappe.utils.formatdate(payment.period_end, 'dd MMM yyyy') if payment.period_end else '—' }}</td>
 										<td>{{ format_money(payment.amount, payment.currency) }}</td>
-										<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}" data-en="{{ payment.status }}" data-ar="{{ payment_status_ar.get(payment.status, payment.status) }}">{{ payment.status }}</span></td>
+										<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span></td>
 									</tr>
 									{% endfor %}
 								</tbody>
@@ -307,7 +303,7 @@
 						{% else %}
 						<div class="empty-state">
 							<div class="empty-state__icon">◎</div>
-							<p data-en="No payments yet. Your first payment will appear here after your trial." data-ar="لا توجد مدفوعات بعد. ستظهر أول دفعة هنا بعد انتهاء التجربة.">No payments yet. Your first payment will appear here after your trial.</p>
+							<p>{{ _("No payments yet. Your first payment will appear here after your trial.") }}</p>
 						</div>
 						{% endif %}
 					</div>
@@ -317,38 +313,38 @@
 				<div class="panel panel--wide">
 					<div class="panel__head">
 						<div>
-							<small data-en="Live usage" data-ar="الاستخدام المباشر">Live usage</small>
-							<h2 data-en="Plan usage &amp; limits" data-ar="استخدام الخطة والحدود">Plan usage &amp; limits</h2>
+							<small>{{ _("Live usage") }}</small>
+							<h2>{{ _("Plan usage & limits") }}</h2>
 						</div>
 						<span class="badge badge--soft">{{ data.plan.plan_name if data.plan else '' }}</span>
 					</div>
-					<p class="panel__lead" data-en="Usage is synced from your ERP workspace automatically. Limits are enforced when you create new users, branches or companies." data-ar="تتم مزامنة الاستخدام من مساحة ERP تلقائيًا. تُطبق الحدود عند إنشاء مستخدمين أو فروع أو شركات جديدة.">Usage is synced from your ERP workspace automatically. Limits are enforced when you create new users, branches or companies.</p>
+					<p class="panel__lead">{{ _("Usage is synced from your ERP workspace automatically. Limits are enforced when you create new users, branches or companies.") }}</p>
 
 					<div class="usage-list">
 						<div class="usage">
 							<div class="usage__head">
-								<span data-en="Users" data-ar="المستخدمون">Users</span>
+								<span>{{ _("Users") }}</span>
 								<b>{{ data.usage.users.used }} / {{ data.usage.users.limit or '∞' }}</b>
 							</div>
 							<div class="meter"><i style="width: {{ data.usage.users.percent }}%"></i></div>
 						</div>
 						<div class="usage">
 							<div class="usage__head">
-								<span data-en="Branches" data-ar="الفروع">Branches</span>
+								<span>{{ _("Branches") }}</span>
 								<b>{{ data.usage.branches.used }} / {{ data.usage.branches.limit or '∞' }}</b>
 							</div>
 							<div class="meter"><i style="width: {{ data.usage.branches.percent }}%"></i></div>
 						</div>
 						<div class="usage">
 							<div class="usage__head">
-								<span data-en="Companies" data-ar="الشركات">Companies</span>
+								<span>{{ _("Companies") }}</span>
 								<b>{{ data.usage.companies.used }} / {{ data.usage.companies.limit or '∞' }}</b>
 							</div>
 							<div class="meter"><i style="width: {{ data.usage.companies.percent }}%"></i></div>
 						</div>
 						<div class="usage">
 							<div class="usage__head">
-								<span data-en="Storage" data-ar="المساحة">Storage</span>
+								<span>{{ _("Storage") }}</span>
 								<b>{{ data.usage.storage.used_mb }} MB / {{ data.usage.storage.limit_gb or '∞' }} GB</b>
 							</div>
 							<div class="meter"><i style="width: {{ data.usage.storage.percent }}%"></i></div>
@@ -356,13 +352,13 @@
 					</div>
 
 					<div class="panel__actions">
-						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.upgrade_url }}" data-en="Upgrade my plan" data-ar="ترقية خطتي">Upgrade my plan</a>
+						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.upgrade_url }}">{{ _("Upgrade my plan") }}</a>
 						{% if data.tenant.provisioning_status == 'Completed' %}
-						<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ data.tenant.site_url }}/app" target="_blank" rel="noopener" data-en="Manage in ERP" data-ar="الإدارة في ERP">Manage in ERP</a>
+						<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ data.tenant.site_url }}/app" target="_blank" rel="noopener">{{ _("Manage in ERP") }}</a>
 						{% endif %}
 					</div>
 					<p class="muted small">
-						<span data-en="Last synced: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'not synced yet' }}" data-ar="آخر مزامنة: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'لم تتم المزامنة بعد' }}">Last synced: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'not synced yet' }}</span>
+						{% if lang == 'ar' %}آخر مزامنة: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'لم تتم المزامنة بعد' }}{% else %}Last synced: {{ frappe.utils.format_datetime(data.tenant.last_usage_sync) if data.tenant.last_usage_sync else 'not synced yet' }}{% endif %}
 					</p>
 				</div>
 
@@ -371,39 +367,39 @@
 					<div class="panel">
 						<div class="panel__head">
 							<div>
-								<small data-en="Subscription" data-ar="الاشتراك">Subscription</small>
+								<small>{{ _("Subscription") }}</small>
 								<h2>{{ data.subscription.name if data.subscription else '—' }}</h2>
 							</div>
-							<span class="status status--{{ (data.subscription.status if data.subscription else data.tenant.status) | lower | replace(' ', '-') }}" data-en="{{ data.subscription.status if data.subscription else data.tenant.status }}" data-ar="{{ status_ar.get(data.subscription.status if data.subscription else data.tenant.status, data.subscription.status if data.subscription else data.tenant.status) }}">{{ data.subscription.status if data.subscription else data.tenant.status }}</span>
+							<strong class="status status--{{ (data.subscription.status if data.subscription else data.tenant.status) | lower | replace(' ', '-') }}">{{ status_label(data.subscription.status if data.subscription else data.tenant.status, lang) }}</strong>
 						</div>
 						<dl class="detail-list">
-							<div><dt data-en="Plan" data-ar="الخطة">Plan</dt><dd>{{ data.plan.plan_name if data.plan else data.tenant.plan }}</dd></div>
-							<div><dt data-en="Billing cycle" data-ar="دورة الفوترة">Billing cycle</dt><dd>{{ data.subscription.billing_cycle if data.subscription else '—' }}</dd></div>
-							<div><dt data-en="Amount" data-ar="المبلغ">Amount</dt><dd>{{ format_money(data.subscription.amount, data.subscription.currency) if data.subscription else '—' }}</dd></div>
-							<div><dt data-en="Payment status" data-ar="حالة الدفع">Payment status</dt><dd><span data-en="{{ data.subscription.payment_status if data.subscription else 'Unpaid' }}" data-ar="{{ payment_status_ar.get(data.subscription.payment_status if data.subscription else 'Unpaid', 'غير مدفوع') }}">{{ data.subscription.payment_status if data.subscription else 'Unpaid' }}</span></dd></div>
-							<div><dt data-en="Started on" data-ar="تاريخ البدء">Started on</dt><dd>{{ frappe.utils.formatdate(data.subscription.start_date, 'dd MMM yyyy') if data.subscription and data.subscription.start_date else '—' }}</dd></div>
-							<div><dt data-en="Trial ends" data-ar="تنتهي التجربة">Trial ends</dt><dd>{% if data.subscription and data.subscription.status == 'Trial' %}{{ frappe.utils.formatdate(data.subscription.trial_end_date, 'dd MMM yyyy') if data.subscription.trial_end_date else '—' }}{% else %}—{% endif %}</dd></div>
-							<div><dt data-en="Current period ends" data-ar="تنتهي الفترة الحالية">Current period ends</dt><dd>{{ frappe.utils.formatdate(data.subscription.end_date, 'dd MMM yyyy') if data.subscription and data.subscription.end_date else '—' }}</dd></div>
-							<div><dt data-en="Next billing date" data-ar="تاريخ الفاتورة القادمة">Next billing date</dt><dd>{{ frappe.utils.formatdate(data.subscription.next_billing_date, 'dd MMM yyyy') if data.subscription and data.subscription.next_billing_date else '—' }}</dd></div>
-							<div><dt data-en="Auto renew" data-ar="التجديد التلقائي">Auto renew</dt><dd><span data-en="{{ 'On' if data.subscription and data.subscription.auto_renew else 'Off' }}" data-ar="{{ 'مفعل' if data.subscription and data.subscription.auto_renew else 'معطل' }}">{{ 'On' if data.subscription and data.subscription.auto_renew else 'Off' }}</span></dd></div>
+							<div><dt>{{ _("Plan") }}</dt><dd>{{ data.plan.plan_name if data.plan else data.tenant.plan }}</dd></div>
+							<div><dt>{{ _("Billing cycle") }}</dt><dd>{{ data.subscription.billing_cycle if data.subscription else '—' }}</dd></div>
+							<div><dt>{{ _("Amount") }}</dt><dd>{{ format_money(data.subscription.amount, data.subscription.currency) if data.subscription else '—' }}</dd></div>
+							<div><dt>{{ _("Payment status") }}</dt><dd><span>{{ status_label(data.subscription.payment_status if data.subscription else 'Unpaid', lang) }}</span></dd></div>
+							<div><dt>{{ _("Started on") }}</dt><dd>{{ frappe.utils.formatdate(data.subscription.start_date, 'dd MMM yyyy') if data.subscription and data.subscription.start_date else '—' }}</dd></div>
+							<div><dt>{{ _("Trial ends") }}</dt><dd>{% if data.subscription and data.subscription.status == 'Trial' %}{{ frappe.utils.formatdate(data.subscription.trial_end_date, 'dd MMM yyyy') if data.subscription.trial_end_date else '—' }}{% else %}—{% endif %}</dd></div>
+							<div><dt>{{ _("Current period ends") }}</dt><dd>{{ frappe.utils.formatdate(data.subscription.end_date, 'dd MMM yyyy') if data.subscription and data.subscription.end_date else '—' }}</dd></div>
+							<div><dt>{{ _("Next billing date") }}</dt><dd>{{ frappe.utils.formatdate(data.subscription.next_billing_date, 'dd MMM yyyy') if data.subscription and data.subscription.next_billing_date else '—' }}</dd></div>
+							<div><dt>{{ _("Auto renew") }}</dt><dd><span>{{ 'On' if data.subscription and data.subscription.auto_renew else 'Off' }}</span></dd></div>
 						</dl>
 					</div>
 
 					<div class="panel panel--accent">
 						<div class="panel__head">
 							<div>
-								<small data-en="Renewal" data-ar="التجديد">Renewal</small>
-								<h2 data-en="Keep your workspace running" data-ar="حافظ على استمرارية مساحة عملك">Keep your workspace running</h2>
+								<small>{{ _("Renewal") }}</small>
+								<h2>{{ _("Keep your workspace running") }}</h2>
 							</div>
 						</div>
-						<p data-en="Pay by bank transfer and upload your receipt. Our team reviews manual payments within one business day." data-ar="ادفع عبر التحويل البنكي وارفع إيصالك. يراجع فريقنا المدفوعات اليدوية خلال يوم عمل واحد.">Pay by bank transfer and upload your receipt. Our team reviews manual payments within one business day.</p>
+						<p>{{ _("Pay by bank transfer and upload your receipt. Our team reviews manual payments within one business day.") }}</p>
 						<div class="panel__actions panel__actions--column">
-							<a class="saas-btn saas-btn--primary saas-btn--block" href="{{ data.payment_url }}" data-en="Pay / renew now" data-ar="ادفع / جدد الآن">Pay / renew now</a>
-							<a class="saas-btn saas-btn--outline saas-btn--block" href="{{ data.upgrade_url }}" data-en="Change plan" data-ar="تغيير الخطة">Change plan</a>
+							<a class="saas-btn saas-btn--primary saas-btn--block" href="{{ data.payment_url }}">{{ _("Pay / renew now") }}</a>
+							<a class="saas-btn saas-btn--outline saas-btn--block" href="{{ data.upgrade_url }}">{{ _("Change plan") }}</a>
 						</div>
 						{% if data.subscription and data.subscription.auto_renew %}
 						<button class="saas-link saas-link--danger" type="button" data-cancel-subscription data-tenant="{{ data.tenant.name }}" data-pending="{{ '1' if data.tenant.status == 'Pending Payment' else '0' }}">
-							<span data-en="{{ 'Cancel workspace' if data.tenant.status == 'Pending Payment' else 'Cancel auto-renewal' }}" data-ar="{{ 'إلغاء مساحة العمل' if data.tenant.status == 'Pending Payment' else 'إلغاء التجديد التلقائي' }}">{{ 'Cancel workspace' if data.tenant.status == 'Pending Payment' else 'Cancel auto-renewal' }}</span>
+							<span>{{ 'Cancel workspace' if data.tenant.status == 'Pending Payment' else 'Cancel auto-renewal' }}</span>
 						</button>
 						{% endif %}
 					</div>
@@ -413,22 +409,22 @@
 				<div class="panel panel--wide">
 					<div class="panel__head">
 						<div>
-							<small data-en="Billing" data-ar="الفوترة">Billing</small>
-							<h2 data-en="Payments &amp; receipts" data-ar="المدفوعات والإيصالات">Payments &amp; receipts</h2>
+							<small>{{ _("Billing") }}</small>
+							<h2>{{ _("Payments & receipts") }}</h2>
 						</div>
-						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.payment_url }}" data-en="New payment" data-ar="دفعة جديدة">New payment</a>
+						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ data.payment_url }}">{{ _("New payment") }}</a>
 					</div>
 					{% if data.payments %}
 					<div class="table-wrap">
 						<table class="table">
 							<thead>
 								<tr>
-									<th data-en="Payment" data-ar="الدفع">Payment</th>
-									<th data-en="Period" data-ar="الفترة">Period</th>
-									<th data-en="Amount" data-ar="المبلغ">Amount</th>
-									<th data-en="Method" data-ar="الطريقة">Method</th>
-									<th data-en="Status" data-ar="الحالة">Status</th>
-									<th data-en="Receipt" data-ar="الإيصال">Receipt</th>
+									<th>{{ _("Payment") }}</th>
+									<th>{{ _("Period") }}</th>
+									<th>{{ _("Amount") }}</th>
+									<th>{{ _("Method") }}</th>
+									<th>{{ _("Status") }}</th>
+									<th>{{ _("Receipt") }}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -438,8 +434,8 @@
 									<td>{{ frappe.utils.formatdate(payment.period_start, 'dd MMM') if payment.period_start else '—' }} – {{ frappe.utils.formatdate(payment.period_end, 'dd MMM yyyy') if payment.period_end else '—' }}</td>
 									<td>{{ format_money(payment.amount, payment.currency) }}</td>
 									<td>{{ payment.payment_method or '—' }}</td>
-									<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}" data-en="{{ payment.status }}" data-ar="{{ payment_status_ar.get(payment.status, payment.status) }}">{{ payment.status }}</span></td>
-									<td>{% if payment.receipt %}<a class="saas-link saas-link--sm" href="{{ payment.receipt }}" target="_blank" rel="noopener" data-en="View" data-ar="عرض">View</a>{% else %}—{% endif %}</td>
+									<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span></td>
+									<td>{% if payment.receipt %}<a class="saas-link saas-link--sm" href="{{ payment.receipt }}" target="_blank" rel="noopener">{{ _("View") }}</a>{% else %}—{% endif %}</td>
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -448,9 +444,9 @@
 					{% else %}
 					<div class="empty-state">
 						<div class="empty-state__icon">◎</div>
-						<h3 data-en="No payments yet" data-ar="لا توجد مدفوعات بعد">No payments yet</h3>
-						<p data-en="When you submit a manual payment it will appear here with its status." data-ar="عند إرسال دفعة يدوية ستظهر هنا مع حالتها.">When you submit a manual payment it will appear here with its status.</p>
-						<a class="saas-btn saas-btn--outline" href="{{ data.payment_url }}" data-en="Make your first payment" data-ar="قم بأول دفعة">Make your first payment</a>
+						<h3>{{ _("No payments yet") }}</h3>
+						<p>{{ _("When you submit a manual payment it will appear here with its status.") }}</p>
+						<a class="saas-btn saas-btn--outline" href="{{ data.payment_url }}">{{ _("Make your first payment") }}</a>
 					</div>
 					{% endif %}
 				</div>
@@ -460,16 +456,16 @@
 				<div class="panel panel--wide">
 					<div class="panel__head">
 						<div>
-							<small data-en="Access" data-ar="الوصول">Access</small>
-							<h2 data-en="Your ERP login details" data-ar="بيانات الدخول إلى نظام ERP">Your ERP login details</h2>
+							<small>{{ _("Access") }}</small>
+							<h2>{{ _("Your ERP login details") }}</h2>
 						</div>
 					</div>
-					<p class="panel__lead" data-en="Your workspace is not created yet. Login details become available after your first payment is approved and the site is provisioned." data-ar="لم تُنشأ مساحة عملك بعد. تتوفر بيانات الدخول بعد الموافقة على دفعتك الأولى وتجهيز الموقع.">Your workspace is not created yet. Login details become available after your first payment is approved and the site is provisioned.</p>
+					<p class="panel__lead">{{ _("Your workspace is not created yet. Login details become available after your first payment is approved and the site is provisioned.") }}</p>
 					<div class="panel__actions">
 						{% if data.tenant.status == 'Pending Payment' and not data.pending_payment %}
-						<a class="saas-btn saas-btn--primary" href="{{ data.payment_url }}" data-en="Pay now" data-ar="ادفع الآن">Pay now</a>
+						<a class="saas-btn saas-btn--primary" href="{{ data.payment_url }}">{{ _("Pay now") }}</a>
 						{% else %}
-						<a class="saas-btn saas-btn--primary" href="/provisioning?tenant={{ data.tenant.name }}" data-en="View progress" data-ar="عرض التقدم">View progress</a>
+						<a class="saas-btn saas-btn--primary" href="{{ saas_url('/provisioning', lang) }}?tenant={{ data.tenant.name }}">{{ _("View progress") }}</a>
 						{% endif %}
 					</div>
 				</div>
@@ -477,36 +473,36 @@
 				<div class="panel panel--wide">
 					<div class="panel__head">
 						<div>
-							<small data-en="Access" data-ar="الوصول">Access</small>
-							<h2 data-en="Your ERP login details" data-ar="بيانات الدخول إلى نظام ERP">Your ERP login details</h2>
+							<small>{{ _("Access") }}</small>
+							<h2>{{ _("Your ERP login details") }}</h2>
 						</div>
-						<span class="badge badge--soft" data-en="Private" data-ar="خاص">Private</span>
+						<span class="badge badge--soft">{{ _("Private") }}</span>
 					</div>
-					<p class="panel__lead" data-en="Use these details to sign in to your own ERP workspace. Change the temporary password after your first login." data-ar="استخدم هذه البيانات لتسجيل الدخول إلى مساحة ERP الخاصة بك. غيّر كلمة المرور المؤقتة بعد أول تسجيل دخول.">Use these details to sign in to your own ERP workspace. Change the temporary password after your first login.</p>
+					<p class="panel__lead">{{ _("Use these details to sign in to your own ERP workspace. Change the temporary password after your first login.") }}</p>
 					<div class="credentials">
 						<div class="credential-row">
-							<span data-en="Workspace URL" data-ar="رابط مساحة العمل">Workspace URL</span>
+							<span>{{ _("Workspace URL") }}</span>
 							<a href="{{ data.tenant.site_url }}" target="_blank" rel="noopener">{{ data.tenant.site_url }}</a>
 						</div>
 						<div class="credential-row">
-							<span data-en="Login URL" data-ar="رابط الدخول">Login URL</span>
+							<span>{{ _("Login URL") }}</span>
 							<a href="{{ data.tenant.site_url }}/login" target="_blank" rel="noopener">{{ data.tenant.site_url }}/login</a>
 						</div>
 						<div class="credential-row">
-							<span data-en="Email" data-ar="البريد الإلكتروني">Email</span>
+							<span>{{ _("Email") }}</span>
 							<b>{{ data.tenant.admin_email }}</b>
 						</div>
 						<div class="credential-row">
-							<span data-en="Password" data-ar="كلمة المرور">Password</span>
+							<span>{{ _("Password") }}</span>
 							<b class="secret" data-secret>••••••••••••</b>
 							<button class="saas-btn saas-btn--outline saas-btn--sm" type="button" data-reveal-password data-tenant="{{ data.tenant.name }}">
-								<span data-en="Reveal" data-ar="إظهار">Reveal</span>
+								<span>{{ _("Reveal") }}</span>
 							</button>
 						</div>
 					</div>
 					<div class="panel__actions">
-						<a class="saas-btn saas-btn--primary" href="{{ data.tenant.site_url }}/login" target="_blank" rel="noopener" data-en="Open login page" data-ar="افتح صفحة الدخول">Open login page</a>
-						<a class="saas-btn saas-btn--outline" href="{{ data.tenant.site_url }}/update-password" target="_blank" rel="noopener" data-en="Change password" data-ar="تغيير كلمة المرور">Change password</a>
+						<a class="saas-btn saas-btn--primary" href="{{ data.tenant.site_url }}/login" target="_blank" rel="noopener">{{ _("Open login page") }}</a>
+						<a class="saas-btn saas-btn--outline" href="{{ data.tenant.site_url }}/update-password" target="_blank" rel="noopener">{{ _("Change password") }}</a>
 					</div>
 				</div>
 				{% endif %}
@@ -516,31 +512,31 @@
 					<div class="panel">
 						<div class="panel__head">
 							<div>
-								<small data-en="Company" data-ar="الشركة">Company</small>
-								<h2 data-en="Company profile" data-ar="ملف الشركة">Company profile</h2>
+								<small>{{ _("Company") }}</small>
+								<h2>{{ _("Company profile") }}</h2>
 							</div>
 						</div>
 						<form class="form form--grid" data-profile-form data-tenant="{{ data.tenant.name }}">
 							<label class="field field--full">
-								<span class="field__label" data-en="Company / workspace name" data-ar="اسم الشركة / مساحة العمل">Company / workspace name</span>
+								<span class="field__label">{{ _("Company / workspace name") }}</span>
 								<div class="field__control">
 									<span class="field__icon">▦</span>
 									<input type="text" name="company_name" required value="{{ data.tenant.tenant_name }}">
 								</div>
 							</label>
 							<label class="field">
-								<span class="field__label" data-en="Phone" data-ar="الهاتف">Phone</span>
+								<span class="field__label">{{ _("Phone") }}</span>
 								<div class="field__control">
 									<span class="field__icon">☎</span>
 									<input type="tel" name="phone" value="{{ tenant.phone or '' }}">
 								</div>
 							</label>
 							<label class="field">
-								<span class="field__label" data-en="Country" data-ar="الدولة">Country</span>
+								<span class="field__label">{{ _("Country") }}</span>
 								<div class="field__control field__control--select">
 									<span class="field__icon">◍</span>
 									<select name="country">
-										<option value="" data-en="Select a country" data-ar="اختر دولة">Select a country</option>
+										<option value="">{{ _("Select a country") }}</option>
 										{% for country in countries %}
 										<option value="{{ country.name }}" {% if country.name == tenant.country %}selected{% endif %}>{{ country.name }}</option>
 										{% endfor %}
@@ -548,7 +544,7 @@
 								</div>
 							</label>
 							<label class="field">
-								<span class="field__label" data-en="Preferred language" data-ar="اللغة المفضلة">Preferred language</span>
+								<span class="field__label">{{ _("Preferred language") }}</span>
 								<div class="field__control field__control--select">
 									<span class="field__icon">◎</span>
 									<select name="language">
@@ -558,16 +554,16 @@
 								</div>
 							</label>
 							<label class="field">
-								<span class="field__label" data-en="Billing currency" data-ar="عملة الفوترة">Billing currency</span>
+								<span class="field__label">{{ _("Billing currency") }}</span>
 								<div class="field__control">
 									<span class="field__icon">◎</span>
 									<input type="text" value="{{ data.tenant.currency }}" readonly>
 								</div>
-								<span class="field__hint" data-en="Contact support to change your billing currency." data-ar="تواصل مع الدعم لتغيير عملة الفوترة.">Contact support to change your billing currency.</span>
+								<span class="field__hint">{{ _("Contact support to change your billing currency.") }}</span>
 							</label>
 							<div class="form__error field--full" data-form-error hidden></div>
 							<button class="saas-btn saas-btn--primary saas-btn--lg field--full" type="submit">
-								<span data-en="Save changes" data-ar="حفظ التغييرات">Save changes</span>
+								<span>{{ _("Save changes") }}</span>
 								<span class="btn-spinner" hidden></span>
 							</button>
 						</form>
@@ -576,18 +572,18 @@
 					<div class="panel">
 						<div class="panel__head">
 							<div>
-								<small data-en="Account" data-ar="الحساب">Account</small>
-								<h2 data-en="Account owner" data-ar="مالك الحساب">Account owner</h2>
+								<small>{{ _("Account") }}</small>
+								<h2>{{ _("Account owner") }}</h2>
 							</div>
 						</div>
 						<dl class="detail-list">
-							<div><dt data-en="Name" data-ar="الاسم">Name</dt><dd>{{ account_user.full_name }}</dd></div>
-							<div><dt data-en="Email" data-ar="البريد الإلكتروني">Email</dt><dd>{{ account_user.email }}</dd></div>
-							<div><dt data-en="Username" data-ar="اسم المستخدم">Username</dt><dd>{{ account_user.username or '—' }}</dd></div>
-							<div><dt data-en="Workspace" data-ar="مساحة العمل">Workspace</dt><dd>{{ data.tenant.name }}</dd></div>
+							<div><dt>{{ _("Name") }}</dt><dd>{{ account_user.full_name }}</dd></div>
+							<div><dt>{{ _("Email") }}</dt><dd>{{ account_user.email }}</dd></div>
+							<div><dt>{{ _("Username") }}</dt><dd>{{ account_user.username or '—' }}</dd></div>
+							<div><dt>{{ _("Workspace") }}</dt><dd>{{ data.tenant.name }}</dd></div>
 						</dl>
-						<p class="muted small" data-en="To change your portal password, use the standard password reset page." data-ar="لتغيير كلمة مرور البوابة، استخدم صفحة إعادة تعيين كلمة المرور القياسية.">To change your portal password, use the standard password reset page.</p>
-						<a class="saas-link saas-link--sm" href="/login#forgot" data-en="Reset portal password" data-ar="إعادة تعيين كلمة مرور البوابة">Reset portal password</a>
+						<p class="muted small">{{ _("To change your portal password, use the standard password reset page.") }}</p>
+						<a class="saas-link saas-link--sm" href="/login#forgot">{{ _("Reset portal password") }}</a>
 					</div>
 				</div>
 				{% endif %}

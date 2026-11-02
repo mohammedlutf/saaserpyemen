@@ -8,18 +8,16 @@
 	<div class="saas-container">
 		<div class="portal__head portal__head--compact">
 			<div>
-				<div class="saas-pill"><span data-en="Manual payment" data-ar="دفع يدوي">Manual payment</span></div>
+				<div class="saas-pill"><span>{{ _("Manual payment") }}</span></div>
 				<h1>
-					<span class="lang-en">Complete your subscription payment</span>
-					<span class="lang-ar">أكمل دفع اشتراكك</span>
+					{{ _("Complete your subscription payment") }}
 				</h1>
 				<p>
-					<span class="lang-en">Transfer the amount below, then upload your receipt. We review payments within one business day.</span>
-					<span class="lang-ar">حوّل المبلغ أدناه ثم ارفع إيصالك. نراجع المدفوعات خلال يوم عمل واحد.</span>
+					{{ _("Transfer the amount below, then upload your receipt. We review payments within one business day.") }}
 				</p>
 			</div>
-			<a class="saas-btn saas-btn--outline" href="/dashboard?tenant={{ data.tenant.name }}&tab=billing">
-				<span data-en="Back to dashboard" data-ar="العودة إلى لوحة التحكم">Back to dashboard</span>
+			<a class="saas-btn saas-btn--outline" href="{{ saas_url('/dashboard', lang) }}?tenant={{ data.tenant.name }}&tab=billing">
+				<span>{{ _("Back to dashboard") }}</span>
 			</a>
 		</div>
 
@@ -27,12 +25,12 @@
 		<div class="alert alert--warning">
 			<span class="alert__icon">◷</span>
 			<div>
-				<b data-en="You already have a payment under review" data-ar="لديك دفعة قيد المراجعة بالفعل">You already have a payment under review</b>
+				<b>{{ _("You already have a payment under review") }}</b>
 				<p>
-					<span data-en="Payment {{ data.pending_payment.name }} was submitted on {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. We will activate your subscription as soon as it is approved." data-ar="تم إرسال الدفعة {{ data.pending_payment.name }} في {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. سنفعّل اشتراكك بمجرد الموافقة عليها.">Payment {{ data.pending_payment.name }} was submitted on {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. We will activate your subscription as soon as it is approved.</span>
+					{% if lang == 'ar' %}تم إرسال الدفعة {{ data.pending_payment.name }} في {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. سنفعّل اشتراكك بمجرد الموافقة عليها.{% else %}Payment {{ data.pending_payment.name }} was submitted on {{ frappe.utils.formatdate(data.pending_payment.creation, 'dd MMM yyyy') }}. We will activate your subscription as soon as it is approved.{% endif %}
 				</p>
 			</div>
-			<span class="status status--pending-review" data-en="Pending Review" data-ar="بانتظار المراجعة">Pending Review</span>
+			<span class="status status--pending-review">{{ _("Pending Review") }}</span>
 		</div>
 		{% endif %}
 
@@ -41,38 +39,38 @@
 				<div class="panel panel--accent">
 					<div class="panel__head">
 						<div>
-							<small data-en="Amount due" data-ar="المبلغ المستحق">Amount due</small>
+							<small>{{ _("Amount due") }}</small>
 							<h2 class="pay-amount">{{ format_money(data.amount, data.currency) }}</h2>
 						</div>
 						<span class="badge badge--accent">{{ data.subscription.billing_cycle }}</span>
 					</div>
 					<dl class="detail-list detail-list--compact">
-						<div><dt data-en="Plan" data-ar="الخطة">Plan</dt><dd>{{ data.plan.plan_name if data.plan else data.subscription.plan }}</dd></div>
-						<div><dt data-en="Billing period" data-ar="فترة الفوترة">Billing period</dt><dd>{{ frappe.utils.formatdate(data.period_start, 'dd MMM yyyy') }} – {{ frappe.utils.formatdate(data.period_end, 'dd MMM yyyy') }}</dd></div>
-						<div><dt data-en="Workspace" data-ar="مساحة العمل">Workspace</dt><dd>{{ data.tenant.subdomain }}.{{ domain }}</dd></div>
-						<div><dt data-en="Reference" data-ar="المرجع">Reference</dt><dd><b>{{ data.tenant.subdomain }}</b></dd></div>
+						<div><dt>{{ _("Plan") }}</dt><dd>{{ data.plan.plan_name if data.plan else data.subscription.plan }}</dd></div>
+						<div><dt>{{ _("Billing period") }}</dt><dd>{{ frappe.utils.formatdate(data.period_start, 'dd MMM yyyy') }} – {{ frappe.utils.formatdate(data.period_end, 'dd MMM yyyy') }}</dd></div>
+						<div><dt>{{ _("Workspace") }}</dt><dd>{{ data.tenant.subdomain }}.{{ domain }}</dd></div>
+						<div><dt>{{ _("Reference") }}</dt><dd><b>{{ data.tenant.subdomain }}</b></dd></div>
 					</dl>
-					<p class="muted small" data-en="Please include your workspace subdomain in the transfer reference so we can match your payment quickly." data-ar="يرجى تضمين النطاق الفرعي لمساحة عملك في مرجع التحويل حتى نتمكن من مطابقة دفعتك بسرعة.">Please include your workspace subdomain in the transfer reference so we can match your payment quickly.</p>
+					<p class="muted small">{{ _("Please include your workspace subdomain in the transfer reference so we can match your payment quickly.") }}</p>
 				</div>
 
 				<div class="panel">
 					<div class="panel__head">
 						<div>
-							<small data-en="Bank transfer" data-ar="تحويل بنكي">Bank transfer</small>
-							<h2 data-en="Bank details" data-ar="بيانات البنك">Bank details</h2>
+							<small>{{ _("Bank transfer") }}</small>
+							<h2>{{ _("Bank details") }}</h2>
 						</div>
 						<span class="panel__big-icon">▦</span>
 					</div>
-					<div class="bank-details lang-en">
-						{{ (data.bank_details or '<p>Bank: Your Bank Name<br>Account name: Sahbix<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
-					</div>
-					<div class="bank-details lang-ar">
+					<div class="bank-details">
+						{% if lang == 'ar' %}
 						{{ (data.bank_details_ar or data.bank_details or '<p>البنك: اسم البنك<br>اسم الحساب: سحبيكس<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
+						{% else %}
+						{{ (data.bank_details or '<p>Bank: Your Bank Name<br>Account name: Sahbix<br>IBAN: YOUR-IBAN-HERE</p>') | safe }}
+						{% endif %}
 					</div>
 					{% if data.payment_note_en or data.payment_note_ar %}
 					<p class="muted small">
-						<span class="lang-en">{{ data.payment_note_en or '' }}</span>
-						<span class="lang-ar">{{ data.payment_note_ar or data.payment_note_en or '' }}</span>
+						{% if lang == 'ar' %}{{ data.payment_note_ar or data.payment_note_en or '' }}{% else %}{{ data.payment_note_en or data.payment_note_ar or '' }}{% endif %}
 					</p>
 					{% endif %}
 				</div>
@@ -82,71 +80,71 @@
 				<div class="panel">
 					<div class="panel__head">
 						<div>
-							<small data-en="Confirm payment" data-ar="تأكيد الدفع">Confirm payment</small>
-							<h2 data-en="Upload your receipt" data-ar="ارفع إيصالك">Upload your receipt</h2>
+							<small>{{ _("Confirm payment") }}</small>
+							<h2>{{ _("Upload your receipt") }}</h2>
 						</div>
 					</div>
 
 					{% if data.pending_payment %}
 					<div class="empty-state">
 						<div class="empty-state__icon">◷</div>
-						<h3 data-en="We are reviewing your payment" data-ar="نراجع دفعتك حاليًا">We are reviewing your payment</h3>
-						<p data-en="You will be able to submit a new payment after the current one is reviewed. Need help? Contact support." data-ar="ستتمكن من إرسال دفعة جديدة بعد مراجعة الدفعة الحالية. تحتاج مساعدة؟ تواصل مع الدعم.">You will be able to submit a new payment after the current one is reviewed. Need help? Contact support.</p>
-						<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}" data-en="Contact support" data-ar="تواصل مع الدعم">Contact support</a>
+						<h3>{{ _("We are reviewing your payment") }}</h3>
+						<p>{{ _("You will be able to submit a new payment after the current one is reviewed. Need help? Contact support.") }}</p>
+						<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">{{ _("Contact support") }}</a>
 					</div>
 					{% else %}
 					<form class="form form--grid" data-payment-form data-tenant="{{ data.tenant.name }}" novalidate>
 						<div class="field field--full">
-							<span class="field__label" data-en="Payment receipt" data-ar="إيصال الدفع">Payment receipt</span>
+							<span class="field__label">{{ _("Payment receipt") }}</span>
 							<label class="upload" data-upload-zone>
 								<input type="file" name="receipt" accept="image/*,application/pdf" hidden data-upload-input>
 								<span class="upload__icon">⇧</span>
-								<span class="upload__title" data-upload-title data-en="Click to upload or drag your receipt here" data-ar="انقر للرفع أو اسحب إيصالك هنا">Click to upload or drag your receipt here</span>
-								<span class="upload__hint" data-en="PDF, JPG or PNG · up to 10 MB" data-ar="PDF أو JPG أو PNG · حتى 10 ميجابايت">PDF, JPG or PNG · up to 10 MB</span>
+								<span class="upload__title" data-upload-title>{{ _("Click to upload or drag your receipt here") }}</span>
+								<span class="upload__hint">{{ _("PDF, JPG or PNG · up to 10 MB") }}</span>
 								<span class="upload__file" data-upload-file hidden></span>
 							</label>
 						</div>
 
 						<label class="field">
-							<span class="field__label" data-en="Transfer reference" data-ar="مرجع التحويل">Transfer reference</span>
+							<span class="field__label">{{ _("Transfer reference") }}</span>
 							<div class="field__control">
 								<span class="field__icon">#</span>
-								<input type="text" name="reference_no" data-en-placeholder="e.g. TRX-849201" data-ar-placeholder="مثال: TRX-849201" placeholder="e.g. TRX-849201">
+								<input type="text" name="reference_no" placeholder="{{ _("e.g. TRX-849201") }}">
 							</div>
 						</label>
 
 						<label class="field">
-							<span class="field__label" data-en="Payment method" data-ar="طريقة الدفع">Payment method</span>
+							<span class="field__label">{{ _("Payment method") }}</span>
 							<div class="field__control field__control--select">
 								<span class="field__icon">◎</span>
 								<select name="payment_method">
-									<option value="Bank Transfer" data-en="Bank transfer" data-ar="تحويل بنكي">Bank transfer</option>
-									<option value="Cash" data-en="Cash" data-ar="نقدًا">Cash</option>
-									<option value="Card" data-en="Card" data-ar="بطاقة">Card</option>
-									<option value="PayPal" data-en="PayPal" data-ar="PayPal">PayPal</option>
-									<option value="Other" data-en="Other" data-ar="أخرى">Other</option>
+									<option value="Bank Transfer">{{ _("Bank transfer") }}</option>
+									<option value="Cash">{{ _("Cash") }}</option>
+									<option value="Card">{{ _("Card") }}</option>
+									<option value="PayPal">{{ _("PayPal") }}</option>
+									<option value="Other">{{ _("Other") }}</option>
 								</select>
 							</div>
 						</label>
 
 						<label class="field field--full">
-							<span class="field__label" data-en="Notes (optional)" data-ar="ملاحظات (اختياري)">Notes (optional)</span>
+							<span class="field__label">{{ _("Notes (optional)") }}</span>
 							<div class="field__control field__control--textarea">
-								<textarea name="notes" rows="3" data-en-placeholder="Anything we should know about this payment" data-ar-placeholder="أي شيء يجب أن نعرفه عن هذه الدفعة" placeholder="Anything we should know about this payment"></textarea>
+								<textarea name="notes" rows="3" placeholder="{{ _("Anything we should know about this payment") }}"></textarea>
 							</div>
 						</label>
 
 						<div class="pay-total field--full">
 							<div>
-								<small data-en="Total to transfer" data-ar="الإجمالي للتحويل">Total to transfer</small>
+								<small>{{ _("Total to transfer") }}</small>
 								<strong>{{ format_money(data.amount, data.currency) }}</strong>
 							</div>
-							<div class="pay-total__note" data-en="Payment is verified manually by our team." data-ar="يتم التحقق من الدفع يدويًا من قبل فريقنا.">Payment is verified manually by our team.</div>
+							<div class="pay-total__note">{{ _("Payment is verified manually by our team.") }}</div>
 						</div>
 
 						<div class="form__error field--full" data-form-error hidden></div>
 						<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block field--full" type="submit">
-							<span data-en="Submit payment for review" data-ar="إرسال الدفعة للمراجعة">Submit payment for review</span>
+							<span>{{ _("Submit payment for review") }}</span>
 							<span class="btn-spinner" hidden></span>
 						</button>
 					</form>
@@ -156,8 +154,8 @@
 				<div class="panel">
 					<div class="panel__head">
 						<div>
-							<small data-en="History" data-ar="السجل">History</small>
-							<h2 data-en="Your payments" data-ar="مدفوعاتك">Your payments</h2>
+							<small>{{ _("History") }}</small>
+							<h2>{{ _("Your payments") }}</h2>
 						</div>
 					</div>
 					{% if data.payments %}
@@ -165,10 +163,10 @@
 						<table class="table">
 							<thead>
 								<tr>
-									<th data-en="Payment" data-ar="الدفع">Payment</th>
-									<th data-en="Amount" data-ar="المبلغ">Amount</th>
-									<th data-en="Status" data-ar="الحالة">Status</th>
-									<th data-en="Receipt" data-ar="الإيصال">Receipt</th>
+									<th>{{ _("Payment") }}</th>
+									<th>{{ _("Amount") }}</th>
+									<th>{{ _("Status") }}</th>
+									<th>{{ _("Receipt") }}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -176,8 +174,8 @@
 								<tr>
 									<td><b>{{ payment.name }}</b><br><small>{{ frappe.utils.formatdate(payment.creation, 'dd MMM yyyy') }}</small></td>
 									<td>{{ format_money(payment.amount, payment.currency) }}</td>
-									<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}" data-en="{{ payment.status }}" data-ar="{{ payment_status_ar.get(payment.status, payment.status) }}">{{ payment.status }}</span></td>
-									<td>{% if payment.receipt %}<a class="saas-link saas-link--sm" href="{{ payment.receipt }}" target="_blank" rel="noopener" data-en="View" data-ar="عرض">View</a>{% else %}—{% endif %}</td>
+									<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span></td>
+									<td>{% if payment.receipt %}<a class="saas-link saas-link--sm" href="{{ payment.receipt }}" target="_blank" rel="noopener">{{ _("View") }}</a>{% else %}—{% endif %}</td>
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -186,7 +184,7 @@
 					{% else %}
 					<div class="empty-state">
 						<div class="empty-state__icon">◎</div>
-						<p data-en="No payments submitted yet." data-ar="لم يتم إرسال أي مدفوعات بعد.">No payments submitted yet.</p>
+						<p>{{ _("No payments submitted yet.") }}</p>
 					</div>
 					{% endif %}
 				</div>

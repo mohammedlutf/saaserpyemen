@@ -8,12 +8,11 @@
 	<div class="saas-container">
 		<div class="saas-footer__grid">
 			<div class="saas-footer__brand">
-				<a class="saas-brand" href="/" aria-label="{{ brand }} — {{ brand_ar }}">
+				<a class="saas-brand" href="{{ saas_url('/') }}" aria-label="{{ brand }} — {{ brand_ar }}">
 					<img class="saas-footer__logo" src="{{ logo }}" alt="{{ brand }}" width="993" height="251">
 				</a>
 				<p class="saas-footer__about">
-					<span class="lang-en">{{ settings.footer_about_en if settings and settings.footer_about_en else 'The all-in-one cloud ERP platform for ambitious businesses in the Middle East and beyond.' }}</span>
-					<span class="lang-ar">{{ settings.footer_about_ar if settings and settings.footer_about_ar else 'منصة ERP السحابية الشاملة للشركات الطموحة في الشرق الأوسط وخارجه.' }}</span>
+					{% if lang == 'ar' %}{{ settings.footer_about_ar if settings and settings.footer_about_ar else _('The all-in-one cloud ERP platform for ambitious businesses in the Middle East and beyond.') }}{% else %}{{ settings.footer_about_en if settings and settings.footer_about_en else _('The all-in-one cloud ERP platform for ambitious businesses in the Middle East and beyond.') }}{% endif %}
 				</p>
 				<div class="saas-footer__social">
 					{% if settings and settings.twitter_url %}<a href="{{ settings.twitter_url }}" target="_blank" rel="noopener" aria-label="X">𝕏</a>{% endif %}
@@ -24,36 +23,36 @@
 			</div>
 
 			<div class="saas-footer__col">
-				<h4 data-en="Product" data-ar="المنتج">Product</h4>
-				<a href="/plans" data-en="Plans &amp; pricing" data-ar="الخطط والأسعار">Plans &amp; pricing</a>
-				<a href="/#features" data-en="Features" data-ar="المزايا">Features</a>
-				<a href="/#how" data-en="How it works" data-ar="كيف يعمل">How it works</a>
-				<a href="/#faq" data-en="FAQ" data-ar="الأسئلة الشائعة">FAQ</a>
+				<h4>{{ _('Product') }}</h4>
+				<a href="{{ saas_url('/plans') }}">{{ _('Plans & pricing') }}</a>
+				<a href="{{ saas_url('/') }}#features">{{ _('Features') }}</a>
+				<a href="{{ saas_url('/') }}#how">{{ _('How it works') }}</a>
+				<a href="{{ saas_url('/') }}#faq">{{ _('FAQ') }}</a>
 			</div>
 
 			<div class="saas-footer__col">
-				<h4 data-en="Company" data-ar="الشركة">Company</h4>
-				<a href="/terms" data-en="Terms of service" data-ar="شروط الخدمة">Terms of service</a>
-				<a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">Privacy policy</a>
-				<a href="/#contact" data-en="Contact us" data-ar="اتصل بنا">Contact us</a>
-				<a href="/signin" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
+				<h4>{{ _('Company') }}</h4>
+				<a href="{{ saas_url('/terms') }}">{{ _('Terms of service') }}</a>
+				<a href="{{ saas_url('/privacy') }}">{{ _('Privacy policy') }}</a>
+				<a href="{{ saas_url('/') }}#contact">{{ _('Contact us') }}</a>
+				<a href="{{ saas_url('/signin') }}">{{ _('Sign in') }}</a>
 			</div>
 
 			<div class="saas-footer__col saas-footer__contact">
-				<h4 data-en="Get in touch" data-ar="تواصل معنا">Get in touch</h4>
-				<p class="saas-footer__contact-note" data-en="We reply within one business day." data-ar="نرد خلال يوم عمل واحد.">We reply within one business day.</p>
+				<h4>{{ _('Get in touch') }}</h4>
+				<p class="saas-footer__contact-note">{{ _('We reply within one business day.') }}</p>
 				<div class="saas-footer__contact-actions">
 					<a href="mailto:{{ support_email }}">
 						<span aria-hidden="true">✉</span>
-						<span data-en="Email" data-ar="البريد">Email</span>
+						<span>{{ _('Email') }}</span>
 					</a>
 					<a href="tel:{{ support_phone }}">
 						<span aria-hidden="true">☎</span>
-						<span data-en="Call" data-ar="اتصال">Call</span>
+						<span>{{ _('Call') }}</span>
 					</a>
 					<a class="wa" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">
 						<span aria-hidden="true">◉</span>
-						<span data-en="WhatsApp" data-ar="واتساب">WhatsApp</span>
+						<span>{{ _('WhatsApp') }}</span>
 					</a>
 				</div>
 				<a href="mailto:{{ support_email }}">{{ support_email }}</a>
@@ -72,14 +71,13 @@
 		<div class="saas-footer__bottom">
 			<p>
 				© {{ frappe.utils.nowdate()[:4] }}
-				<span class="lang-en">{{ brand }}</span>
-				<span class="lang-ar">{{ brand_ar }}</span>
-				· <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span>
+				{% if lang == 'ar' %}{{ brand_ar }}{% else %}{{ brand }}{% endif %}
+				· {{ _('All rights reserved.') }}
 			</p>
 			<p class="saas-footer__made">
-				<span data-en="Built on ERPNext" data-ar="مبني على ERPNext">Built on ERPNext</span>
+				<span>{{ _('Built on ERPNext') }}</span>
 				<span class="dot"></span>
-				<span data-en="Made for the Middle East" data-ar="صُنع للشرق الأوسط">Made for the Middle East</span>
+				<span>{{ _('Made for the Middle East') }}</span>
 			</p>
 		</div>
 	</div>

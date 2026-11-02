@@ -3,41 +3,41 @@
 {% set logo = '/assets/saaserpyemen/images/rtlhorizontallogo.png' if lang == 'ar' else '/assets/saaserpyemen/images/ltlhorizontallogo.png' %}
 <header class="saas-nav" id="saas-nav">
 	<div class="saas-container saas-nav__inner">
-		<a class="saas-brand" href="/" aria-label="{{ brand }} — {{ brand_ar }}">
+		<a class="saas-brand" href="{{ saas_url('/') }}" aria-label="{{ brand }} — {{ brand_ar }}">
 			<img class="saas-brand__logo" src="{{ logo }}" alt="{{ brand }}" width="993" height="251">
 		</a>
 
-		<button class="saas-nav__toggle" type="button" aria-label="Menu" aria-expanded="false" data-nav-toggle>
+		<button class="saas-nav__toggle" type="button" aria-label="{{ _('Menu') }}" aria-expanded="false" data-nav-toggle>
 			<span></span><span></span><span></span>
 		</button>
 
 		<nav class="saas-nav__links" data-nav-links>
-			<a href="/" data-en="Home" data-ar="الرئيسية">Home</a>
-			<a href="/plans" data-en="Plans" data-ar="الخطط">Plans</a>
-			<a href="/#features" data-en="Features" data-ar="المزايا">Features</a>
-			<a href="/#faq" data-en="FAQ" data-ar="الأسئلة">FAQ</a>
-			<a href="/#contact" data-en="Contact" data-ar="اتصل بنا">Contact</a>
+			<a href="{{ saas_url('/') }}">{{ _('Home') }}</a>
+			<a href="{{ saas_url('/plans') }}">{{ _('Plans') }}</a>
+			<a href="{{ saas_url('/') }}#features">{{ _('Features') }}</a>
+			<a href="{{ saas_url('/') }}#faq">{{ _('FAQ') }}</a>
+			<a href="{{ saas_url('/') }}#contact">{{ _('Contact') }}</a>
 		</nav>
 
 		<div class="saas-nav__actions">
-			<button class="saas-lang" type="button" data-lang-toggle aria-label="Switch language">
+			<a class="saas-lang" href="{{ switch_language_url }}" aria-label="{{ _('Switch language') }}">
 				<svg class="saas-lang__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 					<circle cx="12" cy="12" r="9"></circle>
 					<path d="M3 12h18"></path>
 					<path d="M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"></path>
 				</svg>
-				<span class="saas-lang__label" data-lang-label>{% if lang == 'ar' %}English{% else %}العربية{% endif %}</span>
-			</button>
+				<span class="saas-lang__label">{% if lang == 'ar' %}English{% else %}العربية{% endif %}</span>
+			</a>
 
 			{% if frappe.session.user != 'Guest' %}
-				<a class="saas-btn saas-btn--primary saas-nav__cta" href="/dashboard" data-en="Dashboard" data-ar="لوحتي">Dashboard</a>
+				<a class="saas-btn saas-btn--primary saas-nav__cta" href="{{ saas_url('/dashboard') }}">{{ _('Dashboard') }}</a>
 				<button class="saas-btn saas-btn--ghost saas-nav__logout" type="button" data-logout>
 					<span class="saas-nav__logout-icon" aria-hidden="true">⏻</span>
-					<span data-en="Sign out" data-ar="تسجيل الخروج">Sign out</span>
+					<span>{{ _('Sign out') }}</span>
 				</button>
 			{% else %}
-				<a class="saas-btn saas-btn--ghost saas-nav__signin" href="/signin" data-en="Sign in" data-ar="تسجيل الدخول">Sign in</a>
-				<a class="saas-btn saas-btn--primary saas-nav__cta" href="/signup" data-en="Start free trial" data-ar="ابدأ التجربة المجانية">Start free trial</a>
+				<a class="saas-btn saas-btn--ghost saas-nav__signin" href="{{ saas_url('/signin') }}">{{ _('Sign in') }}</a>
+				<a class="saas-btn saas-btn--primary saas-nav__cta" href="{{ saas_url('/signup') }}">{{ _('Start free trial') }}</a>
 			{% endif %}
 		</div>
 	</div>
