@@ -79,5 +79,7 @@ def get_context(context):
 		base = (user.get("saas_company_name") or user.full_name or "workspace").lower()
 		context.suggested_subdomain = re.sub(r"[^a-z0-9]+", "-", base).strip("-")[:24] or "workspace"
 
-	context.title = ("Change plan" if context.is_change else "Choose your workspace") + f" — {context.brand_name}"
-	context.metatags = {"description": f"Choose your plan and subdomain to create your {context.brand_name} workspace."}
+	from frappe import _
+
+	context.title = (_("Change plan") if context.is_change else _("Choose your workspace")) + f" — {context.brand_name}"
+	context.metatags = {"description": _("Choose your plan and subdomain to create your {0} workspace.").format(context.brand_name)}

@@ -36,5 +36,7 @@ def get_context(context):
 			context.plan_doc, context.selected_currency, context.selected_cycle
 		)
 		context.plan_price_label = format_money(context.plan_price, context.selected_currency)
-	context.title = f"Create your account — {context.brand_name}"
-	context.metatags = {"description": f"Create your free {context.brand_name} account and start a 30-day trial."}
+	from frappe import _
+
+	context.title = f"{_('Create your account')} — {context.brand_name}"
+	context.metatags = {"description": _("Create your free {0} account and start a 30-day trial.").format(context.brand_name)}

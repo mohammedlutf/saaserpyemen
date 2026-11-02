@@ -47,7 +47,9 @@ def get_context(context):
 		context.tenant = get_tenant_for_user()
 		context.subscription = get_tenant_subscription(context.tenant) if context.tenant else None
 		context.trial_available = not user_has_workspaces()
-	context.title = f"Plans & pricing — {context.brand_name}"
+	from frappe import _
+
+	context.title = f"{_('Plans & pricing')} — {context.brand_name}"
 	context.metatags = {
-		"description": "Simple, transparent ERP pricing. Choose the plan that fits your team."
+		"description": _("Simple, transparent ERP pricing. Choose the plan that fits your team.")
 	}

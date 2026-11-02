@@ -21,5 +21,7 @@ def get_context(context):
 	context.site_url = get_site_url(tenant.subdomain)
 	context.completed = tenant.provisioning_status == "Completed"
 	context.failed = tenant.provisioning_status == "Failed"
-	context.title = f"Setting up your workspace — {context.brand_name}"
-	context.metatags = {"description": f"Your {context.brand_name} workspace is being provisioned."}
+	from frappe import _
+
+	context.title = f"{_('Setting up your workspace')} — {context.brand_name}"
+	context.metatags = {"description": _("Your {0} workspace is being provisioned.").format(context.brand_name)}

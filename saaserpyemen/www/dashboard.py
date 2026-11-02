@@ -50,8 +50,10 @@ def get_context(context):
 			frappe.log_error(frappe.get_traceback(), "SaaS dashboard context")
 			context.data = None
 
-	context.title = f"My workspace — {context.brand_name}"
+	from frappe import _
+
+	context.title = f"{_('My workspace')} — {context.brand_name}"
 	context.metatags = {
-		"description": f"Manage your {context.brand_name} workspace, plan, usage, payments and credentials.",
+		"description": _("Manage your {0} workspace, plan, usage, payments and credentials.").format(context.brand_name),
 		"robots": "noindex, nofollow",
 	}
