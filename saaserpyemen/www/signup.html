@@ -23,7 +23,7 @@
 		<div class="auth__steps">
 			<div class="auth__step active"><span>1</span><div><b>{{ _("Create account") }}</b><small>{{ _("Takes 30 seconds") }}</small></div></div>
 			<div class="auth__step"><span>2</span><div><b>{{ _("Choose plan & subdomain") }}</b><small>{{ _("Your own isolated ERP") }}</small></div></div>
-			<div class="auth__step"><span>3</span><div><b>{{ _("Start free trial") }}</b><small>{{ _("30 days, no card needed") }}</small></div></div>
+			<div class="auth__step"><span>3</span><div><b>{{ _("Start free trial") }}</b><small>{{ _("{0} days, no card needed").format(settings.trial_days or 14) }}</small></div></div>
 		</div>
 
 		<ul class="auth__points">
@@ -35,7 +35,7 @@
 
 	<div class="auth__panel auth__panel--form">
 		<div class="auth__form-wrap auth__form-wrap--wide">
-			<div class="saas-pill"><span>{{ _("Free 14-day trial") }}</span></div>
+			<div class="saas-pill"><span>{{ _("Free {0}-day trial").format(settings.trial_days or 14) }}</span></div>
 			<h1>
 				{{ _("Create your account") }}
 			</h1>

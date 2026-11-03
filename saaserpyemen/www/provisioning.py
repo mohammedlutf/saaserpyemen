@@ -23,5 +23,9 @@ def get_context(context):
 	context.failed = tenant.provisioning_status == "Failed"
 	from frappe import _
 
-	context.title = f"{_('Setting up your workspace')} — {context.brand_name}"
-	context.metatags = {"description": _("Your {0} workspace is being provisioned.").format(context.brand_name)}
+	brand = context.brand_name_ar if context.lang == "ar" else context.brand_name
+	context.title = f"{_('Setting up your workspace')} — {brand}"
+	context.metatags = {
+		"description": _("Your {0} workspace is being provisioned.").format(brand),
+		"robots": "noindex, nofollow",
+	}

@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import frappe
 
+from saaserpyemen import seo
 from saaserpyemen.utils import get_tenant_for_user, get_tenant_subscription, user_has_workspaces
 from saaserpyemen.website import base_context, plans_context
+
+sitemap = 1
 
 
 def _build_comparison(plans: list[dict]) -> list[dict]:
@@ -49,7 +52,40 @@ def get_context(context):
 		context.trial_available = not user_has_workspaces()
 	from frappe import _
 
-	context.title = f"{_('Plans & pricing')} — {context.brand_name}"
+	brand = context.brand_name_ar if context.lang == "ar" else context.brand_name
+	context.title = f"{_('Plans & pricing')} — {brand}"
+	description = _("Simple, transparent ERP pricing. Choose the plan that fits your team.")
 	context.metatags = {
-		"description": _("Simple, transparent ERP pricing. Choose the plan that fits your team.")
+		"description": description,
+		"keywords": _(
+			"ERP pricing Yemen, ERPNext plans, cloud ERP subscription, ERP Saudi Arabia, ERP UAE, Arabic ERP pricing"
+		),
 	}
+	context.seo_og_type = "website"
+
+	offers = []
+	for plan in context.plans:
+		price = plan.get("monthly")
+		if price is None:
+			continue
+		offers.append(
+			{
+				"@type": "Offer",
+				"name": _(plan.get("plan_name") or plan.get("name")),
+				"price": price,
+				"priceCurrency": plan.get("currency"),
+				"url": seo.localized_absolute(f"/signup?plan={plan.get('slug')}", context.lang),
+				"availability": "https://schema.org/InStock",
+			}
+		)
+
+	seo.add_structured_data(
+		context,
+		seo.product_schema(
+			context,
+			f"{brand} — {_('Plans & pricing')}",
+			description,
+			offers,
+		),
+		seo.breadcrumbs_for("/plans", _("Plans & pricing"), context.lang),
+	)

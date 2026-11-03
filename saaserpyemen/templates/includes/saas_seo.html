@@ -1,0 +1,59 @@
+{#
+	Central SEO block: description, robots, canonical, hreflang,
+	Open Graph, Twitter cards and JSON-LD structured data.
+	Page controllers customise it through `metatags` and `seo_*` context values.
+#}
+{% set _brand = (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') %}
+{% set _default_description = _brand ~ ' — ' ~ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') %}
+{% set _title = (seo_title if seo_title is defined and seo_title else (metatags.get('og:title') if metatags and metatags.get('og:title') else (title if title is defined and title else _brand))) %}
+{% set _description = (metatags.description if metatags and metatags.description else _default_description) %}
+{% set _robots = (metatags.robots if metatags and metatags.robots else (seo_robots if seo_robots is defined and seo_robots else 'index, follow')) %}
+{% set _canonical = (seo_canonical if seo_canonical is defined and seo_canonical else '') %}
+{% set _alternates = (seo_alternates if seo_alternates is defined and seo_alternates else {}) %}
+{% set _image = (seo_image if seo_image is defined and seo_image else '') %}
+{% set _image_alt = (seo_image_alt if seo_image_alt is defined and seo_image_alt else _brand) %}
+{% set _image_width = (seo_image_width if seo_image_width is defined and seo_image_width else '') %}
+{% set _image_height = (seo_image_height if seo_image_height is defined and seo_image_height else '') %}
+{% set _og_type = (seo_og_type if seo_og_type is defined and seo_og_type else 'website') %}
+{% set _locale = 'ar_YE' if lang == 'ar' else 'en_US' %}
+{% set _locale_alt = 'en_US' if lang == 'ar' else 'ar_YE' %}
+{% set _keywords = (metatags.keywords if metatags and metatags.keywords else '') %}
+{% set _twitter_url = (settings.twitter_url if settings and settings.twitter_url else '') %}
+{% set _twitter_site = ('@' ~ _twitter_url.rstrip('/').split('/')[-1]) if _twitter_url else '' %}
+
+<meta name="description" content="{{ _description }}">
+<meta name="robots" content="{{ _robots }}">
+{% if _keywords %}<meta name="keywords" content="{{ _keywords }}">{% endif %}
+
+{% if _canonical %}<link rel="canonical" href="{{ _canonical }}">{% endif %}
+{% for hreflang, href in _alternates.items() %}
+<link rel="alternate" hreflang="{{ hreflang }}" href="{{ href }}">
+{% endfor %}
+
+<meta property="og:site_name" content="{{ _brand }}">
+<meta property="og:type" content="{{ _og_type }}">
+<meta property="og:title" content="{{ _title }}">
+<meta property="og:description" content="{{ _description }}">
+{% if _canonical %}<meta property="og:url" content="{{ _canonical }}">{% endif %}
+<meta property="og:locale" content="{{ _locale }}">
+<meta property="og:locale:alternate" content="{{ _locale_alt }}">
+{% if _image %}
+<meta property="og:image" content="{{ _image }}">
+<meta property="og:image:alt" content="{{ _image_alt }}">
+<meta property="og:image:type" content="image/png">
+{% if _image_width %}<meta property="og:image:width" content="{{ _image_width }}">{% endif %}
+{% if _image_height %}<meta property="og:image:height" content="{{ _image_height }}">{% endif %}
+{% endif %}
+
+<meta name="twitter:card" content="{{ 'summary_large_image' if _image else 'summary' }}">
+<meta name="twitter:title" content="{{ _title }}">
+<meta name="twitter:description" content="{{ _description }}">
+{% if _twitter_site %}<meta name="twitter:site" content="{{ _twitter_site }}">{% endif %}
+{% if _image %}
+<meta name="twitter:image" content="{{ _image }}">
+<meta name="twitter:image:alt" content="{{ _image_alt }}">
+{% endif %}
+
+{% for item in (seo_structured_data or []) %}
+<script type="application/ld+json">{{ item | tojson }}</script>
+{% endfor %}

@@ -49,5 +49,9 @@ def get_context(context):
 	)
 	from frappe import _
 
-	context.title = f"{_('Sign in')} — {context.brand_name}"
-	context.metatags = {"description": _("Sign in to your {0} workspace.").format(context.brand_name)}
+	brand = context.brand_name_ar if context.lang == "ar" else context.brand_name
+	context.title = f"{_('Sign in')} — {brand}"
+	context.metatags = {
+		"description": _("Sign in to your {0} workspace.").format(brand),
+		"robots": "noindex, nofollow",
+	}

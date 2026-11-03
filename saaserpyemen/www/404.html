@@ -1,17 +1,6 @@
-{% set lang = boot.lang or 'en' %}
-{% set settings = get_settings() %}
-{% set switch_language_url = switch_language_url(lang) %}
 {% extends "templates/saas_base.html" %}
 
 {% block title %}{{ _("Page not found") }} — {{ (settings.brand_name_ar or 'سحبيكس') if lang == 'ar' else (settings.brand_name or 'Sahbix') }}{% endblock %}
-
-{% block meta_block %}
-    <meta name="description"
-          content="{{ _("The page you are looking for does not exist or has been moved.") }}">
-
-    <meta name="theme-color" content="#ffffff">
-    <meta name="robots" content="noindex, nofollow">
-{% endblock %}
 
 {% block page_content %}
 <section class="section section--top">

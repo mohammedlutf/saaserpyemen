@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+		xmlns:xhtml="http://www.w3.org/1999/xhtml">
+	{% for link in links %}
+	<url>
+		<loc>{{ link.loc }}</loc>
+		{% if link.lastmod %}<lastmod>{{ link.lastmod }}</lastmod>{% endif %}
+		{% if link.changefreq %}<changefreq>{{ link.changefreq }}</changefreq>{% endif %}
+		{% if link.priority %}<priority>{{ link.priority }}</priority>{% endif %}
+		{% for alternate in (link.alternates or []) %}
+		<xhtml:link rel="alternate" hreflang="{{ alternate.hreflang }}" href="{{ alternate.href }}"/>
+		{% endfor %}
+	</url>
+	{% endfor %}
+</urlset>

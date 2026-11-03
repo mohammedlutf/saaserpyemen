@@ -102,6 +102,10 @@ def base_context(context) -> None:
 	except Exception:
 		context.csrf_token = ""
 
+	from saaserpyemen import seo
+
+	seo.base_seo_context(context)
+
 
 def current_path() -> str:
 	try:

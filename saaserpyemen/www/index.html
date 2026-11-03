@@ -10,7 +10,7 @@
 		<div class="hero__copy">
 			<div class="saas-pill saas-pill--glow">
 				<span class="saas-pill__dot"></span>
-				<span>{{ _("14-day free trial · No credit card required") }}</span>
+				<span>{{ _("{0}-day free trial · No credit card required").format(settings.trial_days or 14) }}</span>
 			</div>
 			<h1 class="hero__title">
 				{{ _("Run your entire business on") }} <span class="gradient-text">{{ _("one beautiful platform") }}</span>.
@@ -28,7 +28,7 @@
 				</a>
 			</div>
 			<ul class="hero__trust">
-				<li><span class="tick">✓</span><span>{{ _("Free 14-day trial") }}</span></li>
+				<li><span class="tick">✓</span><span>{{ _("Free {0}-day trial").format(settings.trial_days or 14) }}</span></li>
 				<li><span class="tick">✓</span><span>{{ _("Your own isolated workspace") }}</span></li>
 				<li><span class="tick">✓</span><span>{{ _("Arabic & English") }}</span></li>
 			</ul>
@@ -181,7 +181,7 @@
 			<div class="step">
 				<span class="step__num">01</span>
 				<h3>{{ _("Choose your plan") }}</h3>
-				<p>{{ _("Pick the plan that fits your team. Every plan starts with a 14-day free trial.") }}</p>
+				<p>{{ _("Pick the plan that fits your team. Every plan starts with a {0}-day free trial.").format(settings.trial_days or 14) }}</p>
 			</div>
 			<div class="step">
 				<span class="step__num">02</span>
@@ -206,7 +206,7 @@
 				{{ _("Plans that grow") }} <span class="gradient-text">{{ _("with you") }}</span>.
 			</h2>
 			<p>
-				{{ _("Start free for 30 days. Upgrade, downgrade or cancel any time. All prices are monthly unless stated.") }}
+				{{ _("Start free for {0} days. Upgrade, downgrade or cancel any time. All prices are monthly unless stated.").format(settings.trial_days or 14) }}
 			</p>
 		</div>
 		<div class="plans">
@@ -316,7 +316,7 @@
 			</details>
 			<details class="faq__item">
 				<summary><span>{{ _("Is the free trial really free?") }}</span></summary>
-				<p>{{ _("Yes. You get 30 days of full access with no credit card. At the end of the trial you can pay manually by bank transfer to keep your workspace active.") }}</p>
+				<p>{{ _("Yes. You get {0} days of full access with no credit card. At the end of the trial you can pay manually by bank transfer to keep your workspace active.").format(settings.trial_days or 14) }}</p>
 			</details>
 			<details class="faq__item">
 				<summary><span>{{ _("How does payment work?") }}</span></summary>

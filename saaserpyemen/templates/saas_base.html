@@ -10,13 +10,11 @@
 
     <title>{% block title %}{{ brand_name or 'Sahbix' }}{% endblock %}</title>
 
-    {% block meta_block %}
-        <meta name="description"
-              content="{% block meta_description %}{{ (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') }} — {{ _('complete cloud ERP platform for growing businesses — accounting, sales, inventory, HR and more.') }}{% endblock %}">
+    {% block meta_block %}{% endblock %}
 
-        <meta name="theme-color" content="#ffffff">
-        <meta name="robots" content="index, follow">
-    {% endblock %}
+    {% include "templates/includes/saas_seo.html" %}
+
+    <meta name="theme-color" content="#ffffff">
 
     {% block favicon %}
         <link rel="icon"

@@ -88,8 +88,9 @@ def get_context(context):
 
 	from frappe import _
 
-	context.title = f"{_('Manual payment')} — {context.brand_name}"
+	brand = context.brand_name_ar if context.lang == "ar" else context.brand_name
+	context.title = f"{_('Manual payment')} — {brand}"
 	context.metatags = {
-		"description": _("Complete your {0} subscription payment by bank transfer.").format(context.brand_name),
+		"description": _("Complete your {0} subscription payment by bank transfer.").format(brand),
 		"robots": "noindex, nofollow",
 	}

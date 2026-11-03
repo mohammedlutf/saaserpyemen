@@ -23,8 +23,9 @@ def get_context(context):
 	context.tenant = get_tenant_for_user() if frappe.session.user != "Guest" else None
 	from frappe import _
 
-	context.title = f"{_('Workspace suspended')} — {context.brand_name}"
+	brand = context.brand_name_ar if context.lang == "ar" else context.brand_name
+	context.title = f"{_('Workspace suspended')} — {brand}"
 	context.metatags = {
-		"description": _("This {0} workspace is temporarily suspended.").format(context.brand_name),
+		"description": _("This {0} workspace is temporarily suspended.").format(brand),
 		"robots": "noindex, nofollow",
 	}
