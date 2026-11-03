@@ -90,6 +90,8 @@
   "col_billing",
   "auto_suspend_on_expiry",
   "send_expiry_reminders",
+  "auto_issue_invoices",
+  "invoice_lead_days",
   "bank_details",
   "bank_details_ar",
   "payment_note_en",
@@ -520,6 +522,21 @@
    "fieldtype": "Check",
    "label": "Send Expiry Reminders",
    "default": "1"
+  },
+  {
+   "fieldname": "auto_issue_invoices",
+   "fieldtype": "Check",
+   "label": "Auto-issue Invoices",
+   "default": "1",
+   "description": "Create an unpaid SaaS Payment invoice before a subscription expires so the customer can pay from the portal."
+  },
+  {
+   "fieldname": "invoice_lead_days",
+   "fieldtype": "Int",
+   "label": "Invoice Lead Days",
+   "default": "7",
+   "depends_on": "auto_issue_invoices",
+   "description": "How many days before the period ends the invoice should be issued. Values below 7 are raised to the 7-day reminder window."
   },
   {
    "fieldname": "bank_details",

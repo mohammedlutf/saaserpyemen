@@ -7,19 +7,32 @@ import re
 
 import frappe
 from frappe import _
-from frappe.utils import add_days, cint, flt, getdate, nowdate, today, validate_email_address
+from frappe.utils import (
+	add_days,
+	add_months,
+	cint,
+	flt,
+	formatdate,
+	getdate,
+	nowdate,
+	today,
+	validate_email_address,
+)
 
 from saaserpyemen import provisioning, tenant_ops
+from saaserpyemen.i18n import status_label
 from saaserpyemen.utils import (
 	convert_amount,
 	create_provisioning_log,
 	ensure_central,
+	format_money,
 	get_billing_period,
 	get_central_url,
 	get_days_left,
 	get_domain,
 	get_enabled_currencies,
 	get_full_site_name,
+	get_months_amount,
 	get_owned_tenant,
 	get_plan_by_identifier,
 	get_plan_limits,
@@ -99,21 +112,106 @@ def _serialize_subscription(subscription) -> dict:
 
 
 def _serialize_payment(payment) -> dict:
+	months = cint(payment.get("months")) or 1
 	return {
 		"name": payment.name,
 		"amount": flt(payment.amount),
 		"currency": payment.currency,
 		"status": payment.status,
+		"is_invoice": bool(cint(payment.get("is_invoice"))),
+		"months": months,
+		"months_label": _month_label(months),
 		"billing_cycle": payment.billing_cycle,
 		"period_start": _serialize_date(payment.period_start),
 		"period_end": _serialize_date(payment.period_end),
+		"due_date": _serialize_date(payment.get("due_date")),
+		"invoice_key": payment.get("invoice_key"),
 		"payment_method": payment.payment_method,
 		"reference_no": payment.reference_no,
 		"paid_on": _serialize_date(payment.paid_on),
 		"receipt": payment.receipt,
 		"notes": payment.notes,
 		"creation": str(payment.creation),
+		"pdf_url": f"/api/method/saaserpyemen.api.download_payment_invoice?payment={payment.name}",
 	}
+
+
+# Prepaid durations offered on the payment page. Twelve months are billed at
+# the plan's yearly price, which usually carries a discount.
+PAYMENT_MONTH_OPTIONS = (1, 2, 3, 4, 12)
+PAYMENT_FIELDS = [
+	"name",
+	"tenant",
+	"subscription",
+	"plan",
+	"amount",
+	"currency",
+	"status",
+	"is_invoice",
+	"months",
+	"billing_cycle",
+	"period_start",
+	"period_end",
+	"due_date",
+	"invoice_key",
+	"payment_method",
+	"reference_no",
+	"paid_on",
+	"receipt",
+	"notes",
+	"creation",
+]
+
+
+def _month_label(months: int) -> str:
+	if months == 12:
+		return _("12 months (one year)")
+	if months == 1:
+		return _("1 month")
+	if months == 2:
+		return _("2 months")
+	if months == 3:
+		return _("3 months")
+	if months == 4:
+		return _("4 months")
+	return _("{0} months").format(months)
+
+
+def _normalize_months(subscription, value) -> int:
+	months = cint(value)
+	if months < 1 or months > 12:
+		months = 12 if str(subscription.billing_cycle or "").lower().startswith("y") else 1
+	return months
+
+
+def _payment_amount(plan, subscription, months: int, currency: str | None = None) -> float:
+	fallback = flt(subscription.amount)
+	if str(subscription.billing_cycle or "").lower().startswith("y") and fallback:
+		fallback = fallback / 12
+	return get_months_amount(
+		plan,
+		currency or subscription.currency,
+		months,
+		fallback_monthly=fallback,
+	)
+
+
+def _payment_period(subscription, months: int, invoice=None):
+	"""Return the period covered by a payment.
+
+	When paying an issued invoice, its start date is authoritative so the
+	new period begins where the previous one ended. If the subscription was
+	already extended in the meantime, start after the current end date.
+	"""
+	start = None
+	if invoice:
+		start = invoice.get("period_start")
+	if start:
+		start = getdate(start)
+		if subscription.end_date and getdate(subscription.end_date) >= start:
+			start = add_days(getdate(subscription.end_date), 1)
+		return start, add_days(add_months(start, months), -1)
+	return get_billing_period(subscription, months=months)
 
 
 def _notify_payment_submitted(payment, tenant):
@@ -495,10 +593,24 @@ def get_dashboard(tenant: str | None = None):
 	payments = frappe.get_all(
 		"SaaS Payment",
 		filters={"tenant": tenant_doc.name},
-		fields=["name", "amount", "currency", "status", "billing_cycle", "period_start", "period_end", "payment_method", "reference_no", "paid_on", "receipt", "notes", "creation"],
+		fields=PAYMENT_FIELDS,
 		order_by="creation desc",
 		limit=20,
 	)
+	open_invoices = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name, "status": "Unpaid"},
+		fields=PAYMENT_FIELDS,
+		order_by="due_date asc, creation asc",
+	)
+	pending_rows = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name, "status": "Pending Review"},
+		fields=PAYMENT_FIELDS,
+		order_by="creation desc",
+		limit=1,
+	)
+	pending = pending_rows[0] if pending_rows else None
 	limits = get_plan_limits(plan) if plan else {}
 	usage = {
 		"users": {
@@ -522,7 +634,6 @@ def get_dashboard(tenant: str | None = None):
 			"percent": min(100, round((flt(tenant_doc.storage_used_mb) / (limits["storage_gb"] * 1024)) * 100)) if limits.get("storage_gb") else 0,
 		},
 	}
-	pending = next((p for p in payments if p.status == "Pending Review"), None)
 	return {
 		"tenant": {
 			"name": tenant_doc.name,
@@ -545,6 +656,8 @@ def get_dashboard(tenant: str | None = None):
 		"usage": usage,
 		"payments": [_serialize_payment(frappe._dict(row)) for row in payments],
 		"pending_payment": _serialize_payment(frappe._dict(pending)) if pending else None,
+		"open_invoices": [_serialize_payment(frappe._dict(row)) for row in open_invoices],
+		"open_invoice": _serialize_payment(frappe._dict(open_invoices[0])) if open_invoices else None,
 		"days_left": (
 			get_days_left(subscription.end_date or subscription.trial_end_date)
 			if subscription and subscription.status != "Pending"
@@ -651,6 +764,35 @@ def cancel_subscription(tenant: str, reason: str | None = None):
 	subscription.save(ignore_permissions=True)
 	frappe.db.commit()
 	log_activity(tenant_doc.name, "Subscription cancelled", subscription.cancel_reason)
+
+	# Invoices are issued ahead of the billing period, so a cancellation closes
+	# any invoice that has not been paid yet instead of leaving a stale debt on
+	# the dashboard.
+	open_invoices = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name, "status": "Unpaid"},
+		pluck="name",
+	)
+	if open_invoices:
+		current_user = frappe.session.user
+		frappe.set_user("Administrator")
+		try:
+			for payment_name in open_invoices:
+				invoice = frappe.get_doc("SaaS Payment", payment_name)
+				invoice.status = "Rejected"
+				invoice.notes = (
+					(invoice.notes or "")
+					+ "\n"
+					+ _("Closed because the workspace subscription was cancelled.")
+				).strip()
+				invoice.flags.ignore_permissions = True
+				invoice.save(ignore_permissions=True)
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), "SaaS close invoices on cancellation")
+		finally:
+			frappe.set_user(current_user)
+		frappe.db.commit()
+
 	if subscription.status == "Cancelled":
 		# Reject any payment that was waiting for review so it cannot be
 		# approved later and silently reactivate a cancelled workspace.
@@ -691,16 +833,76 @@ def get_payment_context(tenant: str | None = None):
 	subscription = get_tenant_subscription(tenant_doc)
 	if not subscription:
 		frappe.throw(_("This workspace has no subscription."))
+
 	plan = get_plan_by_identifier(subscription.plan)
-	period_start, period_end = get_billing_period(subscription)
-	amount = get_plan_price(plan, subscription.currency, subscription.billing_cycle) if plan else subscription.amount
+	currency = subscription.currency or tenant_doc.currency or get_settings().default_currency or "USD"
 	payments = frappe.get_all(
 		"SaaS Payment",
 		filters={"tenant": tenant_doc.name},
-		fields=["name", "amount", "currency", "status", "billing_cycle", "period_start", "period_end", "payment_method", "reference_no", "paid_on", "receipt", "notes", "creation"],
+		fields=PAYMENT_FIELDS,
 		order_by="creation desc",
 		limit=50,
 	)
+	open_invoices = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name, "status": "Unpaid"},
+		fields=PAYMENT_FIELDS,
+		order_by="due_date asc, creation asc",
+	)
+	pending_rows = frappe.get_all(
+		"SaaS Payment",
+		filters={"tenant": tenant_doc.name, "status": "Pending Review"},
+		fields=PAYMENT_FIELDS,
+		order_by="creation desc",
+		limit=1,
+	)
+	pending = pending_rows[0] if pending_rows else None
+
+	# `?invoice=...` comes from the "Pay now" buttons on the dashboard.
+	requested = (frappe.local.request.args.get("invoice") or "").strip() if getattr(frappe.local, "request", None) else ""
+	invoice = None
+	if requested:
+		invoice = next((row for row in open_invoices if row.name == requested), None)
+		if not invoice:
+			row = frappe.db.get_value(
+				"SaaS Payment", requested, PAYMENT_FIELDS, as_dict=True
+			)
+			if not row or row.tenant != tenant_doc.name:
+				frappe.throw(_("Invoice not found."))
+			invoice = row
+		if invoice.status not in ("Unpaid", "Pending Review"):
+			frappe.throw(_("This invoice is no longer open for payment."))
+	elif open_invoices:
+		invoice = open_invoices[0]
+
+	months = _normalize_months(subscription, invoice.months if invoice else None)
+	period_start, period_end = _payment_period(subscription, months, invoice)
+	amount = _payment_amount(plan, subscription, months, currency)
+
+	options = list(PAYMENT_MONTH_OPTIONS)
+	if months not in options:
+		options.append(months)
+		options.sort()
+	month_options = []
+	for value in options:
+		option_start, option_end = _payment_period(subscription, value, invoice)
+		option_amount = _payment_amount(plan, subscription, value, currency)
+		month_options.append(
+			{
+				"months": value,
+				"label": _month_label(value),
+				"amount": option_amount,
+				"amount_display": format_money(option_amount, currency),
+				"billing_cycle": "Yearly" if value == 12 else "Monthly",
+				"period_start": str(option_start),
+				"period_end": str(option_end),
+				"period_display": "{0} – {1}".format(
+					formatdate(option_start, "dd MMM yyyy"),
+					formatdate(option_end, "dd MMM yyyy"),
+				),
+			}
+		)
+
 	settings = get_settings()
 	return {
 		"tenant": {
@@ -713,28 +915,57 @@ def get_payment_context(tenant: str | None = None):
 		"subscription": _serialize_subscription(subscription),
 		"plan": serialize_plan(plan, subscription.currency) if plan else None,
 		"amount": amount,
-		"currency": subscription.currency,
+		"amount_display": format_money(amount, currency),
+		"currency": currency,
+		"months": months,
+		"months_label": _month_label(months),
+		"month_options": month_options,
 		"period_start": str(period_start),
 		"period_end": str(period_end),
+		"period_display": "{0} – {1}".format(
+			formatdate(period_start, "dd MMM yyyy"),
+			formatdate(period_end, "dd MMM yyyy"),
+		),
+		"invoice": _serialize_payment(invoice) if invoice else None,
+		"open_invoices": [_serialize_payment(row) for row in open_invoices],
 		"bank_details": settings.bank_details,
 		"bank_details_ar": settings.bank_details_ar,
 		"payment_note_en": settings.payment_note_en,
 		"payment_note_ar": settings.payment_note_ar,
-		"payments": [_serialize_payment(frappe._dict(row)) for row in payments],
-		"pending_payment": next((p for p in payments if p.status == "Pending Review"), None),
+		"payments": [_serialize_payment(row) for row in payments],
+		"pending_payment": _serialize_payment(pending) if pending else None,
 	}
 
 
 @frappe.whitelist()
 def submit_payment(
-	tenant: str,
+	tenant: str | None = None,
 	reference_no: str | None = None,
 	payment_method: str = "Bank Transfer",
 	notes: str | None = None,
 	receipt: str | None = None,
 	amount: float | None = None,
+	invoice: str | None = None,
+	months: int | None = None,
 ):
 	_require_login()
+
+	invoice_row = None
+	invoice = (invoice or "").strip() or None
+	if invoice:
+		invoice_row = frappe.db.get_value(
+			"SaaS Payment", invoice, PAYMENT_FIELDS, as_dict=True
+		)
+		if not invoice_row:
+			frappe.throw(_("Invoice not found."))
+		if tenant and tenant != invoice_row.tenant:
+			frappe.throw(_("This invoice does not belong to the selected workspace."))
+		tenant = invoice_row.tenant
+		if invoice_row.status != "Unpaid":
+			frappe.throw(_("This invoice is no longer open for payment."))
+
+	if not tenant:
+		frappe.throw(_("A valid workspace is required."))
 	tenant_doc = get_owned_tenant(tenant)
 	subscription = get_tenant_subscription(tenant_doc)
 	if not subscription:
@@ -743,10 +974,27 @@ def submit_payment(
 		frappe.throw(
 			_("This workspace has been cancelled. Please create a new workspace to continue.")
 		)
-	if frappe.db.exists("SaaS Payment", {"tenant": tenant_doc.name, "status": "Pending Review"}):
+
+	pending = frappe.db.get_value(
+		"SaaS Payment", {"tenant": tenant_doc.name, "status": "Pending Review"}, "name"
+	)
+	if pending and (not invoice_row or pending != invoice_row.name):
 		frappe.throw(
 			_("You already have a payment awaiting review. Please wait for our team to approve it before submitting another one.")
 		)
+
+	# If the customer opened the plain payment page while an invoice is open,
+	# reuse that invoice instead of creating a duplicate obligation.
+	if not invoice_row:
+		open_invoice = frappe.db.get_value(
+			"SaaS Payment",
+			{"tenant": tenant_doc.name, "status": "Unpaid"},
+			PAYMENT_FIELDS,
+			as_dict=True,
+			order_by="creation desc",
+		)
+		if open_invoice:
+			invoice_row = open_invoice
 
 	payment_method = (payment_method or "Bank Transfer").strip()
 	allowed_methods = {"Bank Transfer", "Cash", "Card", "PayPal", "Other"}
@@ -759,32 +1007,69 @@ def submit_payment(
 	if receipt and not (receipt.startswith("/files/") or receipt.startswith("/private/")):
 		frappe.throw(_("The uploaded receipt is not valid. Please upload it again."))
 
+	months = _normalize_months(
+		subscription,
+		months or (invoice_row.months if invoice_row else None),
+	)
+	currency = (
+		(invoice_row.currency if invoice_row else None)
+		or subscription.currency
+		or tenant_doc.currency
+		or get_settings().default_currency
+		or "USD"
+	)
 	plan = get_plan_by_identifier(subscription.plan)
-	server_amount = get_plan_price(plan, subscription.currency, subscription.billing_cycle) if plan else subscription.amount
+	server_amount = _payment_amount(plan, subscription, months, currency)
 	if not flt(server_amount):
 		frappe.throw(_("The amount due could not be calculated. Please contact support."))
 
-	period_start, period_end = get_billing_period(subscription)
-	payment = frappe.new_doc("SaaS Payment")
-	payment.update(
-		{
-			"tenant": tenant_doc.name,
-			"subscription": subscription.name,
-			"plan": subscription.plan,
-			"amount": server_amount,
-			"currency": subscription.currency,
-			"billing_cycle": subscription.billing_cycle,
-			"period_start": period_start,
-			"period_end": period_end,
-			"status": "Pending Review",
-			"payment_method": payment_method,
-			"reference_no": reference_no,
-			"notes": (notes or "").strip(),
-			"receipt": receipt or None,
-		}
-	)
-	payment.flags.ignore_permissions = True
-	payment.insert(ignore_permissions=True)
+	period_start, period_end = _payment_period(subscription, months, invoice_row)
+	user_notes = (notes or "").strip()
+
+	if invoice_row:
+		payment = frappe.get_doc("SaaS Payment", invoice_row.name)
+		existing_notes = payment.notes or ""
+		payment.update(
+			{
+				"amount": server_amount,
+				"currency": currency,
+				"months": months,
+				"billing_cycle": "Yearly" if months == 12 else "Monthly",
+				"period_start": period_start,
+				"period_end": period_end,
+				"status": "Pending Review",
+				"payment_method": payment_method,
+				"reference_no": reference_no,
+				"receipt": receipt or payment.receipt,
+				"notes": f"{existing_notes}\n{user_notes}".strip() if user_notes else existing_notes,
+			}
+		)
+		payment.flags.ignore_permissions = True
+		payment.save(ignore_permissions=True)
+	else:
+		payment = frappe.new_doc("SaaS Payment")
+		payment.update(
+			{
+				"tenant": tenant_doc.name,
+				"subscription": subscription.name,
+				"plan": subscription.plan,
+				"amount": server_amount,
+				"currency": currency,
+				"months": months,
+				"billing_cycle": "Yearly" if months == 12 else "Monthly",
+				"period_start": period_start,
+				"period_end": period_end,
+				"due_date": period_start,
+				"status": "Pending Review",
+				"is_invoice": 0,
+				"payment_method": payment_method,
+				"reference_no": reference_no,
+				"notes": user_notes,
+				"receipt": receipt or None,
+			}
+		)
+		payment.flags.ignore_permissions = True
+		payment.insert(ignore_permissions=True)
 
 	if receipt:
 		_attach_receipt(payment, receipt)
@@ -797,12 +1082,16 @@ def submit_payment(
 	log_activity(
 		tenant_doc.name,
 		"Payment submitted",
-		f"Payment {payment.name} for {server_amount} {subscription.currency}",
+		f"Payment {payment.name} for {server_amount} {currency} ({months} month(s))",
 	)
 	_notify_payment_submitted(payment, tenant_doc)
 	return {
 		"ok": True,
 		"payment": payment.name,
+		"amount": server_amount,
+		"months": months,
+		"period_start": str(period_start),
+		"period_end": str(period_end),
 		"message": _("Payment submitted. We will review it within one business day."),
 	}
 
@@ -844,6 +1133,84 @@ def create_payment_invoice(payment: str):
 	doc.db_set("sales_invoice", invoice.name, update_modified=False)
 	frappe.db.commit()
 	return {"ok": True, "invoice": invoice.name, "message": _("Invoice created.")}
+
+
+@frappe.whitelist()
+def download_payment_invoice(payment: str, lang: str | None = None):
+	"""Render a downloadable PDF invoice for a SaaS Payment."""
+	_require_login()
+	if not frappe.db.exists("SaaS Payment", payment):
+		frappe.throw(_("Invoice not found."))
+	doc = frappe.get_doc("SaaS Payment", payment)
+	tenant_doc = get_owned_tenant(doc.tenant)
+
+	lang = "ar" if str(lang or "").lower().startswith("ar") else "en"
+	context = _payment_invoice_context(doc, tenant_doc, lang)
+	try:
+		html = frappe.render_template("templates/print_formats/saas_payment_invoice.html", context)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), f"SaaS invoice template {doc.name}")
+		frappe.throw(_("The invoice could not be generated. Please contact support."))
+
+	try:
+		from frappe.utils.pdf import get_pdf
+
+		content = get_pdf(html)
+		filename = f"{doc.name}.pdf"
+		content_type = "application/pdf"
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), f"SaaS invoice PDF {doc.name}")
+		content = html.encode("utf-8")
+		filename = f"{doc.name}.html"
+		content_type = "text/html"
+
+	frappe.local.response.filename = filename
+	frappe.local.response.filecontent = content
+	frappe.local.response.content_type = content_type
+	frappe.local.response.type = "download"
+
+
+def _payment_invoice_context(doc, tenant_doc, lang: str = "en") -> dict:
+	"""Build the template context for a SaaS Payment invoice."""
+	frappe.local.lang = lang
+	settings = get_settings()
+	plan = get_plan_by_identifier(doc.plan)
+	currency = (
+		doc.currency
+		or (tenant_doc.currency if tenant_doc else None)
+		or settings.default_currency
+		or "USD"
+	)
+	brand = (
+		(settings.brand_name_ar or settings.brand_name)
+		if lang == "ar"
+		else (settings.brand_name or "Sahbix")
+	)
+	return {
+		"doc": doc,
+		"tenant": tenant_doc,
+		"plan": plan,
+		"settings": settings,
+		"lang": lang,
+		"dir": "rtl" if lang == "ar" else "ltr",
+		"brand": brand,
+		"support_email": settings.support_email,
+		"support_phone": settings.support_phone,
+		"website_domain": get_domain(),
+		"currency": currency,
+		"amount_display": format_money(doc.amount, currency),
+		"status_label_text": status_label(doc.status, lang),
+		"issue_date": formatdate(doc.creation, "dd MMM yyyy"),
+		"due_date_display": formatdate(doc.due_date, "dd MMM yyyy") if doc.due_date else "—",
+		"period_start_display": formatdate(doc.period_start, "dd MMM yyyy")
+		if doc.period_start
+		else "—",
+		"period_end_display": formatdate(doc.period_end, "dd MMM yyyy") if doc.period_end else "—",
+		"months_label": _month_label(cint(doc.months) or 1),
+		"plan_name": plan.plan_name if plan else (doc.plan or "—"),
+		"bank_details": settings.bank_details_ar if lang == "ar" else settings.bank_details,
+		"payment_note": settings.payment_note_ar if lang == "ar" else settings.payment_note_en,
+	}
 
 
 @frappe.whitelist()

@@ -797,8 +797,29 @@
 		const input = $("[data-upload-input]", form);
 		const fileName = $("[data-upload-file]", form);
 		const submit = $('button[type="submit"]', form);
+		const monthsSelect = $("[data-months-select]", form);
+		const totalAmountEls = $$("[data-total-amount]");
+		const periodEls = $$("[data-period-range]");
+		const durationEls = $$("[data-duration-label]");
 		let receiptUrl = "";
 		let uploading = false;
+
+		function updateSelection() {
+			if (!monthsSelect) return;
+			const option = monthsSelect.options[monthsSelect.selectedIndex];
+			if (!option) return;
+			const amount = option.getAttribute("data-amount") || "";
+			const period = option.getAttribute("data-period") || "";
+			const label = option.getAttribute("data-label") || "";
+			totalAmountEls.forEach(function (el) { el.textContent = amount; });
+			periodEls.forEach(function (el) { el.textContent = period; });
+			durationEls.forEach(function (el) { el.textContent = label; });
+		}
+
+		if (monthsSelect) {
+			monthsSelect.addEventListener("change", updateSelection);
+			updateSelection();
+		}
 
 		function setFileLabel(name, ok) {
 			if (!fileName) return;
@@ -876,6 +897,8 @@
 			try {
 				const result = await call("saaserpyemen.api.submit_payment", {
 					tenant: form.getAttribute("data-tenant"),
+					invoice: form.getAttribute("data-invoice") || undefined,
+					months: monthsSelect ? monthsSelect.value : undefined,
 					reference_no: reference,
 					payment_method: form.payment_method.value || "Bank Transfer",
 					notes: (form.notes.value || "").trim(),

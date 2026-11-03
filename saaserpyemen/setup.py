@@ -399,6 +399,8 @@ def ensure_settings():
 		"create_sales_invoice": 1,
 		"auto_suspend_on_expiry": 1,
 		"send_expiry_reminders": 1,
+		"auto_issue_invoices": 1,
+		"invoice_lead_days": settings.invoice_lead_days or 7,
 		"invoice_due_days": settings.invoice_due_days or 7,
 		"signup_rate_limit": settings.signup_rate_limit or 20,
 		"min_password_length": settings.min_password_length or 8,

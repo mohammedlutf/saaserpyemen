@@ -139,6 +139,17 @@
 				</div>
 				{% endif %}
 
+				{% if data.open_invoice and not data.pending_payment %}
+				<div class="alert alert--warning">
+					<span class="alert__icon">▤</span>
+					<div>
+						<b>{{ _("Unpaid invoice {0}").format(data.open_invoice.name) }}</b>
+						<p>{{ _("Amount due: {0}. Due date: {1}.").format(format_money(data.open_invoice.amount, data.open_invoice.currency), frappe.utils.formatdate(data.open_invoice.due_date, 'dd MMM yyyy') if data.open_invoice.due_date else '—') }}</p>
+					</div>
+					<a class="saas-btn saas-btn--sm saas-btn--primary" href="{{ saas_url('/payment', lang) }}?tenant={{ data.tenant.name }}&invoice={{ data.open_invoice.name }}">{{ _("Pay now") }}</a>
+				</div>
+				{% endif %}
+
 				{% if data.tenant.status == 'Pending Payment' and not data.pending_payment %}
 				<div class="alert alert--warning">
 					<span class="alert__icon">◷</span>
@@ -284,6 +295,7 @@
 										<th>{{ _("Period") }}</th>
 										<th>{{ _("Amount") }}</th>
 										<th>{{ _("Status") }}</th>
+										<th>{{ _("Invoice") }}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -292,7 +304,13 @@
 										<td><b>{{ payment.name }}</b><br><small>{{ frappe.utils.formatdate(payment.creation, 'dd MMM yyyy') }}</small></td>
 										<td>{{ frappe.utils.formatdate(payment.period_start, 'dd MMM') if payment.period_start else '—' }} – {{ frappe.utils.formatdate(payment.period_end, 'dd MMM yyyy') if payment.period_end else '—' }}</td>
 										<td>{{ format_money(payment.amount, payment.currency) }}</td>
-										<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span></td>
+										<td>
+											<span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span>
+											{% if payment.status == 'Unpaid' %}
+											<br><a class="saas-link saas-link--sm" href="{{ saas_url('/payment', lang) }}?tenant={{ data.tenant.name }}&invoice={{ payment.name }}">{{ _("Pay now") }}</a>
+											{% endif %}
+										</td>
+										<td><a class="saas-link saas-link--sm" href="{{ payment.pdf_url }}&lang={{ lang }}" target="_blank" rel="noopener">{{ _("PDF") }}</a></td>
 									</tr>
 									{% endfor %}
 								</tbody>
@@ -422,6 +440,7 @@
 									<th>{{ _("Amount") }}</th>
 									<th>{{ _("Method") }}</th>
 									<th>{{ _("Status") }}</th>
+									<th>{{ _("Invoice") }}</th>
 									<th>{{ _("Receipt") }}</th>
 								</tr>
 							</thead>
@@ -429,10 +448,16 @@
 								{% for payment in data.payments %}
 								<tr>
 									<td><b>{{ payment.name }}</b><br><small>{{ frappe.utils.formatdate(payment.creation, 'dd MMM yyyy') }}</small>{% if payment.reference_no %}<br><small>{{ payment.reference_no }}</small>{% endif %}</td>
-									<td>{{ frappe.utils.formatdate(payment.period_start, 'dd MMM') if payment.period_start else '—' }} – {{ frappe.utils.formatdate(payment.period_end, 'dd MMM yyyy') if payment.period_end else '—' }}</td>
+									<td>{{ frappe.utils.formatdate(payment.period_start, 'dd MMM') if payment.period_start else '—' }} – {{ frappe.utils.formatdate(payment.period_end, 'dd MMM yyyy') if payment.period_end else '—' }}<br><small>{{ payment.months_label }}</small></td>
 									<td>{{ format_money(payment.amount, payment.currency) }}</td>
 									<td>{{ payment.payment_method or '—' }}</td>
-									<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span></td>
+									<td>
+										<span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span>
+										{% if payment.status == 'Unpaid' %}
+										<br><a class="saas-link saas-link--sm" href="{{ saas_url('/payment', lang) }}?tenant={{ data.tenant.name }}&invoice={{ payment.name }}">{{ _("Pay now") }}</a>
+										{% endif %}
+									</td>
+									<td><a class="saas-link saas-link--sm" href="{{ payment.pdf_url }}&lang={{ lang }}" target="_blank" rel="noopener">{{ _("PDF") }}</a></td>
 									<td>{% if payment.receipt %}<a class="saas-link saas-link--sm" href="{{ payment.receipt }}" target="_blank" rel="noopener">{{ _("View") }}</a>{% else %}—{% endif %}</td>
 								</tr>
 								{% endfor %}

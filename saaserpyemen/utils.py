@@ -25,6 +25,8 @@ DEFAULT_SETTINGS = {
 	"site_scheme": "http",
 	"max_tenants_per_user": 0,
 	"min_password_length": 8,
+	"auto_issue_invoices": 1,
+	"invoice_lead_days": 7,
 	"reserved_subdomains": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,sahbix,sahbixmarket,shopzad,shopzadmarket",
 }
 
@@ -287,6 +289,32 @@ def get_plan_prices(plan, currency: str | None = None) -> dict:
 	}
 
 
+def get_months_amount(
+	plan,
+	currency: str | None = None,
+	months: int = 1,
+	fallback_monthly: float = 0,
+) -> float:
+	"""Return the price for `months` months of a plan.
+
+	Twelve months are always charged at the yearly price (the plan's annual
+	discount), every other duration is charged at the monthly price.
+	"""
+	months = max(1, min(12, cint(months) or 1))
+	currency = (currency or get_settings().default_currency or "USD").upper()
+
+	if plan:
+		if months == 12:
+			yearly = get_plan_price(plan, currency, "Yearly")
+			if yearly:
+				return yearly
+		monthly = get_plan_price(plan, currency, "Monthly")
+		if monthly:
+			return round_price(monthly * months, currency)
+
+	return round_price(flt(fallback_monthly) * months, currency)
+
+
 def format_money(amount: float, currency: str | None = None) -> str:
 	currency = currency or get_settings().default_currency or "USD"
 	symbol = get_currency_symbol(currency)
@@ -386,10 +414,18 @@ def get_trial_end(plan=None, start: date | None = None) -> date:
 	return add_days(start, days)
 
 
-def get_billing_period(subscription, cycle: str | None = None) -> tuple[date, date]:
-	"""Return the next period a manual payment should cover."""
-	cycle = (cycle or subscription.billing_cycle or "Monthly").title()
-	months = 12 if cycle == "Yearly" else 1
+def get_billing_period(
+	subscription, cycle: str | None = None, months: int | None = None
+) -> tuple[date, date]:
+	"""Return the next period a manual payment should cover.
+
+	Pass `months` to bill a custom number of months; otherwise the
+	subscription's billing cycle decides between one and twelve months.
+	"""
+	if months is None:
+		cycle = (cycle or subscription.billing_cycle or "Monthly").title()
+		months = 12 if cycle == "Yearly" else 1
+	months = max(1, cint(months) or 1)
 	current = getdate(today())
 
 	base = current

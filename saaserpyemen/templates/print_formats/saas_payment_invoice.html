@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+	<meta charset="utf-8">
+	<title>{{ _("Invoice") }} {{ doc.name }}</title>
+	<style>
+		@page { margin: 14mm; }
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: "DejaVu Sans", Tahoma, Arial, sans-serif;
+			color: #152238;
+			font-size: 12px;
+			line-height: 1.55;
+			background: #ffffff;
+		}
+		table { border-collapse: collapse; }
+		h1, h2, h3, p { margin: 0; }
+
+		.head { width: 100%; border-bottom: 3px solid #0d9488; margin-bottom: 20px; }
+		.head td { vertical-align: top; padding: 0 0 18px; }
+		.head__brand { width: 58%; }
+		.head__title { width: 42%; text-align: right; }
+		.rtl .head__title { text-align: left; }
+
+		.brand { width: auto; }
+		.brand td { vertical-align: middle; padding: 0; }
+		.brand__mark { width: 46px; }
+		.brand__mark span {
+			display: block;
+			width: 46px;
+			height: 46px;
+			line-height: 46px;
+			border-radius: 12px;
+			background: #0d9488;
+			color: #ffffff;
+			font-size: 22px;
+			font-weight: bold;
+			text-align: center;
+		}
+		.brand__text { padding-left: 12px; }
+		.rtl .brand__text { padding-left: 0; padding-right: 12px; }
+		.brand__text h1 { font-size: 21px; }
+		.brand__text p { margin-top: 2px; color: #5b6b84; font-size: 11px; }
+
+		.head__title h2 {
+			font-size: 27px;
+			letter-spacing: 2px;
+			color: #0d9488;
+			text-transform: uppercase;
+		}
+		.head__title strong { display: block; margin-top: 4px; font-size: 14px; }
+		.head__title .status {
+			display: inline-block;
+			margin-top: 7px;
+			padding: 3px 10px;
+			border-radius: 999px;
+			font-size: 10px;
+			font-weight: bold;
+			background: #fff7ed;
+			color: #b45309;
+			border: 1px solid #fed7aa;
+		}
+
+		.meta { width: 100%; margin: 2px 0 18px; }
+		.meta td.card {
+			width: 47%;
+			padding: 12px 14px;
+			border: 1px solid #dfe6ef;
+			border-radius: 10px;
+			background: #f8fafc;
+			vertical-align: top;
+		}
+		.meta td.gap { width: 6%; }
+		.meta small {
+			display: block;
+			color: #64748b;
+			font-size: 10px;
+			font-weight: bold;
+			letter-spacing: .8px;
+			text-transform: uppercase;
+			margin-bottom: 5px;
+		}
+		.meta b { display: block; font-size: 13px; }
+		.meta span { display: block; color: #475569; font-size: 11px; }
+
+		.facts { width: 100%; margin-bottom: 18px; }
+		.facts td { padding: 7px 0; border-bottom: 1px solid #eef2f7; font-size: 11.5px; }
+		.facts .label { color: #64748b; width: 34%; }
+		.facts .value { text-align: right; font-weight: bold; }
+		.rtl .facts .value { text-align: left; }
+
+		.items { width: 100%; }
+		.items th {
+			padding: 9px 10px;
+			background: #0f766e;
+			color: #ffffff;
+			font-size: 10px;
+			letter-spacing: .6px;
+			text-transform: uppercase;
+			font-weight: bold;
+		}
+		.items td {
+			padding: 12px 10px;
+			border-bottom: 1px solid #e5eaf1;
+			vertical-align: top;
+		}
+		.items td small { display: block; color: #64748b; font-size: 10.5px; }
+		.items .num { text-align: right; }
+		.rtl .items .num { text-align: left; }
+		.total td { padding: 13px 10px; border-bottom: 0; }
+		.total .label { text-align: right; font-weight: bold; color: #334155; }
+		.rtl .total .label { text-align: left; }
+		.total .value { text-align: right; font-size: 18px; font-weight: bold; color: #0d9488; }
+		.rtl .total .value { text-align: left; }
+
+		.note {
+			margin-top: 20px;
+			padding: 14px 16px;
+			border-radius: 10px;
+			background: #f1f5f9;
+			font-size: 11px;
+			color: #475569;
+		}
+		.note h3 {
+			margin-bottom: 6px;
+			font-size: 11px;
+			color: #0f172a;
+			text-transform: uppercase;
+			letter-spacing: .7px;
+		}
+		.note p { margin: 0 0 6px; }
+		.note p.last { margin-bottom: 0; }
+		.foot {
+			margin-top: 22px;
+			padding-top: 12px;
+			border-top: 1px solid #e2e8f0;
+			text-align: center;
+			color: #7b8aa1;
+			font-size: 10px;
+		}
+		.foot b { color: #0f766e; }
+	</style>
+</head>
+<body class="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+	<div class="invoice">
+		<table class="head">
+			<tr>
+				<td class="head__brand">
+					<table class="brand">
+						<tr>
+							<td class="brand__mark"><span>{{ (brand or "S")[:1] }}</span></td>
+							<td class="brand__text">
+								<h1>{{ brand }}</h1>
+								<p>{{ _("Cloud ERP workspace") }}</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td class="head__title">
+					<h2>{{ _("Invoice") }}</h2>
+					<strong>{{ doc.name }}</strong>
+					<span class="status">{{ status_label_text }}</span>
+				</td>
+			</tr>
+		</table>
+
+		<table class="meta">
+			<tr>
+				<td class="card">
+					<small>{{ _("Billed to") }}</small>
+					<b>{{ tenant.tenant_name or tenant.name }}</b>
+					<span>{{ tenant.subdomain }}.{{ website_domain }}</span>
+					{% if tenant.admin_email %}<span>{{ tenant.admin_email }}</span>{% endif %}
+				</td>
+				<td class="gap"></td>
+				<td class="card">
+					<small>{{ _("From") }}</small>
+					<b>{{ brand }}</b>
+					{% if support_email %}<span>{{ support_email }}</span>{% endif %}
+					{% if support_phone %}<span>{{ support_phone }}</span>{% endif %}
+					{% if website_domain %}<span>{{ website_domain }}</span>{% endif %}
+				</td>
+			</tr>
+		</table>
+
+		<table class="facts">
+			<tr>
+				<td class="label">{{ _("Issue date") }}</td>
+				<td class="value">{{ issue_date }}</td>
+			</tr>
+			<tr>
+				<td class="label">{{ _("Due date") }}</td>
+				<td class="value">{{ due_date_display }}</td>
+			</tr>
+			<tr>
+				<td class="label">{{ _("Billing period") }}</td>
+				<td class="value">{{ period_start_display }} – {{ period_end_display }}</td>
+			</tr>
+			<tr>
+				<td class="label">{{ _("Duration") }}</td>
+				<td class="value">{{ months_label }}</td>
+			</tr>
+			<tr>
+				<td class="label">{{ _("Plan") }}</td>
+				<td class="value">{{ plan_name }}</td>
+			</tr>
+			{% if doc.subscription %}
+			<tr>
+				<td class="label">{{ _("Subscription") }}</td>
+				<td class="value">{{ doc.subscription }}</td>
+			</tr>
+			{% endif %}
+		</table>
+
+		<table class="items">
+			<thead>
+				<tr>
+					<th>{{ _("Description") }}</th>
+					<th>{{ _("Period") }}</th>
+					<th class="num">{{ _("Months") }}</th>
+					<th class="num">{{ _("Amount") }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<b>{{ _("SaaS subscription") }} — {{ plan_name }}</b>
+						<small>{{ _("Hosted ERP workspace, updates and support.") }}</small>
+					</td>
+					<td>{{ period_start_display }} – {{ period_end_display }}</td>
+					<td class="num">{{ doc.months or 1 }}</td>
+					<td class="num">{{ amount_display }}</td>
+				</tr>
+				<tr class="total">
+					<td colspan="3" class="label">{{ _("Total due") }}</td>
+					<td class="value">{{ amount_display }}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		{% if bank_details or payment_note %}
+		<div class="note">
+			<h3>{{ _("Payment instructions") }}</h3>
+			{% if bank_details %}<div>{{ bank_details | safe }}</div>{% endif %}
+			{% if payment_note %}<p>{{ payment_note }}</p>{% endif %}
+			{% if doc.name %}<p class="last">{{ _("Please use {0} as the payment reference.").format(doc.name) }}</p>{% endif %}
+		</div>
+		{% endif %}
+
+		<div class="foot">
+			{{ _("Thank you for choosing {0}.").format(brand) }}
+			{% if support_email %} · {{ _("Questions? Contact {0}").format(support_email) }}{% endif %}
+		</div>
+	</div>
+</body>
+</html>

@@ -31,6 +31,15 @@
 			</div>
 			<span class="status status--pending-review">{{ _("Pending Review") }}</span>
 		</div>
+		{% elif data.invoice %}
+		<div class="alert alert--info">
+			<span class="alert__icon">▤</span>
+			<div>
+				<b>{{ _("Invoice {0}").format(data.invoice.name) }}</b>
+				<p>{{ _("This invoice covers {0}. Pay for one month or prepay several months below.").format(data.months_label) }}</p>
+			</div>
+			<span class="status status--unpaid">{{ _("Unpaid") }}</span>
+		</div>
 		{% endif %}
 
 		<div class="pay-layout">
@@ -39,13 +48,22 @@
 					<div class="panel__head">
 						<div>
 							<small>{{ _("Amount due") }}</small>
-							<h2 class="pay-amount">{{ format_money(data.amount, data.currency) }}</h2>
+							<h2 class="pay-amount" data-total-amount>{{ data.amount_display }}</h2>
 						</div>
-						<span class="badge badge--accent">{{ _(data.subscription.billing_cycle) }}</span>
+						{% if data.invoice %}
+						<span class="badge badge--soft">{{ _("Invoice") }}</span>
+						{% else %}
+						<span class="badge badge--accent">{{ _("Monthly") if data.months != 12 else _("Yearly") }}</span>
+						{% endif %}
 					</div>
 					<dl class="detail-list detail-list--compact">
+						{% if data.invoice %}
+						<div><dt>{{ _("Invoice") }}</dt><dd><b>{{ data.invoice.name }}</b></dd></div>
+						<div><dt>{{ _("Due date") }}</dt><dd>{{ frappe.utils.formatdate(data.invoice.due_date, 'dd MMM yyyy') if data.invoice.due_date else '—' }}</dd></div>
+						{% endif %}
 						<div><dt>{{ _("Plan") }}</dt><dd>{{ _(data.plan.plan_name) if data.plan else _(data.subscription.plan) }}</dd></div>
-						<div><dt>{{ _("Billing period") }}</dt><dd>{{ frappe.utils.formatdate(data.period_start, 'dd MMM yyyy') }} – {{ frappe.utils.formatdate(data.period_end, 'dd MMM yyyy') }}</dd></div>
+						<div><dt>{{ _("Billing period") }}</dt><dd data-period-range>{{ data.period_display }}</dd></div>
+						<div><dt>{{ _("Duration") }}</dt><dd data-duration-label>{{ data.months_label }}</dd></div>
 						<div><dt>{{ _("Workspace") }}</dt><dd>{{ data.tenant.subdomain }}.{{ domain }}</dd></div>
 						<div><dt>{{ _("Reference") }}</dt><dd><b>{{ data.tenant.subdomain }}</b></dd></div>
 					</dl>
@@ -95,7 +113,20 @@
 						<a class="saas-btn saas-btn--outline" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">{{ _("Contact support") }}</a>
 					</div>
 					{% else %}
-					<form class="form form--grid" data-payment-form data-tenant="{{ data.tenant.name }}" novalidate>
+					<form class="form form--grid" data-payment-form data-tenant="{{ data.tenant.name }}" data-invoice="{{ data.invoice.name if data.invoice else '' }}" novalidate>
+						<label class="field field--full">
+							<span class="field__label">{{ _("Payment duration") }}</span>
+							<div class="field__control field__control--select">
+								<span class="field__icon">◷</span>
+								<select name="months" data-months-select>
+									{% for option in data.month_options %}
+									<option value="{{ option.months }}" data-amount="{{ option.amount_display }}" data-period="{{ option.period_display }}" data-label="{{ option.label }}" {% if option.months == data.months %}selected{% endif %}>{{ option.label }} — {{ option.amount_display }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<span class="field__hint">{{ _("Prepay two, three or four months, or save with a full year.") }}</span>
+						</label>
+
 						<div class="field field--full">
 							<span class="field__label">{{ _("Payment receipt") }}</span>
 							<label class="upload" data-upload-zone>
@@ -139,7 +170,7 @@
 						<div class="pay-total field--full">
 							<div>
 								<small>{{ _("Total to transfer") }}</small>
-								<strong>{{ format_money(data.amount, data.currency) }}</strong>
+								<strong data-total-amount>{{ data.amount_display }}</strong>
 							</div>
 							<div class="pay-total__note">{{ _("Payment is verified manually by our team.") }}</div>
 						</div>
@@ -166,17 +197,25 @@
 							<thead>
 								<tr>
 									<th>{{ _("Payment") }}</th>
+									<th>{{ _("Period") }}</th>
 									<th>{{ _("Amount") }}</th>
 									<th>{{ _("Status") }}</th>
+									<th>{{ _("Invoice") }}</th>
 									<th>{{ _("Receipt") }}</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% for payment in data.payments %}
 								<tr>
-									<td><b>{{ payment.name }}</b><br><small>{{ frappe.utils.formatdate(payment.creation, 'dd MMM yyyy') }}</small></td>
+									<td>
+										<b>{{ payment.name }}</b><br>
+										<small>{{ frappe.utils.formatdate(payment.creation, 'dd MMM yyyy') }}</small>
+										{% if payment.is_invoice %}<br><span class="badge badge--soft">{{ _("Invoice") }}</span>{% endif %}
+									</td>
+									<td>{{ frappe.utils.formatdate(payment.period_start, 'dd MMM') if payment.period_start else '—' }} – {{ frappe.utils.formatdate(payment.period_end, 'dd MMM yyyy') if payment.period_end else '—' }}<br><small>{{ payment.months_label }}</small></td>
 									<td>{{ format_money(payment.amount, payment.currency) }}</td>
 									<td><span class="status status--{{ payment.status | lower | replace(' ', '-') }}">{{ status_label(payment.status, lang) }}</span></td>
+									<td><a class="saas-link saas-link--sm" href="{{ payment.pdf_url }}&lang={{ lang }}" target="_blank" rel="noopener">{{ _("PDF") }}</a></td>
 									<td>{% if payment.receipt %}<a class="saas-link saas-link--sm" href="{{ payment.receipt }}" target="_blank" rel="noopener">{{ _("View") }}</a>{% else %}—{% endif %}</td>
 								</tr>
 								{% endfor %}

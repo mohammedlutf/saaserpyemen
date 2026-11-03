@@ -23,6 +23,10 @@
   "subscription",
   "plan",
   "status",
+  "is_invoice",
+  "months",
+  "due_date",
+  "invoice_key",
   "col_details",
   "amount",
   "currency",
@@ -91,9 +95,38 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending Review\nPaid\nRejected\nRefunded",
+   "options": "Pending Review\nUnpaid\nPaid\nRejected\nRefunded",
    "default": "Pending Review",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "is_invoice",
+   "fieldtype": "Check",
+   "label": "Issued as Invoice",
+   "default": "0",
+   "read_only": 1,
+   "description": "Set for invoices issued automatically before the billing period ends."
+  },
+  {
+   "fieldname": "months",
+   "fieldtype": "Int",
+   "label": "Months",
+   "default": "1",
+   "description": "Number of months covered by this payment (12 = yearly)."
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date"
+  },
+  {
+   "fieldname": "invoice_key",
+   "fieldtype": "Data",
+   "label": "Invoice Key",
+   "read_only": 1,
+   "search_index": 1,
+   "unique": 1,
+   "description": "Idempotency key used to avoid issuing the same invoice twice."
   },
   {
    "fieldname": "col_details",
@@ -259,6 +292,6 @@
  "docstatus": 0,
  "autoname": "naming_series:",
  "title_field": "tenant_name",
- "search_fields": "tenant,tenant_name,reference_no,status",
+ "search_fields": "tenant,tenant_name,reference_no,status,invoice_key",
  "icon": "payment"
 }

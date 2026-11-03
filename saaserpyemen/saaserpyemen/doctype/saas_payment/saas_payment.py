@@ -31,8 +31,11 @@ class SaaSPayment(Document):
 			self.currency = tenant.currency or get_settings().default_currency or "USD"
 		if flt(self.amount) <= 0:
 			frappe.throw(_("Payment amount must be greater than zero."))
-		if not self.billing_cycle:
-			self.billing_cycle = "Monthly"
+		if not cint(self.months):
+			yearly = str(self.billing_cycle or "").lower().startswith("y")
+			self.months = 12 if yearly else 1
+		self.months = min(12, max(1, cint(self.months)))
+		self.billing_cycle = "Yearly" if self.months == 12 else "Monthly"
 
 		settings = get_settings()
 		base_currency = settings.default_currency or "USD"
@@ -40,7 +43,9 @@ class SaaSPayment(Document):
 		self.base_amount = convert_amount(flt(self.amount), self.currency, base_currency)
 
 		if not self.status:
-			self.status = "Pending Review"
+			self.status = "Unpaid" if cint(self.is_invoice) else "Pending Review"
+		if not self.due_date:
+			self.due_date = self.period_start or today()
 
 	def on_update(self):
 		if self.status == "Paid" and self.subscription:
@@ -129,7 +134,16 @@ class SaaSPayment(Document):
 		return subscription
 
 	def reject(self, reason: str | None = None):
-		self.status = "Rejected"
+		# Invoices stay open so the customer can submit a corrected receipt.
+		# A cancelled subscription has nothing left to pay, so reject instead.
+		if cint(self.is_invoice):
+			cancelled = (
+				self.subscription
+				and frappe.db.get_value("SaaS Subscription", self.subscription, "status") == "Cancelled"
+			)
+			self.status = "Rejected" if cancelled else "Unpaid"
+		else:
+			self.status = "Rejected"
 		self.notes = ((self.notes or "") + f"\n[{now_datetime()}] Rejected: {reason or '-'}").strip()
 		self.approved_by = frappe.session.user
 		self.approved_on = now_datetime()
@@ -184,9 +198,10 @@ class SaaSPayment(Document):
 				"item_code": item,
 				"qty": 1,
 				"rate": flt(self.amount),
-				"description": _("SaaS subscription — {0} ({1}) {2} to {3}").format(
+				"description": _("SaaS subscription — {0} ({1}, {2} month(s)) {3} to {4}").format(
 					self.tenant_name or self.tenant,
 					self.billing_cycle,
+					cint(self.months) or 1,
 					self.period_start or "-",
 					self.period_end or "-",
 				),
