@@ -1,0 +1,4 @@
+Invoice closed	www\dashboard.html:149
+Payment received	www\dashboard.html:141
+This invoice has already been paid.	www\dashboard.html:142
+We could not open the payment page.	www\dashboard.html:165

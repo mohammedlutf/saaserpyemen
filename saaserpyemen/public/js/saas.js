@@ -905,7 +905,10 @@
 					receipt: receiptUrl,
 				});
 				toast((result && result.message) || t("Payment submitted for review.", "تم إرسال الدفعة للمراجعة."), "success");
-				window.setTimeout(function () { window.location.reload(); }, 1000);
+				const tenant = form.getAttribute("data-tenant") || "";
+				const langPrefix = DEFAULT_LANG === "ar" ? "/ar" : "";
+				const target = langPrefix + "/dashboard?tenant=" + encodeURIComponent(tenant) + "&tab=payments&notice=payment_submitted";
+				window.setTimeout(function () { window.location.href = target; }, 1000);
 			} catch (error) {
 				showError(form, error.message);
 				setLoading(submit, false);

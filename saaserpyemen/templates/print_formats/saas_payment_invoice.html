@@ -149,11 +149,22 @@
 				<td class="head__brand">
 					<table class="brand">
 						<tr>
-							<td class="brand__mark"><span>{{ (brand or "S")[:1] }}</span></td>
-							<td class="brand__text">
+							<td class="brand__mark">
+								{% if lang == "ar" %}
+									<img src="/assets/saaserpyemen/images/rtlhorizontallogo.png"
+										alt="سحبيكس"
+										style="height: 55px; width: auto;">
+								{% else %}
+									<img src="/assets/saaserpyemen/images/ltlhorizontallogo.png"
+										alt="Sahbix"
+										style="height: 55px; width: auto;">
+								{% endif %}
+							</td>
+
+							<!-- <td class="brand__text">
 								<h1>{{ brand }}</h1>
 								<p>{{ _("Cloud ERP workspace") }}</p>
-							</td>
+							</td> -->
 						</tr>
 					</table>
 				</td>

@@ -5,6 +5,7 @@
 {% block page_content %}
 <section class="section section--top">
 	<div class="saas-container">
+		{% if data %}
 		<div class="portal__head portal__head--compact">
 			<div>
 				<div class="saas-pill"><span>{{ _("Manual payment") }}</span></div>
@@ -231,6 +232,14 @@
 				</div>
 			</div>
 		</div>
+		{% else %}
+		<div class="empty-state empty-state--lg">
+			<div class="empty-state__icon">!</div>
+			<h2>{{ _("We could not open the payment page.") }}</h2>
+			<p>{{ _("Something went wrong. Please try again.") }}</p>
+			<a class="saas-btn saas-btn--primary" href="{{ saas_url('/dashboard', lang) }}?tenant={{ tenant.name }}&tab=payments">{{ _("Back to dashboard") }}</a>
+		</div>
+		{% endif %}
 	</div>
 </section>
 {% endblock %}

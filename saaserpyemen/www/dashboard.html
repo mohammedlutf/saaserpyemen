@@ -126,7 +126,49 @@
 			</aside>
 
 			<div class="portal__content">
-				{% if data.pending_payment %}
+				{% if notice == 'payment_submitted' %}
+				<div class="alert alert--info">
+					<span class="alert__icon">✓</span>
+					<div>
+						<b>{{ _("Payment under review") }}</b>
+						<p>{{ _("Payment submitted. We will review it within one business day.") }}</p>
+					</div>
+				</div>
+				{% elif notice == 'invoice_paid' %}
+				<div class="alert alert--info">
+					<span class="alert__icon">✓</span>
+					<div>
+						<b>{{ _("Payment received") }}</b>
+						<p>{{ _("This invoice has already been paid.") }}</p>
+					</div>
+				</div>
+				{% elif notice == 'invoice_closed' %}
+				<div class="alert alert--warning">
+					<span class="alert__icon">▤</span>
+					<div>
+						<b>{{ _("Invoice closed") }}</b>
+						<p>{{ _("This invoice is no longer open for payment.") }}</p>
+					</div>
+				</div>
+				{% elif notice == 'invoice_not_found' %}
+				<div class="alert alert--warning">
+					<span class="alert__icon">▤</span>
+					<div>
+						<b>{{ _("Invoice not found.") }}</b>
+						<p>{{ _("This invoice does not belong to the selected workspace.") }}</p>
+					</div>
+				</div>
+				{% elif notice == 'payment_unavailable' %}
+				<div class="alert alert--danger">
+					<span class="alert__icon">!</span>
+					<div>
+						<b>{{ _("We could not open the payment page.") }}</b>
+						<p>{{ _("Something went wrong. Please try again.") }}</p>
+					</div>
+				</div>
+				{% endif %}
+
+				{% if data.pending_payment and notice != 'payment_submitted' %}
 				<div class="alert alert--warning">
 					<span class="alert__icon">◷</span>
 					<div>
@@ -214,7 +256,7 @@
 							</div>
 						</div>
 						<div class="panel__actions">
-							<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.payment_url) }}">{{ _("Make a payment") }}</a>
+							<!-- <a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.payment_url) }}">{{ _("Make a payment") }}</a> -->
 							<a class="saas-btn saas-btn--outline saas-btn--sm" href="{{ saas_url(data.upgrade_url) }}">{{ _("Upgrade or change") }}</a>
 						</div>
 					</div>
@@ -410,7 +452,7 @@
 						</div>
 						<p>{{ _("Pay by bank transfer and upload your receipt. Our team reviews manual payments within one business day.") }}</p>
 						<div class="panel__actions panel__actions--column">
-							<a class="saas-btn saas-btn--primary saas-btn--block" href="{{ saas_url(data.payment_url) }}">{{ _("Pay / renew now") }}</a>
+							<!-- <a class="saas-btn saas-btn--primary saas-btn--block" href="{{ saas_url(data.payment_url) }}">{{ _("Pay / renew now") }}</a> -->
 							<a class="saas-btn saas-btn--outline saas-btn--block" href="{{ saas_url(data.upgrade_url) }}">{{ _("Change plan") }}</a>
 						</div>
 						{% if data.subscription and data.subscription.auto_renew %}
@@ -428,7 +470,7 @@
 							<small>{{ _("Billing") }}</small>
 							<h2>{{ _("Payments & receipts") }}</h2>
 						</div>
-						<a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.payment_url) }}">{{ _("New payment") }}</a>
+						<!-- <a class="saas-btn saas-btn--primary saas-btn--sm" href="{{ saas_url(data.payment_url) }}">{{ _("New payment") }}</a> -->
 					</div>
 					{% if data.payments %}
 					<div class="table-wrap">

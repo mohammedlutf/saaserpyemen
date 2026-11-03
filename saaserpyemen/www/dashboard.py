@@ -14,6 +14,14 @@ from saaserpyemen.website import base_context, require_login
 
 TABS = ("overview", "usage", "billing", "payments", "credentials", "profile")
 
+NOTICES = (
+	"payment_submitted",
+	"invoice_paid",
+	"invoice_closed",
+	"invoice_not_found",
+	"payment_unavailable",
+)
+
 
 def get_context(context):
 	base_context(context)
@@ -35,6 +43,8 @@ def get_context(context):
 	context.active_tab = frappe.local.request.args.get("tab") or "overview"
 	if context.active_tab not in TABS:
 		context.active_tab = "overview"
+	notice = frappe.local.request.args.get("notice") or ""
+	context.notice = notice if notice in NOTICES else ""
 	context.tenant = tenant
 	context.workspaces = get_user_tenants()
 	context.trial_used = user_has_workspaces()
