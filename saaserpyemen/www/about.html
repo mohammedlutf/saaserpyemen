@@ -1,0 +1,217 @@
+{% extends "templates/saas_base.html" %}
+
+{% set brand = (brand_name_ar or 'سحبيكس') if lang == 'ar' else (brand_name or 'Sahbix') %}
+
+{% block title %}{{ _('About') }} {{ brand }} — {{ _('Technology & Digital Transformation') }}{% endblock %}
+
+{% block page_content %}
+<section class="page-hero page-hero--compact">
+	<div class="hero__glow hero__glow--one"></div>
+	<div class="hero__glow hero__glow--two"></div>
+	<div class="saas-container">
+		<div class="page-hero__inner">
+			<div class="saas-pill"><span>{{ _("Technology & Digital Transformation Company") }}</span></div>
+			<h1>
+				{{ _("Building Better Businesses") }} <span class="gradient-text">{{ _("Through Technology") }}</span>
+			</h1>
+			<p>
+				{{ _("We build better businesses through technology — ERP, custom applications, websites, cloud hosting and automation.") }}
+			</p>
+		</div>
+	</div>
+</section>
+
+<section class="section" id="who-we-are">
+	<div class="saas-container">
+		<div class="section__head">
+			<div class="saas-pill"><span>{{ _("Who we are") }}</span></div>
+			<h2>
+				{{ _("Technology that makes") }} <span class="gradient-text">{{ _("business simpler") }}</span>.
+			</h2>
+			<p>
+				{{ _("At {0}, we believe that technology should make businesses more organized, efficient, and ready for the future.").format(brand) }}
+			</p>
+		</div>
+
+		<div class="features">
+			<article class="feature">
+				<span class="feature__icon" style="--c:#02a474">◈</span>
+				<h3>{{ _("Who we are") }}</h3>
+				<p>{{ _("We are a technology company powered by a team of experts in business systems, software engineering, and digital transformation. We help companies simplify their operations, improve productivity, and build a strong digital presence through innovative, reliable, and customized technology solutions.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#0ea5e9">⌘</span>
+				<h3>{{ _("Our expertise") }}</h3>
+				<p>{{ _("With extensive experience in ERPNext and Frappe development, we specialize in implementing, customizing, and developing integrated business management systems tailored to each organization's needs.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#f59e0b">✦</span>
+				<h3>{{ _("Our approach") }}</h3>
+				<p>{{ _("Our approach combines technical expertise, practical business understanding, and modern development technologies to deliver solutions that focus on efficiency, security, scalability, and ease of use.") }}</p>
+			</article>
+		</div>
+	</div>
+</section>
+
+<section class="section section--alt" id="what-we-do">
+	<div class="saas-container">
+		<div class="section__head">
+			<div class="saas-pill"><span>{{ _("Our services") }}</span></div>
+			<h2>
+				{{ _("What we do") }}
+			</h2>
+			<p>
+				{{ _("Seven ways we help your business move forward.") }}
+			</p>
+		</div>
+
+		<div class="features">
+			<article class="feature">
+				<span class="feature__icon" style="--c:#02a474">◈</span>
+				<h3>{{ _("ERP & Business Management Solutions") }}</h3>
+				<p>{{ _("Professional ERP systems that bring your business operations together in one integrated platform. We implement, customize, and develop ERPNext solutions to manage accounting, sales, purchasing, inventory, human resources, and other business processes efficiently and securely.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#0ea5e9">⌘</span>
+				<h3>{{ _("Custom Application Development") }}</h3>
+				<p>{{ _("We design and develop custom mobile and web applications that help businesses manage their operations, connect with customers, and access essential services from anywhere.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#f59e0b">▦</span>
+				<h3>{{ _("Website Design & Development") }}</h3>
+				<p>{{ _("We build modern, responsive, and professional websites that strengthen your digital presence, showcase your brand, and create better experiences for your customers.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#14b8a6">☁</span>
+				<h3>{{ _("Cloud Hosting & Infrastructure") }}</h3>
+				<p>{{ _("Reliable, secure, and high-performance hosting solutions designed to keep your business systems and websites accessible, stable, and running smoothly.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#ec4899">⇄</span>
+				<h3>{{ _("ERPNext Customization & Integration") }}</h3>
+				<p>{{ _("We adapt ERPNext to your business workflows, develop custom modules, automate processes, and integrate third-party services to create a business system that works the way you do.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#8b5cf6">⚡</span>
+				<h3>{{ _("Business Process Automation") }}</h3>
+				<p>{{ _("We help organizations reduce repetitive tasks, minimize manual errors, and improve operational efficiency through intelligent automation and integrated workflows.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#02a474">◎</span>
+				<h3>{{ _("Technical Support & Maintenance") }}</h3>
+				<p>{{ _("We provide ongoing technical support, system monitoring, upgrades, maintenance, and optimization to ensure your technology continues to support your business as it grows.") }}</p>
+			</article>
+			<article class="panel panel--accent">
+				<div class="panel__head">
+					<div>
+						<small>{{ _("Start a project") }}</small>
+						<h2>{{ _("Have a project in mind?") }}</h2>
+					</div>
+					<span class="panel__big-icon">✦</span>
+				</div>
+				<p>{{ _("Tell us what you need and we will suggest the right technology solution.") }}</p>
+				<div class="panel__actions">
+					<a class="saas-btn saas-btn--primary saas-btn--sm" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
+						<span>{{ _("Talk to our team") }}</span>
+					</a>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>
+
+<section class="section" id="mission">
+	<div class="saas-container">
+		<div class="section__head">
+			<div class="saas-pill"><span>{{ _("Our purpose") }}</span></div>
+			<h2>
+				{{ _("Driven by purpose,") }} <span class="gradient-text">{{ _("built for growth") }}</span>.
+			</h2>
+		</div>
+
+		<div class="features features--2">
+			<article class="feature">
+				<span class="feature__icon" style="--c:#02a474">◎</span>
+				<h3>{{ _("Our mission") }}</h3>
+				<p>{{ _("To empower businesses with practical, innovative, and reliable technology solutions that simplify operations, improve efficiency, and accelerate digital transformation.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#0ea5e9">✦</span>
+				<h3>{{ _("Our vision") }}</h3>
+				<p>{{ _("To become a trusted technology partner for businesses by delivering intelligent digital solutions that create lasting value and support sustainable growth.") }}</p>
+			</article>
+		</div>
+	</div>
+</section>
+
+<section class="section section--alt" id="why-us">
+	<div class="saas-container">
+		<div class="section__head">
+			<div class="saas-pill"><span>{{ _("Why choose us") }}</span></div>
+			<h2>
+				{{ _("Why choose {0}?").format(brand) }}
+			</h2>
+			<p>
+				{{ _("The right partner for your digital transformation.") }}
+			</p>
+		</div>
+
+		<div class="features">
+			<article class="feature">
+				<span class="feature__icon" style="--c:#02a474">⚙</span>
+				<h3>{{ _("Technical expertise") }}</h3>
+				<p>{{ _("Experienced developers and specialists in ERPNext, Frappe, and modern software technologies.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#0ea5e9">◈</span>
+				<h3>{{ _("Business understanding") }}</h3>
+				<p>{{ _("We understand that every organization has unique workflows and operational challenges.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#f59e0b">✦</span>
+				<h3>{{ _("Tailored solutions") }}</h3>
+				<p>{{ _("We build and customize solutions around your actual business requirements.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#14b8a6">🔒</span>
+				<h3>{{ _("Security & reliability") }}</h3>
+				<p>{{ _("We prioritize data protection, system stability, and dependable infrastructure.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#ec4899">↻</span>
+				<h3>{{ _("Continuous innovation") }}</h3>
+				<p>{{ _("We use modern technologies to deliver scalable solutions that evolve with your business.") }}</p>
+			</article>
+			<article class="feature">
+				<span class="feature__icon" style="--c:#8b5cf6">◎</span>
+				<h3>{{ _("Long-term partnership") }}</h3>
+				<p>{{ _("We support our clients beyond implementation, helping them continuously improve and grow.") }}</p>
+			</article>
+		</div>
+	</div>
+</section>
+
+<section class="cta">
+	<div class="saas-container">
+		<div class="cta__card">
+			<div class="cta__glow"></div>
+			<div>
+				<h2>{{ _("Let's build something better") }}</h2>
+				<p>
+					{{ _("Your business deserves technology that works for you. Whether you need an integrated ERP system, a custom application, a professional website, or reliable cloud infrastructure, {0} is ready to help you take the next step.").format(brand) }}
+					<br>
+					<b>{{ brand }} — {{ _("Organize Your Business. Empower Your Growth.") }}</b>
+				</p>
+			</div>
+			<div class="cta__actions">
+				<a class="saas-btn saas-btn--white saas-btn--lg" href="mailto:{{ support_email or 'infosahbix@gmail.com' }}">
+					<span>{{ _("Talk to our team") }}</span> →
+				</a>
+				<a class="saas-btn saas-btn--ghost-light saas-btn--lg" href="{{ saas_url('/plans') }}">
+					<span>{{ _("Explore plans") }}</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

@@ -2494,3 +2494,9 @@ html.saas-ar .saas-footer__contact-actions { direction: rtl; }
 	.saas-footer__logo { height: 30px; }
 	.portal__head { padding: 18px; }
 }
+
+/* About page */
+.features--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 720px) {
+	.features--2 { grid-template-columns: 1fr; }
+}
