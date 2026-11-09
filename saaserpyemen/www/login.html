@@ -122,6 +122,32 @@
 					<a href="{{ saas_url('/login', lang) }}">{{ _("Back to sign in") }}</a>
 				</p>
 			</div>
+
+			<div class="auth__otp" data-pane="otp" hidden>
+				<div class="saas-pill"><span>{{ _("Verification") }}</span></div>
+				<h1>{{ _("Verify your sign-in") }}</h1>
+				<p class="auth__sub">
+					<span data-otp-prompt>{{ _("Enter the verification code we sent you.") }}</span>
+				</p>
+
+				<form class="form" id="login-otp-form" data-redirect="{{ redirect_to }}" novalidate>
+					<label class="field">
+						<span class="field__label">{{ _("Verification code") }}</span>
+						<div class="field__control">
+							<span class="field__icon">#</span>
+							<input type="text" name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="123456">
+						</div>
+					</label>
+					<div class="form__error" data-form-error hidden></div>
+					<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block" type="submit">
+						<span>{{ _("Verify & sign in") }}</span>
+						<span class="btn-spinner" hidden></span>
+					</button>
+					<p class="auth__switch">
+						<a href="{{ saas_url('/login', lang) }}" data-otp-back>{{ _("Back to sign in") }}</a>
+					</p>
+				</form>
+			</div>
 		</div>
 	</div>
 </section>

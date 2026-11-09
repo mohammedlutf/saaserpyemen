@@ -100,6 +100,7 @@
   "security_section",
   "signup_rate_limit",
   "min_password_length",
+  "verify_signup_email",
   "max_tenants_per_user",
   "enable_custom_domains",
   "reserved_subdomains",
@@ -579,6 +580,13 @@
    "fieldtype": "Int",
    "label": "Minimum Password Length",
    "default": "8"
+  },
+  {
+   "fieldname": "verify_signup_email",
+   "fieldtype": "Check",
+   "label": "Verify Signup Email with OTP",
+   "default": "0",
+   "description": "When enabled, new email signups must verify a one-time code sent to their email before they can sign in."
   },
   {
    "fieldname": "max_tenants_per_user",

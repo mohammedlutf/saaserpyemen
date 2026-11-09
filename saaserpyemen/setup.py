@@ -174,6 +174,7 @@ def create_roles():
 
 
 def create_custom_fields_for_saas():
+	backfill_signup_verified = not frappe.db.has_column("User", "saas_signup_verified")
 	custom_fields = {
 		"User": [
 			{
@@ -237,6 +238,16 @@ def create_custom_fields_for_saas():
 				"label": "Tenant Admin",
 				"insert_after": "saas_tenant",
 				"read_only": 1,
+				"no_copy": 1,
+			},
+			{
+				"fieldname": "saas_signup_verified",
+				"fieldtype": "Check",
+				"label": "Signup Verified",
+				"default": "1",
+				"insert_after": "saas_is_tenant_admin",
+				"read_only": 1,
+				"hidden": 1,
 				"no_copy": 1,
 			},
 		],
@@ -355,6 +366,13 @@ def create_custom_fields_for_saas():
 		],
 	}
 	create_custom_fields(custom_fields, ignore_validate=True)
+
+	if backfill_signup_verified:
+		# Existing accounts predate email verification, so treat them as verified.
+		frappe.db.sql(
+			"update `tabUser` set saas_signup_verified = 1 "
+			"where ifnull(saas_signup_verified, 0) = 0"
+		)
 
 
 def _existing_link(doctype, name):
@@ -512,7 +530,11 @@ def seed_default_plans():
 def set_portal_defaults():
 	try:
 		portal = frappe.get_single("Portal Settings")
-		if not portal.default_role:
+		# The central SaaS site must not map portal users to ERPNext Customers.
+		# A "Customer" default role makes ERPNext create Customer/Contact records
+		# on session creation, which collides with webshop's cart hooks and
+		# raises TimestampMismatchError right after OAuth signup.
+		if portal.default_role != "SaaS Customer":
 			portal.default_role = "SaaS Customer"
 			portal.flags.ignore_permissions = True
 			portal.save(ignore_permissions=True)

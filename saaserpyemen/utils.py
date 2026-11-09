@@ -25,6 +25,7 @@ DEFAULT_SETTINGS = {
 	"site_scheme": "http",
 	"max_tenants_per_user": 0,
 	"min_password_length": 8,
+	"verify_signup_email": 0,
 	"auto_issue_invoices": 1,
 	"invoice_lead_days": 7,
 	"reserved_subdomains": "www,app,api,admin,mail,ftp,blog,support,billing,dashboard,status,cdn,static,assets,saas,demo,test,dev,staging,login,signup,payment,plans,docs,help,portal,erp,crm,sahbix,sahbixmarket,shopzad,shopzadmarket",

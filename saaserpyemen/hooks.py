@@ -11,8 +11,8 @@ app_license = "mit"
 app_include_css = "/assets/saaserpyemen/css/saas_desk.css"
 app_include_js = "/assets/saaserpyemen/js/saas_desk.js"
 
-web_include_css = "/assets/saaserpyemen/css/saas.css?v=20261106"
-web_include_js = "/assets/saaserpyemen/js/saas.js?v=20261101"
+web_include_css = "/assets/saaserpyemen/css/saas.css?v=20261109"
+web_include_js = "/assets/saaserpyemen/js/saas.js?v=20261109"
 
 # ---------------------------------------------------------------------------
 # Website
@@ -48,6 +48,7 @@ before_request = ["saaserpyemen.tenant_ops.before_request"]
 doc_events = {
 	"User": {
 		"validate": "saaserpyemen.tenant_ops.check_user_limit",
+		"after_insert": "saaserpyemen.auth.on_user_after_insert",
 	},
 	"Branch": {
 		"validate": "saaserpyemen.tenant_ops.check_branch_limit",

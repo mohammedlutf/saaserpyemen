@@ -148,6 +148,37 @@
 				</button>
 			</form>
 
+			<div class="auth__otp" data-pane="signup-otp" hidden>
+				<div class="saas-pill"><span>{{ _("Verify your email") }}</span></div>
+				<h1>{{ _("Check your inbox") }}</h1>
+				<p class="auth__sub">
+					<span>{{ _("We sent a 6-digit code to") }}</span>
+					<b data-otp-email></b>
+				</p>
+
+				<form class="form" id="signup-otp-form" novalidate>
+					<label class="field">
+						<span class="field__label">{{ _("Verification code") }}</span>
+						<div class="field__control">
+							<span class="field__icon">#</span>
+							<input type="text" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required placeholder="123456">
+						</div>
+					</label>
+					<div class="form__error" data-form-error hidden></div>
+					<button class="saas-btn saas-btn--primary saas-btn--lg saas-btn--block" type="submit">
+						<span>{{ _("Verify & continue") }}</span>
+						<span class="btn-spinner" hidden></span>
+					</button>
+					<p class="auth__switch">
+						<span>{{ _("Didn't receive the code?") }}</span>
+						<a href="#" data-otp-resend>{{ _("Resend") }}</a>
+					</p>
+					<p class="auth__switch">
+						<a href="{{ saas_url('/signup', lang) }}">{{ _("Back to sign up") }}</a>
+					</p>
+				</form>
+			</div>
+
 			<p class="auth__terms">
 				<span>{{ _("By creating an account you agree to our terms and privacy policy. We will never sell your data.") }}</span>
 			</p>

@@ -367,6 +367,48 @@
 	function initlogin() {
 		const form = $("#login-form");
 		if (!form) return;
+
+		const wrap = form.closest(".auth__form-wrap");
+		const otpPane = wrap ? $('[data-pane="otp"]', wrap) : null;
+		const otpForm = $("#login-otp-form");
+		let tmpId = "";
+
+		function showOtp(verification, id) {
+			tmpId = id || "";
+			const prompt = otpPane ? $("[data-otp-prompt]", otpPane) : null;
+			let text = verification && verification.prompt ? stripHtml(verification.prompt) : "";
+			if (verification && verification.method === "OTP App" && verification.setup) {
+				text = t(
+					"Set up your authenticator app, then enter the code it displays.",
+					"قم بإعداد تطبيق المصادقة ثم أدخل الرمز الذي يعرضه."
+				);
+			}
+			if (!text) {
+				text = t(
+					"Enter the verification code we sent you.",
+					"أدخل رمز التحقق الذي أرسلناه إليك."
+				);
+			}
+			if (prompt) prompt.textContent = text;
+			if (otpPane) otpPane.hidden = false;
+			if (wrap) wrap.setAttribute("data-pane-active", "otp");
+			const input = otpForm ? $('input[name="otp"]', otpForm) : null;
+			if (input) {
+				input.value = "";
+				try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+			}
+			toast(
+				t("A verification code has been sent to you.", "تم إرسال رمز التحقق إليك."),
+				"success"
+			);
+		}
+
+		function hideOtp() {
+			tmpId = "";
+			if (otpPane) otpPane.hidden = true;
+			if (wrap) wrap.setAttribute("data-pane-active", "");
+		}
+
 		form.addEventListener("submit", async function (event) {
 			event.preventDefault();
 			clearError(form);
@@ -379,13 +421,63 @@
 			const button = $('button[type="submit"]', form);
 			setLoading(button, true);
 			try {
-				await call("login", { usr: usr, pwd: pwd });
+				const data = await callFull("login", { usr: usr, pwd: pwd });
+
+				if (data.message === "Password Reset" && data.redirect_to) {
+					window.location.href = data.redirect_to;
+					return;
+				}
+
+				if (data.verification && data.message !== "Logged In") {
+					showOtp(data.verification, data.tmp_id);
+					setLoading(button, false);
+					return;
+				}
+
 				const redirect = form.getAttribute("data-redirect") || "/dashboard";
 				window.location.href = redirect;
 			} catch (error) {
 				showError(form, error.message);
 				setLoading(button, false);
 			}
+		});
+
+		if (otpForm) {
+			otpForm.addEventListener("submit", async function (event) {
+				event.preventDefault();
+				clearError(otpForm);
+				const otp = (otpForm.otp.value || "").trim();
+				if (!otp) {
+					showError(otpForm, t("Please enter the verification code.", "يرجى إدخال رمز التحقق."));
+					return;
+				}
+				if (!/^\d{6}$/.test(otp)) {
+					showError(otpForm, t("The verification code must be 6 digits.", "يجب أن يتكون رمز التحقق من 6 أرقام."));
+					return;
+				}
+				const button = $('button[type="submit"]', otpForm);
+				setLoading(button, true);
+				try {
+					const data = await callFull("login", { otp: otp, tmp_id: tmpId });
+					if (data.verification) {
+						showError(otpForm, t("Incorrect verification code. Please try again.", "رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى."));
+						setLoading(button, false);
+						return;
+					}
+					const redirect = otpForm.getAttribute("data-redirect") || form.getAttribute("data-redirect") || "/dashboard";
+					window.location.href = redirect;
+				} catch (error) {
+					showError(otpForm, error.message);
+					setLoading(button, false);
+				}
+			});
+		}
+
+		$$("[data-otp-back]", otpPane || document).forEach(function (link) {
+			link.addEventListener("click", function (event) {
+				event.preventDefault();
+				hideOtp();
+			});
 		});
 	}
 
@@ -496,6 +588,33 @@
 		const form = $("#signup-form");
 		if (!form) return;
 
+		const wrap = form.closest(".auth__form-wrap");
+		const otpPane = wrap ? $('[data-pane="signup-otp"]', wrap) : null;
+		const otpForm = $("#signup-otp-form");
+		let pendingEmail = "";
+
+		function planTarget() {
+			const plan = form.getAttribute("data-plan") || "";
+			const cycle = form.getAttribute("data-cycle") || "Monthly";
+			const currency = form.getAttribute("data-currency") || "";
+			if (!plan) return "/plans";
+			const params = new URLSearchParams({ plan: plan, cycle: cycle, currency: currency });
+			return "/subscribe?" + params.toString();
+		}
+
+		function showOtp(email) {
+			pendingEmail = email || "";
+			if (otpPane) otpPane.hidden = false;
+			if (wrap) wrap.setAttribute("data-pane-active", "signup-otp");
+			const emailEl = otpPane ? $("[data-otp-email]", otpPane) : null;
+			if (emailEl) emailEl.textContent = pendingEmail;
+			const input = otpForm ? $('input[name="otp"]', otpForm) : null;
+			if (input) {
+				input.value = "";
+				try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+			}
+		}
+
 		form.addEventListener("submit", async function (event) {
 			event.preventDefault();
 			clearError(form);
@@ -523,13 +642,26 @@
 			setLoading(button, true);
 			try {
 				const result = await call("saaserpyemen.api.signup", data);
+				if (result && result.requires_verification) {
+					showOtp(result.email || data.email);
+					setLoading(button, false);
+					if (result.email_sent === false) {
+						toast(
+							t("We could not send the verification email. Please use Resend.", "تعذر إرسال بريد التحقق. يرجى استخدام إعادة الإرسال."),
+							"error"
+						);
+					} else {
+						toast(
+							t("We sent a verification code to your email.", "أرسلنا رمز تحقق إلى بريدك الإلكتروني."),
+							"success"
+						);
+					}
+					return;
+				}
 				const plan = form.getAttribute("data-plan") || "";
-				const cycle = form.getAttribute("data-cycle") || "Monthly";
-				const currency = form.getAttribute("data-currency") || "";
 				let target = (result && result.redirect) || "/plans";
 				if (plan && target.indexOf("plan=") === -1) {
-					const params = new URLSearchParams({ plan: plan, cycle: cycle, currency: currency });
-					target = "/subscribe?" + params.toString();
+					target = planTarget();
 				}
 				window.location.href = target;
 			} catch (error) {
@@ -537,6 +669,62 @@
 				setLoading(button, false);
 			}
 		});
+
+		if (otpForm) {
+			otpForm.addEventListener("submit", async function (event) {
+				event.preventDefault();
+				clearError(otpForm);
+				const otp = (otpForm.otp.value || "").trim();
+				const email = pendingEmail || (form.email.value || "").trim();
+				if (!email) {
+					showError(otpForm, t("Please enter your email address.", "يرجى إدخال عنوان بريدك الإلكتروني."));
+					return;
+				}
+				if (!otp) {
+					showError(otpForm, t("Please enter the verification code.", "يرجى إدخال رمز التحقق."));
+					return;
+				}
+				if (!/^\d{6}$/.test(otp)) {
+					showError(otpForm, t("The verification code must be 6 digits.", "يجب أن يتكون رمز التحقق من 6 أرقام."));
+					return;
+				}
+				const button = $('button[type="submit"]', otpForm);
+				setLoading(button, true);
+				try {
+					const result = await call("saaserpyemen.api.verify_signup_otp", {
+						email: email,
+						otp: otp,
+						redirect: planTarget(),
+					});
+					window.location.href = (result && result.redirect) || planTarget();
+				} catch (error) {
+					showError(otpForm, error.message);
+					setLoading(button, false);
+				}
+			});
+
+			const resend = $("[data-otp-resend]", otpForm);
+			if (resend) {
+				resend.addEventListener("click", async function (event) {
+					event.preventDefault();
+					clearError(otpForm);
+					const email = pendingEmail || (form.email.value || "").trim();
+					if (!email) {
+						showError(otpForm, t("Please enter your email address.", "يرجى إدخال عنوان بريدك الإلكتروني."));
+						return;
+					}
+					try {
+						await call("saaserpyemen.api.resend_signup_otp", { email: email });
+						toast(
+							t("A new verification code has been sent.", "تم إرسال رمز تحقق جديد."),
+							"success"
+						);
+					} catch (error) {
+						showError(otpForm, error.message);
+					}
+				});
+			}
+		}
 	}
 
 	/* ----------------------------------------------------------------------

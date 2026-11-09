@@ -3,7 +3,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import re
+import secrets
 
 import frappe
 from frappe import _
@@ -72,6 +75,86 @@ def _rate_limit(bucket: str, limit: int, window: int = 3600):
 	if count >= limit:
 		frappe.throw(_("Too many attempts. Please try again later."), frappe.RateLimitExceededError)
 	frappe.cache.set_value(key, count + 1, expires_in_sec=window)
+
+
+# ---------------------------------------------------------------------------
+# Signup email verification (OTP)
+# ---------------------------------------------------------------------------
+SIGNUP_OTP_TTL = 600
+SIGNUP_OTP_MAX_ATTEMPTS = 5
+
+
+def _signup_otp_key(email: str) -> str:
+	return f"saas_signup_otp:{email}"
+
+
+def _hash_signup_otp(email: str, otp: str) -> str:
+	return hashlib.sha256(f"{email}:{otp}".encode("utf-8")).hexdigest()
+
+
+def _generate_signup_otp() -> str:
+	return f"{secrets.randbelow(1000000):06d}"
+
+
+def _is_pending_signup(user) -> bool:
+	"""A disabled, unverified email signup that never managed to log in."""
+	print(cint(user.get("enabled")))
+	print(user.get("saas_signup_verified"))
+	print(user.get("saas_signup_source"))
+	print(user.name)
+	if cint(user.get("enabled")):
+		print("entereedddddddddddddd")
+		return False
+	if cint(user.get("saas_signup_verified")):
+		print("entereedddddddddddddd hereeeeeeeeeeeeeee")
+		return False
+	if (user.get("saas_signup_source") or "Email") != "Email":
+		return False
+	return not user.get("last_login")
+
+
+def _send_signup_otp(user) -> bool:
+	"""Generate and email a fresh OTP. Returns True when the email was sent."""
+	email = user.email
+	otp = _generate_signup_otp()
+	frappe.cache.set_value(
+		_signup_otp_key(email),
+		{
+			"hash": _hash_signup_otp(email, otp),
+			"attempts": 0,
+			"user": user.name,
+		},
+		expires_in_sec=SIGNUP_OTP_TTL,
+	)
+
+	settings = get_settings()
+	brand = settings.brand_name or "Sahbix"
+	minutes = SIGNUP_OTP_TTL // 60
+	message = (
+		'<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;'
+		'padding:28px;color:#0f172a;">'
+		f'<h2 style="margin:0 0 18px;color:#0f766e;">{frappe.utils.escape_html(brand)}</h2>'
+		f"<p>{_('Hello {0},').format(frappe.utils.escape_html(user.first_name or email))}</p>"
+		f"<p>{_('Use the verification code below to finish creating your account:')}</p>"
+		'<p style="font-size:32px;letter-spacing:8px;font-weight:700;margin:22px 0;">'
+		f"{otp}</p>"
+		f"<p>{_('This code expires in {0} minutes. If you did not request it, you can ignore this email.').format(minutes)}</p>"
+		"</div>"
+	)
+
+	try:
+		frappe.sendmail(
+			recipients=[email],
+			subject=_("{0} verification code").format(brand),
+			message=message,
+			reference_doctype="User",
+			reference_name=user.name,
+			now=True,
+		)
+		return True
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "SaaS Signup OTP Email")
+		return False
 
 
 def _ensure_currency(currency: str) -> str:
@@ -358,19 +441,26 @@ def signup(
 	if username and not re.match(r"^[a-zA-Z0-9._-]{3,30}$", username):
 		frappe.throw(_("Username may contain letters, numbers, dots, underscores and hyphens only."))
 
+	verify_signup = cint(settings.get("verify_signup_email"))
+	existing = None
 	if frappe.db.exists("User", email):
-		frappe.throw(_("An account with this email already exists. Please sign in instead."))
-	if username and frappe.db.exists("User", {"username": username}):
-		frappe.throw(_("This username is already taken."))
+		existing = frappe.get_doc("User", email)
+		print(_is_pending_signup(existing))
+		if not (verify_signup and _is_pending_signup(existing)):
+			frappe.throw(_("An account with this email already exists. Please sign in instead."))
+	if username:
+		taken = frappe.db.get_value("User", {"username": username}, "name")
+		if taken and taken != email:
+			frappe.throw(_("This username is already taken."))
 
 	parts = full_name.split(" ", 1)
-	user = frappe.new_doc("User")
+	user = existing or frappe.new_doc("User")
 	user.update(
 		{
 			"email": email,
 			"first_name": parts[0],
 			"last_name": parts[1] if len(parts) > 1 else "",
-			"enabled": 1,
+			"enabled": 0 if verify_signup else 1,
 			"user_type": "Website User",
 			"new_password": password,
 			"send_welcome_email": 0,
@@ -382,12 +472,32 @@ def signup(
 			"saas_signup_source": "Email",
 		}
 	)
+	if frappe.db.has_column("User", "saas_signup_verified"):
+		user.set("saas_signup_verified", 0 if verify_signup else 1)
+	print(user.saas_signup_verified)
+	print(verify_signup)	
 	user.flags.ignore_permissions = True
 	user.flags.no_welcome_mail = True
-	user.insert(ignore_permissions=True)
+	if existing:
+		user.save(ignore_permissions=True)
+	else:
+		user.insert(ignore_permissions=True)
 
 	if frappe.db.exists("Role", "SaaS Customer"):
 		user.add_roles("SaaS Customer")
+
+	redirect = sanitize_redirect(redirect, "/plans")
+
+	if verify_signup:
+		email_sent = _send_signup_otp(user)
+		frappe.db.commit()
+		return {
+			"ok": True,
+			"requires_verification": True,
+			"email": email,
+			"email_sent": email_sent,
+			"redirect": redirect,
+		}
 
 	log_activity(None, "Signup", f"New account created via website: {email}", user=user.name)
 	frappe.db.commit()
@@ -397,8 +507,84 @@ def signup(
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "SaaS Signup Login")
 
+	return {"ok": True, "redirect": redirect, "user": user.name}
+
+
+@frappe.whitelist(allow_guest=True)
+def verify_signup_otp(email: str, otp: str, redirect: str | None = None):
+	ensure_central()
+	email = (email or "").strip().lower()
+	otp = (otp or "").strip()
+
+	if not email:
+		frappe.throw(_("Please enter your email address."))
+	if not otp:
+		frappe.throw(_("Please enter the verification code."))
+
+	key = _signup_otp_key(email)
+	cached = frappe.cache.get_value(key)
+	if not cached or not isinstance(cached, dict):
+		frappe.throw(_("This verification code has expired. Please request a new one."))
+
+	attempts = cint(cached.get("attempts"))
+	if attempts >= SIGNUP_OTP_MAX_ATTEMPTS:
+		frappe.cache.delete_value(key)
+		frappe.throw(_("Too many incorrect attempts. Please request a new code."))
+
+	if not hmac.compare_digest(cached.get("hash") or "", _hash_signup_otp(email, otp)):
+		cached["attempts"] = attempts + 1
+		frappe.cache.set_value(key, cached, expires_in_sec=SIGNUP_OTP_TTL)
+		frappe.throw(_("Incorrect verification code. Please try again."))
+
+	user = frappe.get_doc("User", cached.get("user") or email)
+	print(_is_pending_signup(user))
+	if  not _is_pending_signup(user) and cint(user.get("saas_signup_verified")):
+		frappe.cache.delete_value(key)
+		frappe.throw(_("This account is already verified. Please sign in instead."))
+
+	# Update the in-memory document (not just the database) because add_roles()
+	# saves the document afterwards and would otherwise write enabled=0 back.
+	user.enabled = 1
+	if frappe.db.has_column("User", "saas_signup_verified"):
+		user.saas_signup_verified = 1
+	user.flags.ignore_permissions = True
+	user.save(ignore_permissions=True)
+	if frappe.db.exists("Role", "SaaS Customer"):
+		user.add_roles("SaaS Customer")
+
+	frappe.cache.delete_value(key)
+	log_activity(None, "Signup", f"Email verified for new account: {email}", user=user.name)
+	frappe.db.commit()
+
+	try:
+		frappe.local.login_manager.login_as(user.name)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "SaaS Signup Login")
+
 	redirect = sanitize_redirect(redirect, "/plans")
 	return {"ok": True, "redirect": redirect, "user": user.name}
+
+
+@frappe.whitelist(allow_guest=True)
+def resend_signup_otp(email: str):
+	ensure_central()
+	email = (email or "").strip().lower()
+	if not email:
+		frappe.throw(_("Please enter your email address."))
+	_rate_limit("signup_otp_resend", 5, 3600)
+
+	if not frappe.db.exists("User", email):
+		frappe.throw(_("No pending signup was found for this email address."))
+
+	user = frappe.get_doc("User", email)
+	if  not _is_pending_signup(user):
+		frappe.throw(_("This account is already verified. Please sign in instead."))
+
+	email_sent = _send_signup_otp(user)
+	frappe.db.commit()
+	if not email_sent:
+		frappe.throw(_("We could not send the verification email. Please try again in a moment."))
+	return {"ok": True}
 
 
 # ---------------------------------------------------------------------------
