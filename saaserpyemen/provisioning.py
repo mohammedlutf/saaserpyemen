@@ -803,8 +803,9 @@ def _setup_admin_user(email: str, full_name: str, password: str | None, language
 	user.flags.ignore_permissions = True
 	user.flags.no_welcome_mail = True
 	user.save(ignore_permissions=True)
+	roles = ["Academics User", "Accounts Manager", "Accounts User", "Agriculture Manager", "Agriculture User", "Auditor", "Blogger", "Customer", "Dashboard Manager", "Delivery Manager", "Delivery User", "Fleet Manager", "Fulfillment User", "HR Manager", "HR User", "Inbox User", "Item Manager", "Knowledge Base Contributor", "Knowledge Base Editor", "Maintenance Manager", "Maintenance User", "Manufacturing Manager", "Manufacturing User", "Newsletter Manager", "Prepared Report User", "Projects Manager", "Projects User", "Purchase Manager", "Purchase Master Manager", "Purchase User", "Quality Manager", "Report Manager", "Sales Manager", "Sales Master Manager", "Sales User", "Script Manager", "Stock Manager", "Stock User", "Supplier", "Support Team", "System Manager", "Translator", "Website Manager", "Workspace Manager"]
 
-	for role in ("System Manager", "Accounts Manager", "Sales Manager", "Purchase Manager", "Stock Manager"):
+	for role in roles:
 		if frappe.db.exists("Role", role):
 			user.add_roles(role)
 
