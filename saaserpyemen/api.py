@@ -98,15 +98,9 @@ def _generate_signup_otp() -> str:
 
 def _is_pending_signup(user) -> bool:
 	"""A disabled, unverified email signup that never managed to log in."""
-	print(cint(user.get("enabled")))
-	print(user.get("saas_signup_verified"))
-	print(user.get("saas_signup_source"))
-	print(user.name)
 	if cint(user.get("enabled")):
-		print("entereedddddddddddddd")
 		return False
 	if cint(user.get("saas_signup_verified")):
-		print("entereedddddddddddddd hereeeeeeeeeeeeeee")
 		return False
 	if (user.get("saas_signup_source") or "Email") != "Email":
 		return False
@@ -445,7 +439,6 @@ def signup(
 	existing = None
 	if frappe.db.exists("User", email):
 		existing = frappe.get_doc("User", email)
-		print(_is_pending_signup(existing))
 		if not (verify_signup and _is_pending_signup(existing)):
 			frappe.throw(_("An account with this email already exists. Please sign in instead."))
 	if username:
@@ -474,8 +467,6 @@ def signup(
 	)
 	if frappe.db.has_column("User", "saas_signup_verified"):
 		user.set("saas_signup_verified", 0 if verify_signup else 1)
-	print(user.saas_signup_verified)
-	print(verify_signup)	
 	user.flags.ignore_permissions = True
 	user.flags.no_welcome_mail = True
 	if existing:
@@ -537,8 +528,7 @@ def verify_signup_otp(email: str, otp: str, redirect: str | None = None):
 		frappe.throw(_("Incorrect verification code. Please try again."))
 
 	user = frappe.get_doc("User", cached.get("user") or email)
-	print(_is_pending_signup(user))
-	if  not _is_pending_signup(user) and cint(user.get("saas_signup_verified")):
+	if not _is_pending_signup(user) and cint(user.get("saas_signup_verified")):
 		frappe.cache.delete_value(key)
 		frappe.throw(_("This account is already verified. Please sign in instead."))
 
@@ -577,7 +567,7 @@ def resend_signup_otp(email: str):
 		frappe.throw(_("No pending signup was found for this email address."))
 
 	user = frappe.get_doc("User", email)
-	if  not _is_pending_signup(user):
+	if not _is_pending_signup(user):
 		frappe.throw(_("This account is already verified. Please sign in instead."))
 
 	email_sent = _send_signup_otp(user)

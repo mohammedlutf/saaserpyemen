@@ -14,6 +14,7 @@ from saaserpyemen.utils import (
 	get_enabled_currencies,
 	get_settings,
 	is_central_site,
+	log_activity,
 	round_price,
 )
 
@@ -159,6 +160,7 @@ def setup_saas():
 		seed_default_plans()
 		set_portal_defaults()
 		sync_google_login()
+		backfill_social_signup_sources()
 	frappe.clear_cache()
 
 
@@ -365,7 +367,7 @@ def create_custom_fields_for_saas():
 			},
 		],
 	}
-	create_custom_fields(custom_fields, ignore_validate=True)
+	create_custom_fields(custom_fields, ignore_validate=True, update=True)
 
 	if backfill_signup_verified:
 		# Existing accounts predate email verification, so treat them as verified.
@@ -373,6 +375,48 @@ def create_custom_fields_for_saas():
 			"update `tabUser` set saas_signup_verified = 1 "
 			"where ifnull(saas_signup_verified, 0) = 0"
 		)
+
+
+def backfill_social_signup_sources():
+	"""Recover the signup source for accounts created before the field existed.
+
+	Frappe fills ``Select`` fields with their first option ("Email"), so users
+	who signed up with Google were stored as email signups. Their
+	``social_logins`` rows still identify the real provider.
+	"""
+	if not frappe.db.has_column("User", "saas_signup_source"):
+		return
+
+	rows = frappe.db.sql(
+		"""
+		select u.name, sl.provider
+		from `tabUser` u
+		inner join `tabUser Social Login` sl on sl.parent = u.name
+		where ifnull(u.saas_signup_source, '') in ('', 'Email')
+			and u.user_type = 'Website User'
+			and sl.provider not in ('', 'frappe')
+		""",
+		as_dict=True,
+	)
+	providers: dict[str, str] = {}
+	for row in rows:
+		provider = (row.provider or "").strip().lower()
+		if not provider:
+			continue
+		# Prefer Google when the account has several providers.
+		if row.name not in providers or provider == "google":
+			providers[row.name] = provider
+
+	for name, provider in providers.items():
+		source = "Google" if provider == "google" else provider.title()
+		frappe.db.set_value("User", name, "saas_signup_source", source, update_modified=False)
+		if not frappe.db.exists("SaaS Activity", {"user": name, "action": "Signup"}):
+			log_activity(
+				None,
+				"Signup",
+				f"New account created via {source}: {name}",
+				user=name,
+			)
 
 
 def _existing_link(doctype, name):
