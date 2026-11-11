@@ -120,3 +120,7 @@ add_to_apps_screen = [
 		"has_permission": "saaserpyemen.api.has_app_permission",
 	}
 ]
+
+override_doctype_class = {
+    "User": "saaserpyemen.overrides.user.CustomUser",
+}
